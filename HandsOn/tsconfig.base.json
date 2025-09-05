@@ -1,0 +1,111 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@farm/account": [
+        "libs/feature/settings/src/lib/settings/account/src/index.ts"
+      ],
+      "@farm/analise": [
+        "libs/feature/analises/src/lib/analises/analise/src/index.ts"
+      ],
+      "@farm/analises": ["libs/feature/analises/src/index.ts"],
+      "@farm/analises-list": [
+        "libs/feature/analises/src/lib/analises/analises-list/src/index.ts"
+      ],
+      "@farm/change-password": ["libs/feature/change-password/src/index.ts"],
+      "@farm/core": ["libs/shared/core/src/index.ts"],
+      "@farm/culture": [
+        "libs/feature/cultures/src/lib/cultures/culture/src/index.ts"
+      ],
+      "@farm/cultures": ["libs/feature/cultures/src/index.ts"],
+      "@farm/cultures-list": [
+        "libs/feature/cultures/src/lib/cultures/cultures-list/src/index.ts"
+      ],
+      "@farm/dashboard": ["libs/feature/dashboard/src/index.ts"],
+      "@farm/environments": ["src/app/environments/app-config.token.ts"],
+      "@farm/fertilizer-table": [
+        "libs/feature/fertilizer-tables/src/lib/fertilizer-tables/fertilizer-table/src/index.ts"
+      ],
+      "@farm/fertilizer-tables": [
+        "libs/feature/fertilizer-tables/src/index.ts"
+      ],
+      "@farm/fertilizer-tables-list": [
+        "libs/feature/fertilizer-tables/src/lib/fertilizer-tables/fertilizer-tables-list/src/index.ts"
+      ],
+      "@farm/foliar": [
+        "libs/feature/analises/src/lib/analises/foliar/src/index.ts"
+      ],
+      "@farm/foliar-list": [
+        "libs/feature/analises/src/lib/analises/foliar-list/src/index.ts"
+      ],
+      "@farm/footer": [
+        "libs/master-page/src/lib/master-page/footer/src/index.ts"
+      ],
+      "@farm/harvest": [
+        "libs/feature/harvests/src/lib/harvests/harvest/src/index.ts"
+      ],
+      "@farm/harvest-list": [
+        "libs/feature/harvests/src/lib/harvests/harvest-list/src/index.ts"
+      ],
+      "@farm/harvests": ["libs/feature/harvests/src/index.ts"],
+      "@farm/header": [
+        "libs/master-page/src/lib/master-page/header/src/index.ts"
+      ],
+      "@farm/home": ["libs/feature/home/src/index.ts"],
+      "@farm/main": ["libs/master-page/src/lib/master-page/main/src/index.ts"],
+      "@farm/master-page": ["libs/master-page/src/index.ts"],
+      "@farm/not-found": ["libs/feature/not-found/src/index.ts"],
+      "@farm/nutrient-table": [
+        "libs/feature/nutrient-tables/src/lib/nutrient-tables/nutrient-table/src/index.ts"
+      ],
+      "@farm/nutrient-tables": ["libs/feature/nutrient-tables/src/index.ts"],
+      "@farm/nutrient-tables-list": [
+        "libs/feature/nutrient-tables/src/lib/nutrient-tables/nutrient-tables-list/src/index.ts"
+      ],
+      "@farm/plot": ["libs/feature/plots/src/lib/plots/plot/src/index.ts"],
+      "@farm/plots": ["libs/feature/plots/src/index.ts"],
+      "@farm/plots-list": [
+        "libs/feature/plots/src/lib/plots/plots-list/src/index.ts"
+      ],
+      "@farm/result_analises": [
+        "libs/feature/analises/src/lib/analises/result_analises/src/index.ts"
+      ],
+      "@farm/results_analises": ["libs/feature/results_analises/src/index.ts"],
+      "@farm/security": [
+        "libs/feature/settings/src/lib/settings/security/src/index.ts"
+      ],
+      "@farm/settings": ["libs/feature/settings/src/index.ts"],
+      "@farm/sidebar": [
+        "libs/master-page/src/lib/master-page/sidebar/src/index.ts"
+      ],
+      "@farm/sign-in": ["libs/feature/sign-in/src/index.ts"],
+      "@farm/sign-up": ["libs/feature/sign-up/src/index.ts"],
+      "@farm/solo": [
+        "libs/feature/analises/src/lib/analises/solo/src/index.ts"
+      ],
+      "@farm/solo-list": [
+        "libs/feature/analises/src/lib/analises/solo-list/src/index.ts"
+      ],
+      "@farm/ui": ["libs/shared/ui/src/index.ts"],
+      "@farm/user": ["libs/feature/users/src/lib/users/user/src/index.ts"],
+      "@farm/users": ["libs/feature/users/src/index.ts"],
+      "@farm/users-list": [
+        "libs/feature/users/src/lib/users/users-list/src/index.ts"
+      ]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

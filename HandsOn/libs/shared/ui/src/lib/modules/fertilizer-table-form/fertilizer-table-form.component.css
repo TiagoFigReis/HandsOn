@@ -1,0 +1,4 @@
+::ng-deep .pressed {
+    background-color: #005bb5 !important;
+    border-color: #004a94 !important;
+}

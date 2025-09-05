@@ -1,0 +1,87 @@
+
+<a [routerLink]="['/app/analises']">
+      <p class="description flex items-center gap-1 link">
+        <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
+      </p>
+</a>
+
+<div *ngIf="loading; else tableContent" class="flex justify-center items-center">
+    <lib-spinner></lib-spinner>
+</div>
+
+<ng-template #tableContent >
+    <div *ngIf="!fertilizerRecommendations" class="flex flex-col items-center justify-center gap-3">
+      <div class="flex flex-col gap-2">
+        <p class="font-bold text-xl">Dados da análise</p>
+        <p class="text-red-600 font-bold">AVISO: Preencha corretamente as colunas de produtividade esperada da safra e do espaçamento da lavoura, pois será utilizada para as recomendações de fertilizantes</p>
+        <lib-table
+          [data]="data"
+          [columns]="columns"
+          [loading]="loading"
+          [showMoreButton]="showMoreButton"
+          (refresh)="refresh()"
+          [editable]="editable"
+          (rowUpdate)="onRowUpdate($event)"
+          (optionSelected)="selectedOption($event)"
+        >
+        </lib-table>
+        <small *ngIf="cultureError" class="error text-center">Todos os talhões devem ter uma cultura associada</small>
+      </div>
+
+      <lib-button [label]="'Solicitar recomendações'" (click)="solicitar_recomendacoes()"></lib-button>
+    
+    </div>  
+
+    <div *ngIf="resultsData" class="w-full ">
+        <p-card header="Resultados da Análise">
+
+        <p-accordion [value]="0" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
+
+          <p-accordion-panel *ngFor="let plot of resultsData.plots; let i = index" [value]="i">
+
+            <p-accordion-header>
+              {{ plot.plotName }} ({{ plot.cultureType }})
+            </p-accordion-header>
+
+            <p-accordion-content>
+              <ul class="recommendation-list">
+                <li *ngFor="let n of plot.nutrients">
+                  <div class="flex gap-1">
+                    <strong>{{ n.header }}:</strong> <p [ngClass]="getColor(n.analysis)" >{{ n.analysis }}</p>
+                  </div>
+                </li>
+              </ul>
+            </p-accordion-content>
+            
+          </p-accordion-panel>
+        </p-accordion>
+
+      </p-card>
+      </div>
+
+    <div *ngIf="fertilizerRecommendations && fertilizerRecommendations.plots.length > 0" class="mt-4">
+      <p-card header="Recomendações de Fertilizantes">
+
+        <p-accordion [value]="0" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
+
+          <p-accordion-panel *ngFor="let plot of fertilizerRecommendations.plots; let i = index" [value]="i">
+
+            <p-accordion-header>
+              {{ plot.plotName }} ({{ plot.cultureType }})
+            </p-accordion-header>
+
+            <p-accordion-content>
+              <ul class="recommendation-list">
+                <li *ngFor="let rec of plot.productRecomendations">
+                  <strong>{{ rec.name }}:</strong> {{ rec.recomendation }}
+                </li>
+              </ul>
+            </p-accordion-content>
+            
+          </p-accordion-panel>
+        </p-accordion>
+
+      </p-card>
+    </div>
+
+</ng-template>

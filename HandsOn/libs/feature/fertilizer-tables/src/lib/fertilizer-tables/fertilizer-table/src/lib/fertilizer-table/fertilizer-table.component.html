@@ -1,0 +1,18 @@
+<lib-card-table>
+    <a [routerLink]="['/app/fertilizerTables']" class="absolute top-0 left-0 mt-2 ml-2">
+        <p class="description flex items-center gap-1 link">
+            <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
+        </p>
+    </a>
+
+    <h1 class="title text-center">
+        {{ title }}
+    </h1>
+    <p class="description text-center mt-2">
+        {{ description }}
+    </p>
+
+    <lib-fertilizer-table-form class="mt-6" [loading]="loading" [selectCulture]="selectCulture"
+        [submitLabel]="submitLabel" [user]="user" [fertilizerTable]="fertilizerTable"
+        (fertilizerTableSubmit)="onSubmit($event)"></lib-fertilizer-table-form>
+</lib-card-table>

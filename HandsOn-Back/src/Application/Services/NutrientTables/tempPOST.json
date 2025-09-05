@@ -1,0 +1,55 @@
+{
+  "division": 0,
+  "leafNutrientRows": [
+    {
+      "nutrientColumns": [
+        { "header": 0, "min": 28, "max": 31 },
+        { "header": 1, "min": 1.7, "max": 1.9 },
+        { "header": 2, "min": 22, "max": 25 },
+        { "header": 3, "min": 10, "max": 13 },
+        { "header": 4, "min": 2.7, "max": 3.5 },
+        { "header": 5, "min": 1.8, "max": 2.3 },
+        { "header": 6, "min": 10, "max": 20 },
+        { "header": 7, "min": 50, "max": 60 },
+        { "header": 8, "min": 10, "max": 15 },
+        { "header": 9, "min": 100, "max": 150 },
+        { "header": 10, "min": 120, "max": 200 },
+        { "header": 11, "min": 15, "max": 18 },
+        { "header": 12, "min": 1.1, "max": 1.4 },
+        { "header": 13, "min": 12, "max": 17 },
+        { "header": 14, "min": 467, "max": 620 },
+        { "header": 15, "min": 1867, "max": 3100 },
+        { "header": 16, "min": 0.5, "max": 0.7 },
+        { "header": 17, "min": 85, "max": 190 },
+        { "header": 18, "min": 1.7, "max": 2.5 },
+        { "header": 19, "min": 6, "max": 9 },
+        { "header": 20, "min": 146, "max": 250 },
+        { "header": 21, "min": 2.8, "max": 4.8 },
+        { "header": 22, "min": 67, "max": 130},
+        { "header": 23, "min": 0.8, "max": 2.0 }
+      ]
+    }
+  ],
+  "soilNutrientRow": {
+    "nutrientColumns": [
+      { "header": 1, "min": 10, "max": 30 },
+      { "header": 2, "min": 0.15, "max": 0.3 },
+      { "header": 3, "min": 2.0, "max": 5.0 },
+      { "header": 4, "min": 0.5, "max": 1.5 },
+      { "header": 5, "min": 5, "max": 20 },
+      { "header": 6, "min": 2, "max": 6 },
+      { "header": 7, "min": 0.5, "max": 2 },
+      { "header": 8, "min": 0.5, "max": 10 },
+      { "header": 9, "min": 10, "max": 100 },
+      { "header": 10, "min": 10, "max": 40 },
+      { "header": 24, "min": 5, "max": 6.5 },
+      { "header": 25, "min": 0.2, "med1": 0.5, "med2": 1, "max": 2, "inverted":true },
+      { "header": 26, "min": 1, "med1": 2.5, "med2": 5, "max": 9, "inverted" : true },
+      { "header": 27, "min": 0.7, "med1": 2, "med2":4, "max": 7 },
+      { "header": 28, "min": 0.6, "med1" : 1.8, "med2":3.6, "max": 6 },
+      { "header": 29, "min": 1.6, "med1": 4.3, "med2": 8.6, "max": 15 },
+      { "header": 30, "min": 20, "med1":40, "med2":60, "max": 80 }
+    ]
+  },
+  "cultureId": "8a3a7b72-2b6a-4b7e-b8d2-3b8d6f6e8a3a"
+}

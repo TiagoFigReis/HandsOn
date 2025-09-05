@@ -1,0 +1,29 @@
+<form
+  [formGroup]="cultureForm"
+  (ngSubmit)="onSubmit()"
+  class="w-full flex flex-col gap-2 mt-6"
+>
+  <div class="w-full max-w-md mx-auto flex flex-col gap-2">
+    <lib-input
+      [id]="'name'"
+      [label]="'Nome'"
+      [type]="'text'"
+      [placeholder]="'ex. Café'"
+      [required]="true"
+      [fluid]="true"
+      [minlength]="2"
+      [maxlength]="50"
+      [control]="name"
+      class="w-full"
+    ></lib-input>
+  </div>
+
+  <lib-button
+    class="w-full max-w-96 mt-6 mx-auto"
+    [label]="submitLabel"
+    [type]="'submit'"
+    [fluid]="true"
+    [severity]="'primary'"
+    [loading]="loading"
+  ></lib-button>
+</form>

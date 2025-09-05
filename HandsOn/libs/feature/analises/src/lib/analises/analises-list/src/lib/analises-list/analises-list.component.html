@@ -1,0 +1,13 @@
+<div *ngIf="data.length === 0" class="min-w-full text-center">Não há análises cadastradas</div>
+
+<div class="flex flex-col gap-10">
+    <div *ngIf="data.length > 0">
+        <lib-table
+        [data]="data"
+        [columns]="columns"
+        [loading]="loading"
+        [showMoreButton]="showMoreButton"
+        (refresh)="refresh()"
+        />
+    </div>
+</div>
