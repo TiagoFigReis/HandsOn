@@ -1,0 +1,5 @@
+#map {
+  height: 400px; /* Ou a altura que desejar */
+  width: 100%;
+  border-radius: 8px; /* Opcional: para deixar as bordas bonitas */
+}

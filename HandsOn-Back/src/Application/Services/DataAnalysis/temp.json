@@ -1,0 +1,55 @@
+//Análise foliar
+{
+  "month": "-",
+  "soilAnalysis": false,
+  "plots": [
+    {
+      "cultureType": "Café",
+      "plotName": "Talhão 1",
+      "nutrients": [
+        { "header": 0, "value": 29 },
+        { "header": 1, "value": 1.7 },
+        { "header": 2, "value": 27 },
+        { "header": 3, "value": 11 },
+        { "header": 4, "value": 2.5 },
+        { "header": 5, "value": 2.0 },
+        { "header": 6, "value": 17 },
+        { "header": 7, "value": 59 },
+        { "header": 8, "value": 13 },
+        { "header": 9, "value": 123 },
+        { "header": 10, "value": 176 } 
+      ]
+    }
+  ]
+}
+
+//Análise do solo
+{
+  "month": "-",
+  "soilAnalysis": true,
+  "plots": [
+    {
+      "cultureType": "Café",
+      "plotName": "Talhão 1",
+      "nutrients": [
+        { "header": 1, "value": 1.7 },
+        { "header": 2, "value": 27 },
+        { "header": 3, "value": 11 },
+        { "header": 4, "value": 2.5 },
+        { "header": 5, "value": 2.0 },
+        { "header": 6, "value": 17 },
+        { "header": 7, "value": 59 },
+        { "header": 8, "value": 13 },
+        { "header": 9, "value": 123 },
+        { "header": 10, "value": 176 },
+        { "header": 24, "value": 1 },
+        { "header": 25, "value": 1 },
+        { "header": 26, "value": 1 },
+        { "header": 27, "value": 1 },
+        { "header": 28, "value": 1 },
+        { "header": 29, "value": 1 },
+        { "header": 30, "value": 1 }
+      ]
+    }
+  ]
+}

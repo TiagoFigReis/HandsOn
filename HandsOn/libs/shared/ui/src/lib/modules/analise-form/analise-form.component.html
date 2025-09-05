@@ -1,0 +1,89 @@
+<form
+  [formGroup]="analiseForm"
+  (ngSubmit)="onSubmit()"
+  class="w-full flex flex-col gap-2 mt-6"
+>
+  <div class="w-full max-w-md mx-auto flex flex-col gap-2">
+
+    <lib-select
+      id="tipo"
+      label="Tipo"
+      placeholder="Selecione um tipo de análise"
+      [required]="true"
+      [fluid]="true"
+      [control]="tipo"
+      [options]="tipoOptions"
+      [filter]="true"
+      class="w-full"
+    ></lib-select>
+
+    <lib-input
+      id="lab"
+      label="Laboratório"
+      type="text"
+      placeholder="ex. Cocatrel"
+      [required]="true"
+      [fluid]="true"
+      [minlength]="1"
+      [maxlength]="100"
+      [control]="lab"
+      class="w-full"
+    ></lib-input>
+
+    <lib-input
+      id="mes"
+      label="Data da Análise"
+      type="date"
+      placeholder="ex. Janeiro"
+      [minlength]="1"
+      [maxlength]="100"
+      [required]="true"
+      [fluid]="true"
+      [control]="date"
+      class="w-full"
+    ></lib-input>
+
+    <lib-input
+      id="proprietario"
+      label="Proprietário"
+      type="text"
+      placeholder="ex. Ana"
+      [required]="true"
+      [fluid]="true"
+      [minlength]="1"
+      [maxlength]="100"
+      [control]="proprietario"
+      class="w-full"
+    ></lib-input>
+
+    <lib-input
+      id="propriedade"
+      label="Propriedade"
+      type="text"
+      placeholder="ex. Fazenda Limeira"
+      [minlength]="1"
+      [maxlength]="100"
+      [required]="true"
+      [fluid]="true"
+      [control]="propriedade"
+      class="w-full"
+    ></lib-input>
+
+    <lib-upload-file
+      id="file"
+      label="Laudo da análise"
+      chooseLabel="Selecione um arquivo"
+      formControlName = "file"
+    >
+    </lib-upload-file>
+  </div>
+
+  <lib-button
+    class="w-full max-w-96 mt-6 mx-auto"
+    [label]="submitLabel"
+    type="submit"
+    [fluid]="true"
+    severity="primary"
+    [loading]="loading"
+  ></lib-button>
+</form>

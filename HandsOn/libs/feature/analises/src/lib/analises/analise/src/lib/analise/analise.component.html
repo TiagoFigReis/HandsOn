@@ -1,0 +1,31 @@
+<lib-card *ngIf="!submitLoading; else loadingScreen">
+    <a [routerLink]="['/app/analises']" class="absolute top-0 left-0 mt-2 ml-2">
+      <p class="description flex items-center gap-1 link">
+        <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
+      </p>
+    </a>
+  
+    <h1 class="title text-center">
+      {{ title }}
+    </h1>
+    <p class="description text-center mt-2">
+      {{ description }}
+    </p>
+  
+    <lib-analise-form
+      class="mt-6"
+      tipo = "Solo"
+      [loading]="loading"
+      [analise]="analise"
+      [submitLabel]="submitLabel"
+      (analiseSubmit)="onSubmit($event)"
+    ></lib-analise-form>
+</lib-card>
+
+<ng-template #loadingScreen>
+  <div class="flex justify-center items-center h-[80vh] w-full flex-col">
+    <lib-spinner />
+    <p>Interpretando dados do laudo</p>
+  </div>
+</ng-template>
+  

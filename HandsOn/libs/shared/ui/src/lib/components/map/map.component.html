@@ -1,0 +1,29 @@
+<div class="relative w-full">
+  <label [for]="id"  [ngClass]="{
+        error: errorMessage
+    }">{{label}}</label>
+  <div [id]="id" class="absolute top-12 left-14 z-[1000] flex flex-wrap items-center justify-center gap-2">
+    <input 
+      #searchInput 
+      type="text" 
+      placeholder="Digite uma cidade ou endereço..."
+      (keyup.enter)="searchLocation(searchInput.value)"
+      class="w-48 sm:w-64 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+    >
+    <button 
+      (click)="searchLocation(searchInput.value)"
+      class="px-4 py-2 text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      Buscar
+    </button>
+  </div>
+
+  <div #mapContainer id="map" class="w-full h-full"></div>
+  
+  <div *ngIf="errorMessage">
+        <small class="small-text error font-semibold">
+          {{ errorMessage }}
+        </small>
+    </div>
+
+</div>
