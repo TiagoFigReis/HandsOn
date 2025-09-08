@@ -18,6 +18,7 @@ export * from './lib/components/upload-file/upload-file.component';
 export * from './lib/components/card-table/card-table.component';
 export * from './lib/components/table-cultures/table-cultures.component';
 export * from './lib/components/input-nutrient-table/input-nutrient-table.component';
+export * from './lib/components/barChart/barChart.component'
 
 // Modules
 export * from './lib/modules/user-form/user-form.component';

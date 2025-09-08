@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, Culture } from '@farm/core';
+import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, Culture, NutrientTableFacade, NutrientTable } from '@farm/core';
 import { Column, Row, SelectTable } from '@farm/ui';
 
 @Injectable({
@@ -12,10 +12,12 @@ export class ResultAnaliseComponentFacade {
   private fertilizersSubject = new BehaviorSubject<RecommendFertilizers | null>(null);
   private analiseSubject = new BehaviorSubject<Row[] | undefined>(undefined);
   private columnsSubject = new BehaviorSubject<Column[] | undefined>(undefined);
+  private nutrientTableSubject = new BehaviorSubject<NutrientTable | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private tipoSubject = new BehaviorSubject<number>(0);
 
   id: string | undefined;
+  nutrientTable$: Observable<NutrientTable | null> = this.nutrientTableSubject.asObservable();
   analise$: Observable<Row[] | undefined> = this.analiseSubject.asObservable();
   columns$: Observable<Column[] | undefined> = this.columnsSubject.asObservable();
   dataAnalyse$: Observable<DadosAnalise | null> = this.dataAnalyseSubject.asObservable();
@@ -33,7 +35,8 @@ export class ResultAnaliseComponentFacade {
   constructor(
     private analiseFacade: AnaliseFacade,
     private dataAnalyseFacade: DataAnalyseFacade,
-    private cultureFacade: CultureFacade
+    private cultureFacade: CultureFacade,
+    private nutrientTableFacade: NutrientTableFacade,
   ) {}
 
   load(data: DadosAnalise) {
@@ -50,6 +53,22 @@ export class ResultAnaliseComponentFacade {
 
   getCultures(){
     this.cultureFacade.getAllCultures().subscribe(cultures => this.selectOptions = {label: "Selecione uma cultura", options: cultures, optionLabel: "name"})
+  }
+
+  getNutrientTable(culture : string){
+    this.nutrientTableSubject.next(null)
+    this.loadingSubject.next(true);
+
+    this.cultureFacade.getCultureByName(culture).subscribe((c) => {
+      if(c && c.id){
+        this.nutrientTableFacade.getNutrientTableByCultureType(c.id).pipe(
+        tap((table) => {
+          this.nutrientTableSubject.next(table);
+          this.loadingSubject.next(false);
+        }),
+      ).subscribe()
+      }
+    })
   }
 
   recommendFertilizers(data: RecommendFertilizers){
