@@ -12,12 +12,14 @@ namespace Application.Services.DataAnalysis
     public class DataAnalysisServices(
         INutrientTablesRepository nutrientTablesRepository,
         IFertilizerTablesRepository fertilizerTablesRepository,
+        IFormulationTablesRepository formulationTableRepository,
         ICulturesRepository culturesRepository,
         IUsersRepository usersRepository
     ) : IDataAnalysisServices
     {
         private readonly INutrientTablesRepository _nutrientTablesRepository = nutrientTablesRepository;
         private readonly IFertilizerTablesRepository _fertilizerTablesRepository = fertilizerTablesRepository;
+        private readonly IFormulationTablesRepository _formulationTableRepository = formulationTableRepository;
         private readonly ICulturesRepository _culturesRepository = culturesRepository;
         private readonly IUsersRepository _usersRepository = usersRepository;
 
@@ -279,13 +281,16 @@ namespace Application.Services.DataAnalysis
                 var fertilizerTable = await _fertilizerTablesRepository.GetByCultureAsync(plotCulture.Id, user)
                     ?? throw new NotFoundException("Nutrient Table not found");
 
+                var formulationTable = await _formulationTableRepository.GetByCultureAsync(plotCulture.Id, user)
+                ?? throw new NotFoundException("Formulation Table not found");;
+
                 var tableData = fertilizerTable.GetTableData();
 
-                
+                var formulationTableData = formulationTable.GetTableData();
 
                 if (inputModel.SoilRecomendation)
                 {
-                    SoilRecommendation(plotInputModel, tableData.SoilFertilizerRows, plotViewModel);
+                    SoilRecommendation(plotInputModel, tableData.SoilFertilizerRows, formulationTableData, plotViewModel);
                 }
                 else
                 {
@@ -298,7 +303,7 @@ namespace Application.Services.DataAnalysis
             return fertilizerViewModel;
         }
 
-        private void SoilRecommendation(FertilizerPlotInputModel inputModel, List<SoilFertilizerRowData> soilData, PlotFertilizerViewModel viewModel)
+        private void SoilRecommendation(FertilizerPlotInputModel inputModel, List<SoilFertilizerRowData> soilData, FormulationTableData formulationData, PlotFertilizerViewModel viewModel)
         {
             var width = inputModel.Spacing.Width;
             var height = inputModel.Spacing.Height;
@@ -307,6 +312,8 @@ namespace Application.Services.DataAnalysis
 
             float SB = 0, T = 0, organicMatter = 0, V = 0;
             const float Vexpected = 70;
+
+            float nValue = 0, pValue = 0, kValue = 0;
 
             foreach (var nutrient in inputModel.Nutrients)
             {
@@ -333,7 +340,7 @@ namespace Application.Services.DataAnalysis
             var nCol = selectedSoilData.SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.N);
             if (nCol != null)
             {
-                var nValue = (organicMatter < 3 ? nCol.Value1 : nCol.Value2) * plants / 1000;
+                nValue = (organicMatter < 3 ? nCol.Value1 : nCol.Value2) * plants / 1000;
                 AddRecommendation("N", $"Pode-se utilizar {nValue:F0} kg/ha/ano de Nitrogênio (N)");
             }
 
@@ -347,14 +354,13 @@ namespace Application.Services.DataAnalysis
                     var pCol = selectedSoilData.SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.P);
                     if (pCol != null)
                     {
-                        float value = 0;
                         if (nutrient.Value <= 10)
-                            value = pCol.Value1 * plants / 1000;
+                            pValue = pCol.Value1 * plants / 1000;
                         else if (nutrient.Value > 10 && nutrient.Value < 20)
-                            value = pCol.Value2 * plants / 1000;
+                            pValue = pCol.Value2 * plants / 1000;
 
-                        if (value > 0)
-                            AddRecommendation("P", $"Pode-se utilizar {value:F0} kg/ha/ano de P₂O₅");
+                        if (pValue > 0)
+                            AddRecommendation("P", $"Pode-se utilizar {pValue:F0} kg/ha/ano de P₂O₅");
                         else
                             AddRecommendation("P", "Não é necessário aplicação desse nutriente");
                     }
@@ -366,17 +372,16 @@ namespace Application.Services.DataAnalysis
                     if (kCol != null)
                     {
                         var perc = nutrient.Value / T * 100;
-                        float value = 0;
 
                         if (perc < 3)
-                            value = kCol.Value1 * plants / 1000;
+                            kValue = kCol.Value1 * plants / 1000;
                         else if (perc >= 3 && perc < 5)
-                            value = kCol.Value2 * plants / 1000;
+                            kValue = kCol.Value2 * plants / 1000;
                         else if (perc >= 5 && perc < 7)
-                            value = kCol.Value3 * plants / 1000;
+                            kValue = kCol.Value3 * plants / 1000;
 
-                        if (value > 0)
-                            AddRecommendation("K", $"Pode-se utilizar {value:F0} kg/ha/ano de K₂O ");
+                        if (kValue > 0)
+                            AddRecommendation("K", $"Pode-se utilizar {kValue:F0} kg/ha/ano de K₂O ");
                         else
                             AddRecommendation("K", "Não é necessário aplicação desse nutriente");
                     }
@@ -385,7 +390,6 @@ namespace Application.Services.DataAnalysis
                 else if (header == NutrientHeader.B.ToFriendlyString())
                 {
                     var bCol = soilData[0].SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.B);
-                    Console.WriteLine("uai so");
                     if (bCol != null)
                     {
                         string rec = "Não é necessário correção desse nutriente";
@@ -471,7 +475,7 @@ namespace Application.Services.DataAnalysis
             ProductRecomendationViewModel Others = new ProductRecomendationViewModel
             {
                 Name = "Macronutrientes",
-                Recomendation = "A correção de micronutrientes é feita via solo. Para isso é necessário uma análise de solo para que sejam feitas recomendações"
+                Recomendation = "A correção de macronutrientes é feita via solo. Para isso é necessário uma análise de solo para que sejam feitas recomendações"
             };
 
             viewModel.ProductRecomendations.Add(Others);

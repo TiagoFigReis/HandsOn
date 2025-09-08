@@ -111,8 +111,12 @@ export class ResultAnalisesComponent implements OnInit {
         const highMin = adequateMax;
         const scaleMaximum = parseFloat((adequateMax * 1.3).toFixed(2));
 
+        const clear = (str : string) =>{
+          return str.replace(/\s+[A-Za-z%µ/²³]+$/, "")
+        }
+
         chartData.push({
-          name: `${info.name} (${info.symbol})`,
+          name: clear(info.displayName),
           value: measured.value,
           unit: info.unit,
           ranges: {

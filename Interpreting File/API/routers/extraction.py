@@ -1,6 +1,6 @@
 import os
 import shutil
-from fastapi import APIRouter, UploadFile, File, HTTPException, Body
+from fastapi import APIRouter, Query, UploadFile, File, HTTPException
 from typing import Annotated
 
 from Infrastructure.pdf.pdfplumber_processor import PdfplumberProcessor
@@ -16,7 +16,7 @@ extraction_service = ExtractionService(pdf_processor, ai_extractor)
 @router.post("/extrair-dados-pdf/", response_model=dict)
 async def process_file_and_extract_data(
     file: UploadFile = File(..., description="Arquivo de laudo (PDF)."),
-    type: Annotated[int, Body(embed=True, description="Tipo de análise: 0 para Solo, 1 para Foliar")] = 0
+    type: Annotated[int, Query(description="Tipo de análise: 0 para Solo, 1 para Foliar")] = 0
 ):
     """
     Recebe um arquivo PDF, extrai o texto e o estrutura usando IA.
