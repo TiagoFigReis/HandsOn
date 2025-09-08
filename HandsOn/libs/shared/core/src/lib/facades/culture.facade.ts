@@ -72,19 +72,6 @@ export class CultureFacade {
     );
   }
 
-  getCultureByName(name: string): Observable<Culture> {
-    return this.cultureService.getCultureByName(name).pipe(
-      tap({
-        error: () => {
-          this.notificationService.error(
-            'Erro!',
-            'Não foi possível carregar a Cultura!',
-          );
-        },
-      }),
-    );
-  }
-
   createCulture(culture: Culture): Observable<Culture> {
     return this.cultureService.createCulture(culture).pipe(
       tap({

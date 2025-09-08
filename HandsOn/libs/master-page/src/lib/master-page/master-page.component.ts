@@ -48,52 +48,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.userFacade.reset();
   }
 
-
   loadMenu(userRole: string) {
     const menuItems: MenuItem[] = [];
 
-    menuItems.push({
-      label: 'Tabelas de Nutrientes',
-      icon: 'pi pi-fw pi-table',
-      items: [
-        {
-          label: 'Gerenciar',
-          icon: 'pi pi-fw pi-cog',
-          routerLink: '/app/nutrientTables'
-        },
-        {
-          label: 'Cadastrar',
-          icon: 'pi pi-fw pi-plus',
-          routerLink: '/app/nutrientTables/create'
-        }
-      ]
-    })
-
-    menuItems.push({
-      label: 'Tabelas de Fertilizantes',
-      icon: 'pi pi-fw pi-table',
-      items: [
-        {
-          label: 'Gerenciar',
-          icon: 'pi pi-fw pi-cog',
-          routerLink: '/app/fertilizerTables'
-        },
-        {
-          label: 'Cadastrar',
-          icon: 'pi pi-fw pi-plus',
-          routerLink: '/app/fertilizerTables/create'
-        }
-      ]
-    })
-
     if (userRole === 'Admin') {
-
-      menuItems.push({
-        label: 'Culturas',
-        icon: 'pi pi-fw pi-whatsapp',
-        routerLink: '/app/cultures'
-      });
-
       menuItems.push({
         label: 'Usuários',
         icon: 'pi pi-fw pi-users',
@@ -111,10 +69,20 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         ],
       });
 
+      menuItems.push({
+        label: 'Culturas',
+        icon: 'pi pi-fw pi-whatsapp',
+        items: [
+          {
+            label: 'Gerenciar',
+            icon: 'pi pw-fw pi-cog',
+            routerLink: '/app/cultures'
+          }
+        ]
+      });
     }
 
     if (userRole === 'Owner') {
-
       menuItems.push({
         label: 'Análises',
         icon: 'fas fa-chart-simple',
@@ -131,6 +99,25 @@ export class MasterPageComponent implements OnInit, OnDestroy {
           },
         ]
       });
+    }
+
+    if (userRole === "Consultant" || userRole === "Owner" || userRole === "Admin") {
+      menuItems.push({
+        label: 'Tabelas de Recomendação',
+        icon: 'pi pi-fw pi-table',
+        items: [
+          {
+            label: 'Gerenciar Tabelas de Nutrientes',
+            icon: 'pi pi-fw pi-percentage',
+            routerLink: '/app/nutrientTables'
+          },
+          {
+            label: 'Gerenciar Tabelas de Fertilizantes',
+            icon: 'pi pi-fw pi-bolt',
+            routerLink: '/app/fertilizerTables'
+          }
+        ]
+      })
     }
 
     this.menuItems = menuItems;

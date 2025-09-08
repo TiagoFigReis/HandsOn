@@ -27,7 +27,7 @@
 >
   <ng-template pTemplate="caption">
     <div class="flex justify-between items-center gap-2">
-      <div class="w-full flex items-center gap-2">
+      <div class="w-2/5 flex items-center gap-2">
         <lib-button
           [variant]="'text'"
           [severity]="'secondary'"
@@ -45,7 +45,16 @@
         ></lib-button>
       </div>
 
-      <div class="w-full flex items-center justify-end gap-2">
+      <div class="w-3/5 flex items-center justify-end gap-2">
+        <lib-button
+          *ngIf="registerButton === true"
+          [severity]="'primary'"
+          [icon]="'pi pi-plus'"
+          [loading]="loading"
+          [tooltip]="registerTooltip"
+          (click)="onRegister()"
+        ></lib-button>
+
         <lib-button
           [variant]="'text'"
           [severity]="'secondary'"

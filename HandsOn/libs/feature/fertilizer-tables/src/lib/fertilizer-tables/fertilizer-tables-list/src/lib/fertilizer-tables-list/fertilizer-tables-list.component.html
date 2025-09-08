@@ -1,2 +1,10 @@
-<lib-table [data]="data" [columns]="columns" [loading]="loading" [showMoreButton]="showMoreButton"
-    (refresh)="refresh()" />
+<lib-table 
+    [data]="data" 
+    [columns]="columns" 
+    [loading]="loading" 
+    [showMoreButton]="showMoreButton"
+    [registerButton]="isAdmin"
+    [registerLink]="'/app/fertilizerTables/create'"
+    [registerTooltip]="'Cadastrar Nova Tabela'"
+    (refresh)="refresh()" 
+/>

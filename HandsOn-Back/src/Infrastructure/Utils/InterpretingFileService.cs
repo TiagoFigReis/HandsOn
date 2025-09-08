@@ -12,7 +12,7 @@ namespace Infrastructure.Utils
         private static async Task<DadosAnalise?> GetOriginalDadosAnalise(IFormFile pdf, int type)
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, $"http://localhost:8000/api/extrair-dados-pdf/?type={type}");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"http://localhost:8000/extrair-dados-pdf/?type={type}");
             var content = new MultipartFormDataContent();
 
             using var stream = pdf.OpenReadStream();

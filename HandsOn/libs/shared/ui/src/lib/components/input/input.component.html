@@ -57,7 +57,7 @@
     />
     <small
       class="small-text"
-      *ngIf="(error || hint || hasError) && icon.length === 0"
+      *ngIf="showErrorMessage && (error || hint || hasError) && icon.length === 0"
       [ngClass]="{
         error: error || control.invalid
       }"

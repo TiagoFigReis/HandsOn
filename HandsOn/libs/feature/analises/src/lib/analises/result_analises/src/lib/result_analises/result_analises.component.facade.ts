@@ -13,12 +13,10 @@ export class ResultAnaliseComponentFacade {
   private fertilizersSubject = new BehaviorSubject<RecommendFertilizers | null>(null);
   private analiseSubject = new BehaviorSubject<Row[] | undefined>(undefined);
   private columnsSubject = new BehaviorSubject<Column[] | undefined>(undefined);
-  private nutrientTableSubject = new BehaviorSubject<NutrientTable | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private tipoSubject = new BehaviorSubject<number>(0);
 
   id: string | undefined;
-  nutrientTable$: Observable<NutrientTable | null> = this.nutrientTableSubject.asObservable();
   analise$: Observable<Row[] | undefined> = this.analiseSubject.asObservable();
   columns$: Observable<Column[] | undefined> = this.columnsSubject.asObservable();
   dataAnalyse$: Observable<DadosAnalise | null> = this.dataAnalyseSubject.asObservable();
@@ -36,8 +34,6 @@ export class ResultAnaliseComponentFacade {
   constructor(
     private analiseFacade: AnaliseFacade,
     private dataAnalyseFacade: DataAnalyseFacade,
-    private cultureFacade: CultureFacade,
-    private nutrientTableFacade: NutrientTableFacade,
   ) {}
 
   load(data: DadosAnalise) {
@@ -128,7 +124,7 @@ export class ResultAnaliseComponentFacade {
 
     const staticColumns: Column[] = [
       { field: 'plotName', header: 'Talhão', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
-      { field: 'cultureType', header: 'Cultura', type: 'select', sortable: true, filterable: true, visible: true, showToUser: true, editable: false },
+      { field: 'cultureType', header: 'Cultura', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'expectedProductivity', header: 'Produtividade Esperada (sc/ha)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'width', header: 'Espaçamento entre ruas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'height', header: 'Espaçamento entre plantas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable }

@@ -2,12 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NutrientTable, User } from '@farm/core';
-import { CardTableComponent, NutrientTableFormComponent } from '@farm/ui';
+import { CardComponent, NutrientTableFormComponent } from '@farm/ui';
 import { NutrientTableComponentFacade } from './nutrient-table.component.facade';
 
 @Component({
   selector: 'lib-nutrient-table',
-  imports: [CommonModule, CardTableComponent, NutrientTableFormComponent, RouterModule],
+  imports: [CommonModule, CardComponent, NutrientTableFormComponent, RouterModule],
   templateUrl: './nutrient-table.component.html',
   styleUrl: './nutrient-table.component.css',
 })
@@ -19,7 +19,7 @@ export class NutrientTableComponent implements OnInit, OnDestroy{
   selectCulture = false;
 
   title = 'Criar Tabela de Nutrientes';
-  description = 'Preencha os campos abaixo para criar uma nova tabela';
+  description = '';
   submitLabel = 'Cadastrar';
 
   constructor(

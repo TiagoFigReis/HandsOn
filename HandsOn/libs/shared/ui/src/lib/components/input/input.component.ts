@@ -69,6 +69,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() maxlength = 0;
   @Input() min = 0;
   @Input() max = 0;
+  @Input() showErrorMessage = true;
   @Input() loading = false;
 
   onChange: any = () => undefined;

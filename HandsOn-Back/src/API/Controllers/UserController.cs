@@ -1,5 +1,5 @@
 using Application.InputModels.UserInputModels;
-using Application.Services;
+using Application.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -15,10 +15,11 @@ export * from './lib/components/spinner/spinner.component';
 export * from './lib/components/table/table.component';
 export * from './lib/components/toast/toast.component';
 export * from './lib/components/upload-file/upload-file.component';
-export * from './lib/components/card-table/card-table.component';
 export * from './lib/components/table-cultures/table-cultures.component';
-export * from './lib/components/input-nutrient-table/input-nutrient-table.component';
-export * from './lib/components/barChart/barChart.component'
+export * from './lib/components/input-number/input-number.component';
+export * from './lib/components/tabs/tabs.component';
+export * from './lib/components/fieldset/fieldset.component';
+export * from './lib/components/divider/divider.component';
 
 // Modules
 export * from './lib/modules/user-form/user-form.component';
