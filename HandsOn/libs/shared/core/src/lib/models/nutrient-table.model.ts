@@ -15,9 +15,6 @@ export interface NutrientTable {
 
   culture?: Culture;
   cultureId: string;
-
-  user?: User;
-  userId: string;
 }
 
 export interface NutrientRow {

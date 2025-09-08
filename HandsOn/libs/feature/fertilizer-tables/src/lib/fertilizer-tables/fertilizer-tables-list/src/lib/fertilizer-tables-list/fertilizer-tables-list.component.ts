@@ -14,6 +14,7 @@ export class FertilizerTablesListComponent implements OnInit {
   columns: Column[];
   loading = false;
   showMoreButton = true;
+  isAdmin = false;
 
   constructor(private facade: FertilizerTablesListComponentFacade) {
     this.columns = columns;
@@ -26,6 +27,10 @@ export class FertilizerTablesListComponent implements OnInit {
 
     this.facade.fertilizerTables$.subscribe((fertilizerTables) => {
       this.data = fertilizerTables;
+    });
+
+    this.facade.isAdmin$.subscribe((isAdmin) => {
+      this.isAdmin = isAdmin;
     });
 
     this.facade.load();

@@ -1,0 +1,134 @@
+<ng-container [formGroup]="parentForm">
+  <div formArrayName="soilRows" class="overflow-x-auto min-h-[650px]">
+
+    <!--Main Section-->
+    <table class="min-w-max border-collapse text-center mx-auto">
+      <thead>
+        <tr>
+          <th rowspan="3" class="border-b border-zinc-200 dark:border-zinc-700">Produtividade <br> (litros/planta)</th>
+          <th colspan="2">Nitrogênio</th>
+          <th colspan="3">Fósforo</th>
+          <th colspan="4">Potássio</th>
+        </tr>
+        <tr>
+          <th colspan="2">Matéria Orgânica (dag/kg)</th>
+          <th colspan="3">P (mg/dm³)</th>
+          <th colspan="4">K (% em relação a CTC)</th>
+        </tr>
+
+        <tr>
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&lt; 3</th>
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&gt; 3</th>
+
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&lt; 10</th>
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">11 - 20</th>
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&gt; 20</th>
+
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&lt; 3</th>
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">3 - 5</th>
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">5 - 7</th>
+          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&gt; 7</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+        <tr 
+          *ngFor="let productivity of soilRowsProductivities; let i = index"
+          [formGroupName]="i" 
+          class="hover:bg-zinc-100 dark:hover:bg-zinc-800"
+        >
+          <td class="border-zinc-200 dark:border-zinc-700">
+            <span *ngIf="i === 0">&lt;</span>
+            {{ productivity }}
+          </td>
+
+          <td 
+            class="py-1 px-1"  
+            [ngClass]="{'border-zinc-200 dark:border-zinc-700' : last}"
+            formGroupName="n" 
+            *ngFor="let col of [1,2]; let last = last"
+          >
+            <lib-input-number 
+              [required]="true" 
+              [min]="0" 
+              [max]="10000" 
+              [placeholder]="'Qtd. Fert.'"
+              [id]="'n-' + i + '-' + col" 
+              [control]="getValue(i, 'n', col)"
+            ></lib-input-number>
+          </td>
+
+          <td 
+            class="py-1 px-1" 
+            [ngClass]="{'border-zinc-200 dark:border-zinc-700' : last}"
+            formGroupName="p" 
+            *ngFor="let col of [1,2,3]; let last = last"
+          >
+            <lib-input-number 
+              [required]="true" 
+              [min]="0" 
+              [max]="10000" 
+              [placeholder]="'Qtd. Fert.'"
+              [id]="'p-' + i + '-' + col" 
+              [control]="getValue(i, 'p', col)"
+            ></lib-input-number>
+          </td>
+
+          <td 
+            class="py-1 px-1"
+            [ngClass]="{'border-zinc-200 dark:border-zinc-700' : last}"
+            formGroupName="k" 
+            *ngFor="let col of [1,2,3,4]; let last = last"
+          >
+            <lib-input-number 
+              [required]="true" 
+              [min]="0" 
+              [max]="10000" 
+              [placeholder]="'Qtd. Fert.'"
+              [id]="'k-' + i + '-' + col" 
+              [control]="getValue(i, 'k', col)"
+            ></lib-input-number>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!--B Sub-Section-->
+    <table class="min-w-max border-collapse text-center mx-auto">
+      <thead>
+        <tr>
+          <th colspan="4">Boro</th>
+        </tr>
+        <tr>
+          <th colspan="4">B (mg/dm³)</th>
+        </tr>
+        <tr>
+          <th class="w-32">Baixo</th>
+          <th class="w-32">Médio</th>
+          <th class="w-32">Adequado</th>
+          <th class="w-32">Alto</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr [formGroupName]="0">
+          <td 
+            class="p-0.5" 
+            formGroupName="b" 
+            *ngFor="let col of [1,2,3,4]"
+          >
+            <lib-input-number 
+              [placeholder]="'Qtd. Fert.'" 
+              [required]="true" 
+              [min]="0" 
+              [max]="10000"
+              [id]="'b-' + 0 + '-' + col" 
+              [control]="getValue(0, 'b', col)">
+            </lib-input-number>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+  </div> 
+</ng-container>

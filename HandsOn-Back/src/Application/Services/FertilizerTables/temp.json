@@ -87,8 +87,7 @@
     "soilFertilizerColumns": [
       { "header": 0, "numberOfValues": 2, "value1": 56, "value2": 45 },
       { "header": 1, "numberOfValues": 2, "value1": 10, "value2": 6 },
-      { "header": 2, "numberOfValues": 3, "value1": 46, "value2": 37, "value3": 27 },
-      { "header" : 7, "numberOfValues" : 3, "value1" :8, "value2": 6, "value3" : 4}
+      { "header": 2, "numberOfValues": 3, "value1": 46, "value2": 37, "value3": 27 }
     ]
   },
   {

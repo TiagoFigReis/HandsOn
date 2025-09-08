@@ -57,6 +57,7 @@ namespace Infrastructure
             services.AddScoped<INutrientTablesRepository, NutrientTablesRepository>();
             services.AddScoped<ICulturesRepository, CulturesRepository>();
             services.AddScoped<IFertilizerTablesRepository, FertilizerTablesRepository>();
+            services.AddScoped<IFormulationTablesRepository, FormulationTablesRepository>();
 
             return services;
         }

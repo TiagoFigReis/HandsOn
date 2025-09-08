@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, Culture, NutrientTableFacade, NutrientTable } from '@farm/core';
-import { Column, Row, SelectTable } from '@farm/ui';
+import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers } from '@farm/core';
+import { Column, Row } from '@farm/ui';
 
 @Injectable({
   providedIn: 'root',
@@ -12,12 +12,10 @@ export class ResultAnaliseComponentFacade {
   private fertilizersSubject = new BehaviorSubject<RecommendFertilizers | null>(null);
   private analiseSubject = new BehaviorSubject<Row[] | undefined>(undefined);
   private columnsSubject = new BehaviorSubject<Column[] | undefined>(undefined);
-  private nutrientTableSubject = new BehaviorSubject<NutrientTable | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private tipoSubject = new BehaviorSubject<number>(0);
 
   id: string | undefined;
-  nutrientTable$: Observable<NutrientTable | null> = this.nutrientTableSubject.asObservable();
   analise$: Observable<Row[] | undefined> = this.analiseSubject.asObservable();
   columns$: Observable<Column[] | undefined> = this.columnsSubject.asObservable();
   dataAnalyse$: Observable<DadosAnalise | null> = this.dataAnalyseSubject.asObservable();
@@ -25,18 +23,9 @@ export class ResultAnaliseComponentFacade {
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
   tipo$: Observable<number> = this.tipoSubject.asObservable();
 
-  cultures : Culture[] | undefined = undefined
-  standardProductivity = '30'
-  standardWidth = '3.5'
-  standardHeight = '0.6'
-
-  selectOptions : SelectTable | undefined
-
   constructor(
     private analiseFacade: AnaliseFacade,
     private dataAnalyseFacade: DataAnalyseFacade,
-    private cultureFacade: CultureFacade,
-    private nutrientTableFacade: NutrientTableFacade,
   ) {}
 
   load(data: DadosAnalise) {
@@ -49,26 +38,6 @@ export class ResultAnaliseComponentFacade {
         this.loadingSubject.next(false);
       }),
     ).subscribe();
-  }
-
-  getCultures(){
-    this.cultureFacade.getAllCultures().subscribe(cultures => this.selectOptions = {label: "Selecione uma cultura", options: cultures, optionLabel: "name"})
-  }
-
-  getNutrientTable(culture : string){
-    this.nutrientTableSubject.next(null)
-    this.loadingSubject.next(true);
-
-    this.cultureFacade.getCultureByName(culture).subscribe((c) => {
-      if(c && c.id){
-        this.nutrientTableFacade.getNutrientTableByCultureType(c.id).pipe(
-        tap((table) => {
-          this.nutrientTableSubject.next(table);
-          this.loadingSubject.next(false);
-        }),
-      ).subscribe()
-      }
-    })
   }
 
   recommendFertilizers(data: RecommendFertilizers){
@@ -115,11 +84,46 @@ export class ResultAnaliseComponentFacade {
   }
 
   transformDataForTable(plots: Plots[], editable: boolean): { rows: Row[], columns: Column[] } {
-    const headerMap = this.getHeaderMap()
+    let headerMap : { [key: string]: string }
+    if(this.tipoSubject.getValue()){
+      headerMap = {
+      '0': 'N (g/kg)',
+      '1': 'P (g/kg)',
+      '2': 'K (g/kg)',
+      '3': 'Ca (g/kg)',
+      '4': 'Mg (g/kg)',
+      '5': 'S (g/kg)',
+      '6': 'Zn (ppm)',
+      '7': 'B (ppm)',
+      '8': 'Cu (ppm)',
+      '9': 'Mn (ppm)',
+      '10': 'Fe (ppm)',
+    };
+    }else{
+      headerMap = {
+      '1': 'P (ppm)',
+      '2': 'K (cmolc/dm³)',
+      '3': 'Ca (cmolc/dm³)',
+      '4': 'Mg (cmolc/dm³)',
+      '5': 'S (ppm)',
+      '6': 'Zn (ppm)',
+      '7': 'B (ppm)',
+      '8': 'Cu (ppm)',
+      '9': 'Mn (ppm)',
+      '10': 'Fe (ppm)',
+      '24': 'pH H2O',
+      '25': 'Al (cmolc/dm³)',
+      '26': 'H+Al (cmolc/dm³)',
+      '27': 'M.O (%)',
+      '28': 'SB (cmolc/dm³)',
+      '29': 'T (cmolc/dm³)',
+      '30': 'v (%)',
+    };
+    }
 
     const staticColumns: Column[] = [
       { field: 'plotName', header: 'Talhão', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
-      { field: 'cultureType', header: 'Cultura', type: 'select', sortable: true, filterable: true, visible: true, showToUser: true, editable: false },
+      { field: 'cultureType', header: 'Cultura', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'expectedProductivity', header: 'Produtividade Esperada (sc/ha)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'width', header: 'Espaçamento entre ruas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'height', header: 'Espaçamento entre plantas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable }
@@ -152,17 +156,12 @@ export class ResultAnaliseComponentFacade {
       });
 
     const rows = plots.map(plot => {
-      const cultureTypeOptions = {
-          ...this.selectOptions,
-          rowIdentifier: plot.plotName 
-      };
-
       const row: Row = {
         plotName: plot.plotName,
-        cultureType: cultureTypeOptions,
-        expectedProductivity : this.standardProductivity,
-        width: this.standardWidth,
-        height: this.standardHeight
+        cultureType: "Café",
+        expectedProductivity :  plot.expectedProductivity ?? '0',
+        width: '0',
+        height: '0'
       };
 
       plot.nutrients?.forEach(nutrient => {
@@ -178,22 +177,5 @@ export class ResultAnaliseComponentFacade {
     });
 
     return { rows, columns: [...staticColumns, ...DynamicColumns] };
-  }
-
-  getHeaderMap(): { [key: string]: string } {
-    if(this.tipoSubject.getValue()){
-      return {
-        '0': 'N (g/kg)', '1': 'P (g/kg)', '2': 'K (g/kg)', '3': 'Ca (g/kg)',
-        '4': 'Mg (g/kg)', '5': 'S (g/kg)', '6': 'Zn (ppm)', '7': 'B (ppm)',
-        '8': 'Cu (ppm)', '9': 'Mn (ppm)', '10': 'Fe (ppm)',
-      };
-    }else{
-      return {
-        '1': 'P (ppm)', '2': 'K (cmolc/dm³)', '3': 'Ca (cmolc/dm³)', '4': 'Mg (cmolc/dm³)',
-        '5': 'S (ppm)', '6': 'Zn (ppm)', '7': 'B (ppm)', '8': 'Cu (ppm)', '9': 'Mn (ppm)',
-        '10': 'Fe (ppm)', '24': 'pH H2O', '25': 'Al (cmolc/dm³)', '26': 'H+Al (cmolc/dm³)',
-        '27': 'M.O (%)', '28': 'SB (cmolc/dm³)', '29': 'T (cmolc/dm³)', '30': 'v (%)',
-      };
-    }
   }
 }

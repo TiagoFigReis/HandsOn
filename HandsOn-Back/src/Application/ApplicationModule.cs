@@ -5,6 +5,8 @@ using Application.Services.NutrientTables;
 using Application.Services.DataAnalysis;
 using Application.Services.Cultures;
 using Application.Services.FertilizerTables;
+using Application.Services.Users;
+using Application.Services.FormulationTables;
 
 namespace Application
 {
@@ -26,6 +28,7 @@ namespace Application
             services.AddScoped<IDataAnalysisServices, DataAnalysisServices>();
             services.AddScoped<ICulturesServices, CulturesServices>();
             services.AddScoped<IFertilizerTablesServices, FertilizerTablesServices>();
+            services.AddScoped<IFormulationTablesServices, FormulationTablesServices>();
             return services;
         }
     }

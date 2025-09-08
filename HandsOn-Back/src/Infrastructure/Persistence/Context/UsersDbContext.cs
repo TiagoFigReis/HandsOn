@@ -14,6 +14,7 @@ namespace Infrastructure.Persistence.Context
         public DbSet<NutrientTable> NutrientTables { get; set; }
         public DbSet<Culture> Cultures { get; set; }
         public DbSet<FertilizerTable> FertilizerTables { get; set; }
+        public DbSet<FormulationTable> FormulationTables { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
