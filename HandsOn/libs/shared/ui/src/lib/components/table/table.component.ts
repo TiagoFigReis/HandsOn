@@ -283,7 +283,8 @@ export interface SelectTable{
   label: string;
   options: any[];
   optionLabel: string;
-  rowIdentifier?: string
+  rowIdentifier?: string;
+  selectedOption?: string;
 }
 
 export interface selectedOption{
