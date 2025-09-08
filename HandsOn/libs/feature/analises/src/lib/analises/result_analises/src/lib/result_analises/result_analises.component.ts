@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, ProductRecomendations, Spacing } from '@farm/core';
+import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, ProductRecomendations, Spacing, NutrientTable } from '@farm/core';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { ResultAnaliseComponentFacade } from './result_analises.component.facade';
-import { Column, Row, TableComponent, ButtonComponent, SpinnerComponent } from '@farm/ui';
-import { filter, switchMap, take } from 'rxjs/operators';
+import { Column, Row, TableComponent, ButtonComponent, SpinnerComponent, selectedOption, NutrientAnalysis } from '@farm/ui';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
 import { BarChartComponent } from '@farm/ui';
@@ -17,7 +17,7 @@ import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP, NutrientInfo } from '@farm/core';
 
 @Component({
   selector: 'lib-result-analises',
-  imports: [CommonModule, TableModule, CardModule, ButtonComponent, InputNumberModule, InputTextModule, FormsModule, SpinnerComponent, RouterModule, TableComponent, AccordionModule],
+  imports: [CommonModule, TableModule, CardModule, ButtonComponent, InputNumberModule, InputTextModule, FormsModule, SpinnerComponent, RouterModule, TableComponent, AccordionModule, BarChartComponent],
   templateUrl: './result_analises.component.html',
   styleUrl: './result_analises.component.css',
 })
@@ -136,7 +136,7 @@ export class ResultAnalisesComponent implements OnInit {
     this.dataAnalyseFacade.loadAnalyse(this.id);
   }
 
-  solicitar_recomendacoes() 
+  solicitar_recomendacoes() {
     if (this.data.length !== Object.keys(this.plotCulture).length) {
       this.cultureError = true;
       return;
@@ -151,7 +151,7 @@ export class ResultAnalisesComponent implements OnInit {
       });
       return {
         plotName: item['plotName']?.toString() || '',
-        cultureType: this.plotCulture[item['plotName']]
+        cultureType: this.plotCulture[item['plotName']],
         nutrients
       };
     });
@@ -161,7 +161,7 @@ export class ResultAnalisesComponent implements OnInit {
       soilAnalysis: !this.tipo,
       plots: plotsForAnalysis
     };
-    
+
     this.dataAnalyseFacade.load(dadosAnalise as DadosAnalise);
 
     this.dataAnalyseFacade.dataAnalyse$.pipe(

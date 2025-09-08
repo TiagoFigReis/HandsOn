@@ -19,6 +19,7 @@ import {
   ActionButtonComponent,
 } from './lib/action-button/action-button.component';
 import { DadosAnalise, Nutrients, Plots } from '@farm/core'
+import { SelectChangeEvent, SelectModule } from 'primeng/select';
 import { Router } from '@angular/router';
 
 @Component({
@@ -26,6 +27,7 @@ import { Router } from '@angular/router';
   imports: [
     CommonModule,
     FormsModule,
+    SelectModule,
     ReactiveFormsModule,
     TableModule,
     Skeleton,
@@ -56,6 +58,8 @@ export class TableComponent implements AfterViewInit, OnInit {
   @Input() registerLink = "";
   @Input() registerTooltip = "";
 
+
+  @Output() optionSelected : EventEmitter<selectedOption> = new EventEmitter()
   @Output() rowUpdate: EventEmitter<Row> = new EventEmitter<Row>();
   @Output() rowSelect: EventEmitter<Row> = new EventEmitter();
   @Output() rowUnselect: EventEmitter<Row> = new EventEmitter();
@@ -113,6 +117,16 @@ export class TableComponent implements AfterViewInit, OnInit {
 
    onCellUpdate(updatedRow: Row) {
     this.rowUpdate.emit(updatedRow);
+  }
+
+  onSelectedOption(selectedOption : SelectChangeEvent, rowData : Row, column : string){
+
+    const option : selectedOption = {
+      identifier: rowData[column].rowIdentifier,
+      selectedOption: selectedOption.value[rowData[column].optionLabel]
+    }
+
+    this.optionSelected.emit(option);
   }
 
   clearSelection() {
@@ -249,7 +263,7 @@ export class TableComponent implements AfterViewInit, OnInit {
 export { Action };
 
 export interface Row {
-  [key: string]: string | number | boolean | Date | Action[] | Blob | DadosAnalise | Plots | Nutrients[] | undefined | number[][] ;
+  [key: string]: string | number | boolean | Date | Action[] | Blob | DadosAnalise | Plots | Nutrients[] | undefined | number[][] | any;
 }
 
 export interface Column {
@@ -263,6 +277,7 @@ export interface Column {
     | 'number'
     | 'boolean'
     | 'action'
+    | 'select'
     | 'file';
   sortable?: boolean;
   filterable?: boolean;

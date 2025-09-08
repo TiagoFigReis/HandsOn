@@ -20,6 +20,7 @@ export * from './lib/components/input-number/input-number.component';
 export * from './lib/components/tabs/tabs.component';
 export * from './lib/components/fieldset/fieldset.component';
 export * from './lib/components/divider/divider.component';
+export * from './lib/components/barChart/barChart.component'
 
 // Modules
 export * from './lib/modules/user-form/user-form.component';

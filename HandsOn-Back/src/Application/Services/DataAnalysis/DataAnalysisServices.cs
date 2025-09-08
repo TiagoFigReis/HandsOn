@@ -305,155 +305,118 @@ namespace Application.Services.DataAnalysis
             var plants = 10000 / (width * height);
             var expectedProductivity = 480 * inputModel.ExpectedProductivity / plants;
 
-            float SB = 0, T = 0, organicMatter = 0, V = 0, Vexpected = 60;
+            float SB = 0, T = 0, organicMatter = 0, V = 0;
+            const float Vexpected = 70;
 
             foreach (var nutrient in inputModel.Nutrients)
             {
-                if (nutrient.Header == NutrientHeader.SumBases.ToFriendlyString())
+                var header = nutrient.Header;
+
+                if (header == NutrientHeader.SumBases.ToFriendlyString())
                     SB = nutrient.Value;
-                else if (nutrient.Header == NutrientHeader.CTCpH7.ToFriendlyString())
+                else if (header == NutrientHeader.CTCpH7.ToFriendlyString())
                     T = nutrient.Value;
-                else if (nutrient.Header == NutrientHeader.OrganicMatter.ToFriendlyString())
+                else if (header == NutrientHeader.OrganicMatter.ToFriendlyString())
                     organicMatter = nutrient.Value;
-                else if (nutrient.Header == NutrientHeader.BasesSaturation.ToFriendlyString())
-                {
+                else if (header == NutrientHeader.BasesSaturation.ToFriendlyString())
                     V = nutrient.Value;
-                }
             }
 
-            foreach (var data in soilData)
+            var selectedSoilData = soilData.FirstOrDefault(d => expectedProductivity < d.ExpectedProductivity);
+            if (selectedSoilData == null) return;
+
+            
+            void AddRecommendation(string name, string text) =>
+                viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel { Name = name, Recomendation = text });
+
+            
+            var nCol = selectedSoilData.SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.N);
+            if (nCol != null)
             {
-                if (expectedProductivity < data.ExpectedProductivity)
-                {
-                    foreach (var columns in data.SoilFertilizerColumns)
-                    {
-                        if (columns.Header == NutrientHeader.N)
-                        {
-                            ProductRecomendationViewModel recomendation = new();
-
-                            float value;
-
-                            if (organicMatter < 3)
-                            {
-                                value = columns.Value1 * plants / 1000;
-                            }
-                            else
-                            {
-                                value = columns.Value2 * plants / 1000;
-                            }
-
-                            recomendation.Name = "N";
-                            recomendation.Recomendation = $"Pode-se utilizar {value} kg/ha/ano de Nitrogênio(N)";
-
-                            viewModel.ProductRecomendations.Add(recomendation);
-                        }
-                    }
-
-                    break;
-
-                }
+                var nValue = (organicMatter < 3 ? nCol.Value1 : nCol.Value2) * plants / 1000;
+                AddRecommendation("N", $"Pode-se utilizar {nValue:F0} kg/ha/ano de Nitrogênio (N)");
             }
 
+            
             foreach (var nutrient in inputModel.Nutrients)
             {
-                if (nutrient.Header == NutrientHeader.P.ToFriendlyString())
+                var header = nutrient.Header;
+
+                if (header == NutrientHeader.P.ToFriendlyString())
                 {
-                    foreach (var data in soilData)
+                    var pCol = selectedSoilData.SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.P);
+                    if (pCol != null)
                     {
-                        if (expectedProductivity < data.ExpectedProductivity)
-                        {
-                            foreach (var columns in data.SoilFertilizerColumns)
-                            {
-                                if (columns.Header == NutrientHeader.P)
-                                {
-                                    ProductRecomendationViewModel recomendation = new();
+                        float value = 0;
+                        if (nutrient.Value <= 10)
+                            value = pCol.Value1 * plants / 1000;
+                        else if (nutrient.Value > 10 && nutrient.Value < 20)
+                            value = pCol.Value2 * plants / 1000;
 
-                                    float value = 0;
-
-                                    if (nutrient.Value <= 10)
-                                    {
-                                        value = columns.Value1 * plants / 1000;
-                                    }
-                                    else if (nutrient.Value > 10 && nutrient.Value < 20)
-                                    {
-                                        value = columns.Value2 * plants / 1000;
-                                    }
-
-                                    recomendation.Name = nutrient.Header;
-                                    recomendation.Recomendation = value != 0 ? $"Pode-se utilizar {value} kg/ha/abo de Fósforo(P)" : "Não é necessário aplicação desse nutriente";
-
-                                    viewModel.ProductRecomendations.Add(recomendation);
-                                }
-                            }
-
-                            break;
-                        }
+                        if (value > 0)
+                            AddRecommendation("P", $"Pode-se utilizar {value:F0} kg/ha/ano de P₂O₅");
+                        else
+                            AddRecommendation("P", "Não é necessário aplicação desse nutriente");
                     }
                 }
-                else if (nutrient.Header == NutrientHeader.K.ToFriendlyString())
+
+                else if (header == NutrientHeader.K.ToFriendlyString())
                 {
-                    foreach (var data in soilData)
+                    var kCol = selectedSoilData.SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.K);
+                    if (kCol != null)
                     {
-                        if (expectedProductivity < data.ExpectedProductivity)
-                        {
-                            foreach (var columns in data.SoilFertilizerColumns)
-                            {
-                                if (columns.Header == NutrientHeader.K)
-                                {
-                                    ProductRecomendationViewModel recomendation = new();
+                        var perc = nutrient.Value / T * 100;
+                        float value = 0;
 
-                                    float value = 0;
+                        if (perc < 3)
+                            value = kCol.Value1 * plants / 1000;
+                        else if (perc >= 3 && perc < 5)
+                            value = kCol.Value2 * plants / 1000;
+                        else if (perc >= 5 && perc < 7)
+                            value = kCol.Value3 * plants / 1000;
 
-                                    if (nutrient.Value / T * 100 < 3)
-                                    {
-                                        value = columns.Value1 * plants / 1000;
-                                    }
-                                    else if (nutrient.Value / T * 100 >= 3 && nutrient.Value / T * 100 < 5)
-                                    {
-                                        value = columns.Value2 * plants / 1000;
-                                    }
-                                    else if (nutrient.Value / T * 100 >= 5 && nutrient.Value / T * 100 < 7)
-                                    {
-                                        value = columns.Value3 * plants / 1000;
-                                    }
+                        if (value > 0)
+                            AddRecommendation("K", $"Pode-se utilizar {value:F0} kg/ha/ano de K₂O ");
+                        else
+                            AddRecommendation("K", "Não é necessário aplicação desse nutriente");
+                    }
+                }
 
-                                    recomendation.Name = nutrient.Header;
-                                    recomendation.Recomendation = value != 0 ? $"Pode-se utilizar {value} kg/ha/ano de Potássio(K)" : "Não é necessário aplicação desse nutriente";
+                else if (header == NutrientHeader.B.ToFriendlyString())
+                {
+                    var bCol = soilData[0].SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.B);
+                    Console.WriteLine("uai so");
+                    if (bCol != null)
+                    {
+                        string rec = "Não é necessário correção desse nutriente";
 
-                                    viewModel.ProductRecomendations.Add(recomendation);
-                                }
-                            }
+                        if (nutrient.Analysis == "Baixo")
+                            rec = $"Pode-se utilizar {bCol.Value1} kg/ha de Boro (B)";
+                        else if (nutrient.Analysis == "Aceitável")
+                            rec = $"Pode-se utilizar {bCol.Value2} kg/ha de Boro (B)";
+                        else if (nutrient.Analysis == "Adequado")
+                            rec = $"Pode-se utilizar {bCol.Value3} kg/ha de Boro (B)";
 
-                            break;
-                        }
+                        AddRecommendation("B", rec);
                     }
                 }
             }
-
-            ProductRecomendationViewModel calagemRecommendation = new();
-
-            calagemRecommendation.Name = "Calagem";
 
             if (V < Vexpected)
             {
                 var calagem = Vexpected / 100 * T - SB;
-                calagemRecommendation.Recomendation = $"Pode-se utilizar {calagem}t/ha de calcário";
+                AddRecommendation("Calagem", $"Pode-se utilizar {calagem:F2} t/ha de calcário");
             }
             else
             {
-                calagemRecommendation.Recomendation = "Não é necessário aplicação de calcário";
+                AddRecommendation("Calagem", "Não é necessário aplicação de calcário");
             }
 
-            ProductRecomendationViewModel Others = new ProductRecomendationViewModel
-            {
-                Name = "Micronutrientes",
-                Recomendation = "A correção de micronutrientes é predominantemente feita via foliar. Para isso é necessário uma análise de folhas para que sejam feitas recomendações"
-            };
-
-            viewModel.ProductRecomendations.Add(calagemRecommendation);
-            viewModel.ProductRecomendations.Add(Others);
-            
+            AddRecommendation("Micronutrientes",
+                "A correção de micronutrientes é predominantemente feita via foliar. " +
+                "Para isso é necessário uma análise de folhas para que sejam feitas recomendações");
         }
+
 
         private void LeafRecommendation(FertilizerPlotInputModel inputModel, LeafFertilizerRowData leafData, PlotFertilizerViewModel viewModel)
         {
@@ -470,7 +433,6 @@ namespace Application.Services.DataAnalysis
                                     .FirstOrDefault(d => d.Header.ToFriendlyString() == nutrient.Header);
                     if (data == null) continue;
 
-                    // Caso o nutriente não precise de correção
                     if (nutrient.Analysis != "Baixo" && nutrient.Analysis != "Aceitável")
                     {
                         viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel
@@ -478,10 +440,9 @@ namespace Application.Services.DataAnalysis
                             Name = nutrient.Header,
                             Recomendation = "Não é necessário correção desse nutriente"
                         });
-                        continue; // passa para o próximo nutriente
+                        continue;
                     }
 
-                    // Caso o nutriente precise de recomendação (Baixo ou Aceitável)
                     foreach (var product in data.Products)
                     {
                         var recommendation = new ProductRecomendationViewModel
