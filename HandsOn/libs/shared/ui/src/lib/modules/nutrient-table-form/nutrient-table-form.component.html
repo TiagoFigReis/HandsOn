@@ -1,129 +1,63 @@
-<form [formGroup]="nutrientTableForm" (ngSubmit)="onSubmit()" class="w-full flex flex-col gap-4 mt-6 px-4">
-  <div>
+<form
+  [formGroup]="nutrientTableForm"
+  (ngSubmit)="onSubmit()"
+  class="w-full flex flex-col gap-2 mt-6"
+>
+    <div class="w-full mx-auto flex flex-col lg:flex-row gap-2 px-6 lg:px-10">
+        <div class="w-full lg:w-3/5 m-auto">
+            <lib-fieldset [legend]="'Como Funciona'" [toggleable]="isSmallScreen" [styleClass]="'my-auto'">
+                <p [innerHtml]="currentText"></p>
+            </lib-fieldset>
+        </div>
+        
+        <div class="w-full max-w-md lg:w-2/5 m-auto  flex flex-col gap-2">
+            <lib-select
+                [id]="'cultureType'"
+                [control]="cultureType"
+                [label]="'Cultura'"
+                [placeholder]="'Selecione uma cultura'"
+                [options]="cultureOptions"
+                [required]="true"
+                [fluid]="true"
+                [filter]="true"
+                *ngIf="selectCulture"
+            ></lib-select>
 
-    <div class="max-w-md mx-auto flex flex-col gap-2">
-      <lib-select [id]="'cultureType'" [label]="'Cultura'" [placeholder]="'Selecione uma cultura'" [required]="true"
-        [fluid]="true" [control]="cultureType" [options]="cultureOptions" [filter]="true" class="w-full"
-        *ngIf="selectCulture"></lib-select>
-
-      <div class="flex flex-row items-center gap-3 rounded-md p-2">
-        <lib-button class="w-full" [label]="'Folha'" [type]="'button'" [fluid]="true" [severity]="'primary'"
-          [loading]="loading" [tooltip]="'Ativar seção de folha'" [styleClass]="activeTable == 'leaf' ? 'pressed' : ''"
-          (click)="setLeafSection()"></lib-button>
-
-        <lib-button class="w-full" [label]="'Solo'" [type]="'button'" [fluid]="true" [severity]="'primary'"
-          [loading]="loading" [tooltip]="'Ativar seção de solo'" [styleClass]="activeTable == 'soil' ? 'pressed' : ''"
-          (click)="setSoilSection()"></lib-button>
-      </div>
+            <lib-select 
+                [id]="'tableDivision'" 
+                [control]="tableDivision"
+                [label]="'Divisão de Períodos'" 
+                [placeholder]="'Selecione uma divisão'"
+                [options]="divisionOptions"
+                [required]="true"   
+                [filter]="true"
+                *ngIf="selectDivision"
+            ></lib-select>
+        </div>
     </div>
+    
+    <div class="mt-10 px-0 lg:px-10">
+        <lib-tabs [tabs]="tabs" (tabChange)="onTabChange($event)">
+            <ng-template #leafSection>
+                <lib-nutrient-table-leaf-form
+                    [nutrientTable]="nutrientTable"
+                ></lib-nutrient-table-leaf-form>
+            </ng-template>
 
-    <!-- Leaf Section -->
-    <div [hidden]="activeTable !== 'leaf'">
-      <lib-select [id]="'tableDivision'" [label]="'Divisão de Períodos'" [placeholder]="'Selecione uma divisão'"
-        [required]="true" [fluid]="true" [control]="tableDivision" [options]="divisionOptions" [filter]="true"
-        class="max-w-md mx-auto flex flex-col"></lib-select>
-
-      <div class="overflow-x-auto overflow-y-hidden mt-10 border border-[#3f3f46] rounded-xl px-3 py-2">
-        <table class="min-w-max border-collapse text-center border-separate border-spacing-x-1.5 border-spacing-y-0.5">
-          <thead>
-            <tr>
-              <th rowspan="2" class="w-32">Período</th>
-              <th colspan="6">Macronutrientes (g/kg)</th>
-              <th colspan="5">Micronutrientes (mg/kg)</th>
-              <th colspan="13">Relações Fisiológicas</th>
-            </tr>
-            <tr>
-              <ng-container *ngFor="let header of leafHeaders">
-                <th class="w-32">{{ header }}</th>
-              </ng-container>
-            </tr>
-          </thead>
-
-          <tbody formArrayName="leafRows">
-            <ng-container *ngFor="let leafRow of leafRows.controls; let i = index">
-              <tr [formGroupName]="i">
-                <td>{{ periods[i] }}</td>
-
-                <ng-container formArrayName="leafColumns">
-                  <ng-container *ngFor="let leafColumn of getLeafColumns(i).controls; let j = index">
-                    <td [formGroupName]="j">
-                      <div class="flex flex-row gap-0.5">
-                        <lib-input-nutrient-table [id]="'min-' + i + '-' + j" [type]="'text'" [placeholder]="'Min.'"
-                          [required]="true" [fluid]="true" [minlength]="1" [maxlength]="10" [control]="getMinLeaf(i, j)"
-                          class="w-full">
-                        </lib-input-nutrient-table>
-
-                        <lib-input-nutrient-table [id]="'max-' + i + '-' + j" [type]="'text'" [placeholder]="'Máx.'"
-                          [required]="true" [fluid]="true" [minlength]="1" [maxlength]="10" [control]="getMaxLeaf(i, j)"
-                          class="w-full">
-                        </lib-input-nutrient-table>
-                      </div>
-                    </td>
-                  </ng-container>
-                </ng-container>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
-      </div>
+            <ng-template #soilSection>
+                <lib-nutrient-table-soil-form
+                    [nutrientTable]="nutrientTable"
+                ></lib-nutrient-table-soil-form>
+            </ng-template>
+        </lib-tabs>
     </div>
-
-    <!-- Soil Section -->
-    <div class="text-center">
-      <div [ngClass]="{'hidden': activeTable !== 'soil'}"
-        class="inline-block max-w-full overflow-x-auto overflow-y-hidden mt-10 border border-[#3f3f46] rounded-xl px-3 py-2">
-
-        <table class="min-w-max border-collapse text-center">
-          <thead>
-            <tr>
-              <ng-container *ngFor="let header of soilHeaders">
-                <th colspan="2">{{ header.title }}</th>
-              </ng-container>
-            </tr>
-          </thead>
-
-          <tbody [formGroup]="soilRow">
-            <tr formArrayName="soilColumns" *ngFor="let row of [].constructor(5); let i = index">
-              <ng-container *ngFor="let header of soilHeaders; let j = index">
-                <td class="w-24" [innerHTML]="header.items[i] ? header.items[i].label : ''"></td>
-
-                <td>
-                  <ng-container *ngIf="header.items[i]">
-                    <div [formGroupName]="i" class="flex flex-row gap-0.5">
-                      <lib-input-nutrient-table [id]="'min-' + i + '-' + j" [type]="'text'" [placeholder]="'Min.'"
-                        [required]="true" [fluid]="true" [minlength]="1" [maxlength]="10"
-                        [control]="getMinSoil(header.items[i].id)" class="w-16">
-                      </lib-input-nutrient-table>
-
-                      <ng-container *ngIf="header.items[i].complex === true">
-                        <lib-input-nutrient-table [id]="'med1-' + i + '-' + j" [type]="'text'" [placeholder]="'Méd1.'"
-                          [required]="true" [fluid]="true" [minlength]="1" [maxlength]="10"
-                          [control]="getMed1Soil(header.items[i].id)" class="w-16">
-                        </lib-input-nutrient-table>
-
-                        <lib-input-nutrient-table [id]="'med2-' + i + '-' + j" [type]="'text'" [placeholder]="'Méd2.'"
-                          [required]="true" [fluid]="true" [minlength]="1" [maxlength]="10"
-                          [control]="getMed2Soil(header.items[i].id)" class="w-16">
-                        </lib-input-nutrient-table>
-                      </ng-container>
-
-                      <lib-input-nutrient-table [id]="'max-' + i + '-' + j" [type]="'text'" [placeholder]="'Máx.'"
-                        [required]="true" [fluid]="true" [minlength]="1" [maxlength]="10"
-                        [control]="getMaxSoil(header.items[i].id)" class="w-16">
-                      </lib-input-nutrient-table>
-                    </div>
-                  </ng-container>
-                </td>
-              </ng-container>
-            </tr>
-          </tbody>
-
-        </table>
-
-      </div>
-    </div>
-  </div>
-
-  <lib-button class="w-full max-w-96 mt-6 mx-auto" [label]="submitLabel" [type]="'submit'" [fluid]="true"
-    [severity]="'primary'" [loading]="loading"></lib-button>
+    
+    <lib-button
+        class="w-full max-w-96 mt-6 mx-auto"
+        [label]="submitLabel"
+        [type]="'submit'"
+        [fluid]="true"
+        [severity]="'primary'"
+        [loading]="loading"
+    ></lib-button>
 </form>

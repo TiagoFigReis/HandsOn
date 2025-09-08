@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import {
     NutrientTable,
     NutrientTableFacade,
@@ -11,55 +11,86 @@ import {
     UserFacade
 } from '@farm/core';
 import { Row, Action } from '@farm/ui';
+import { Location } from '@angular/common';
 
 @Injectable({
     providedIn: 'root',
 })
 export class NutrientTablesListComponentFacade {
     private nutrientTablesSubject = new BehaviorSubject<Row[]>([]);
+    private userRoleSubject = new BehaviorSubject<string>('');
     private loadingSubject = new BehaviorSubject<boolean>(false);
     private allCultures: Culture[] = [];
     private userRole = '';
 
     loading$: Observable<boolean> = this.loadingSubject.asObservable();
     nutrientTables$: Observable<Row[]> = this.nutrientTablesSubject.asObservable();
+    isAdmin$: Observable<boolean> = this.userRoleSubject.asObservable().pipe(
+        map(role => role === "Admin")
+    );
 
     constructor(
         private nutrientTableFacade: NutrientTableFacade,
         private confirmationService: ConfirmationService,
         private cultureFacade: CultureFacade,
-        private userFacade: UserFacade
+        private userFacade: UserFacade,
+        private location: Location
     ) { }
 
     load() {
         this.loadingSubject.next(true);
 
-        this.userFacade.me().pipe(
-            switchMap(user => {
-                this.userRole = user.role as string
+        this.userFacade.me().subscribe({
+            next: user => {
+                this.userRole = user.role as string;
+                this.userRoleSubject.next(this.userRole);
 
-                return forkJoin([
-                    this.cultureFacade.getAllCultures(),
-                    this.nutrientTableFacade.getAllNutrientTables()
-                ]);
-            }),
-            tap({
-                next: ([cultures, nutrientTables]) => {
-                    this.allCultures = cultures;
-                    this.nutrientTablesSubject.next(
-                        nutrientTables.map(nutrientTable => this.mapNutrientTableToRow(nutrientTable))
-                    );
-                    this.loadingSubject.next(false);
-                },
-                error: () => {
-                    this.loadingSubject.next(false);
+                const alreadyConfirmed = localStorage.getItem(`confirmedTableWarning_${user.id}`);
+
+                if (this.userRole !== "Admin" && !alreadyConfirmed) {
+                    this.confirmationService.confirm({
+                        header: "Cuidado!",
+                        message: "Esta seção inclui a manipulação de dados complexos. O uso incorreto pode prejudicar outras funcionalidades do sistema. Deseja continuar?",
+                        accept: () => {
+                            localStorage.setItem(`confirmedTableWarning_${user.id}`, "true");
+                            this.fetchData();
+                        },
+                        reject: () => {
+                            this.location.back();
+                        }
+                    });
+                } else {
+                    this.fetchData();
                 }
-            })
-        ).subscribe();
+            },
+            error: () => {
+                this.loadingSubject.next(false);
+            }
+        });
+    }
+
+    private fetchData() {
+        forkJoin([
+            this.cultureFacade.getAllCultures(),
+            this.nutrientTableFacade.getAllNutrientTables()
+        ]).subscribe({
+            next: ([cultures, nutrientTables]) => {
+                this.allCultures = cultures;
+                this.nutrientTablesSubject.next(
+                    nutrientTables.map(nutrientTable =>
+                        this.mapNutrientTableToRow(nutrientTable)
+                    )
+                );
+                this.loadingSubject.next(false);
+            },
+            error: () => {
+                this.loadingSubject.next(false);
+            }
+        });
     }
 
     private mapNutrientTableToRow(nutrientTable: NutrientTable): Row {
-        const { user, culture, leafNutrientRows, soilNutrientRow, standard, ...data } = nutrientTable;
+        const {  culture, leafNutrientRows, soilNutrientRow, standard, ...data } = nutrientTable;
 
         const newData = {
             ...data,

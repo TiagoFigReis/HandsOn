@@ -1,0 +1,190 @@
+<ng-container [formGroup]="parentForm">
+  <div formGroupName="leafRow" class="overflow-x-auto min-h-[650px] flex flex-row pb-2">
+    <!-- Macronutrients subsection -->
+    <table class="min-w-max border-collapse text-center mx-auto">
+      <thead>
+        <tr>
+          <th colspan="5">Macronutrientes</th>
+        </tr>
+        <tr>
+          <th rowspan="2" colspan="2" class="border-b border-zinc-200 dark:border-zinc-700">Deficiência</th>
+          <th colspan="4">Produtos</th>
+        </tr>
+        <tr>
+          <th class="w-64 border-b border-zinc-200 dark:border-zinc-700">Nome</th>
+          <th colspan="2" class="border-b border-zinc-200 dark:border-zinc-700 px-2">Concentração (Kg/400 litros de
+            água)</th>
+        </tr>
+      </thead>
+
+      <tbody formArrayName="leafColumns" *ngFor="let header of macroHeaders; let columnIndex = index"
+        class="divide-y divide-zinc-200 dark:divide-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+        <!-- Row for when there are no products -->
+        <tr *ngIf="header.products.length === 0" class="border-b border-zinc-200 dark:border-zinc-700">
+          <td class="border-b border-zinc-200 dark:border-zinc-700">
+            <div class="w-16">
+              {{ header.label }}
+            </div>
+          </td>
+
+          <td class="border-b border-zinc-200 dark:border-zinc-700">
+            <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="false" [severity]="'success'"
+              [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
+              class="mr-2"></lib-button>
+          </td>
+
+          <td colspan="4">Nenhum produto adicionado</td>
+        </tr>
+
+        <!-- Products' Sub-Section -->
+        <tr *ngFor="let product of header.products; let productIndex = index" [formGroupName]="columnIndex">
+          <ng-container *ngIf="productIndex === 0">
+
+            <td [attr.rowspan]="header.products.length" class="border-b border-zinc-200 dark:border-zinc-700">
+              <div class="w-16">
+                {{ header.label }}
+              </div>
+            </td>
+
+            <td [attr.rowspan]="header.products.length" class="border-b border-zinc-200 dark:border-zinc-700">
+              <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="true" [severity]="'success'"
+                [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
+                class="mr-2"></lib-button>
+            </td>
+
+          </ng-container>
+
+          <!-- Name Input -->
+          <td formArrayName="products" class="px-2 py-1.5 border-b border-zinc-200 dark:border-zinc-700">
+            <div [formGroupName]="productIndex">
+              <lib-input [placeholder]="'Nome'" [required]="true" [variant]="'filled'" [showErrorMessage]="false"
+                [minlength]="3" [maxlength]="50" [id]="'name-' + columnIndex + '-' + productIndex"
+                [control]="getName(columnIndex, productIndex)"></lib-input>
+            </div>
+          </td>
+
+          <!-- Concentration Thresholds + Solid Button -->
+          <td formArrayName="products" class="px-2 border-b border-zinc-200 dark:border-zinc-700">
+            <div [formGroupName]="productIndex" class="flex flex-row gap-1">
+              <lib-input-number [placeholder]="'Min.'" [required]="true" class="w-16" [min]="0" [max]="1000"
+                [id]="'min-' + columnIndex + '-' + productIndex"
+                [control]="getMin(columnIndex, productIndex)"></lib-input-number>
+
+              <lib-input-number [placeholder]="'Máx.'" [required]="true" class="w-16"
+                [min]="getMin(columnIndex, productIndex).value" [max]="1000"
+                [id]="'max-' + columnIndex + '-' + productIndex"
+                [control]="getMax(columnIndex, productIndex)"></lib-input-number>
+
+              <lib-checkbox [label]="'É sólido'" class="mx-auto my-auto"
+                [id]="'solid-' + columnIndex + '-' + productIndex"
+                [control]="getSolid(columnIndex, productIndex)"></lib-checkbox>
+            </div>
+          </td>
+
+          <!-- Remove Button -->
+          <td class="border-b border-zinc-200 dark:border-zinc-700">
+            <lib-button [type]="'button'" [fluid]="true" [icon]="'pi pi-times'" [severity]="'danger'"
+              [loading]="loading" [tooltip]="'Remover produto'"
+              (click)="removeProduct(header, columnIndex, productIndex)">
+            </lib-button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <lib-divider [layout]="'vertical'" class=""></lib-divider>
+
+    <!-- Micronutrients subsection -->
+    <table class="min-w-max border-collapse text-center mx-auto">
+      <thead>
+        <tr>
+          <th colspan="5">Macronutrientes</th>
+        </tr>
+        <tr>
+          <th rowspan="2" colspan="2" class="border-b border-zinc-200 dark:border-zinc-700">Deficiência</th>
+          <th colspan="4">Produtos</th>
+        </tr>
+        <tr>
+          <th class="w-64 border-b border-zinc-200 dark:border-zinc-700">Nome</th>
+          <th colspan="2" class="border-b border-zinc-200 dark:border-zinc-700 px-2">Concentração (Kg/400 litros de
+            água)</th>
+        </tr>
+      </thead>
+
+      <tbody formArrayName="leafColumns" *ngFor="let header of microHeaders; let microIndex = index"
+        class="divide-y divide-zinc-200 dark:divide-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+        <ng-container *ngIf="calculateMicroColIndex(microIndex) as columnIndex">
+          <!-- Row for when there are no produts -->
+          <tr *ngIf="header.products.length === 0" class="border-b border-zinc-200 dark:border-zinc-700">
+            <td class="border-b border-zinc-200 dark:border-zinc-700">
+              <div class="w-16">
+                {{ header.label }}
+              </div>
+            </td>
+
+            <td class="border-b border-zinc-200 dark:border-zinc-700">
+              <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="false" [severity]="'success'"
+                [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
+                class="mr-2"></lib-button>
+            </td>
+
+            <td colspan="4">Nenhum produto adicionado</td>
+          </tr>
+
+          <!-- Products' Sub-Section -->
+          <tr *ngFor="let product of header.products; let productIndex = index" [formGroupName]="columnIndex">
+            <ng-container *ngIf="productIndex === 0">
+              <td [attr.rowspan]="header.products.length" class="border-b border-zinc-200 dark:border-zinc-700">
+                <div class="w-16">
+                  {{ header.label }}
+                </div>
+              </td>
+
+              <td [attr.rowspan]="header.products.length"
+                class="border-b border-zinc-200 dark:border-zinc-700">
+                <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="true" [severity]="'success'"
+                  [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
+                  class="mr-2"></lib-button>
+              </td>
+            </ng-container>
+
+            <!-- Name Input -->
+            <td formArrayName="products" class="px-2 py-1.5 border-b border-zinc-200 dark:border-zinc-700">
+              <div [formGroupName]="productIndex">
+                <lib-input [placeholder]="'Nome'" [required]="true" [variant]="'filled'" [showErrorMessage]="false"
+                  [minlength]="3" [maxlength]="50" [id]="'name-' + columnIndex + '-' + productIndex"
+                  [control]="getName(columnIndex, productIndex)"></lib-input>
+              </div>
+            </td>
+
+            <!-- Concentration Thresholds + Solid Button -->
+            <td formArrayName="products" class="px-2 border-b border-zinc-200 dark:border-zinc-700">
+              <div [formGroupName]="productIndex" class="flex flex-row gap-1">
+                <lib-input-number [placeholder]="'Min.'" [required]="true" class="w-16" [min]="0" [max]="1000"
+                  [id]="'min-' + columnIndex + '-' + productIndex"
+                  [control]="getMin(columnIndex, productIndex)"></lib-input-number>
+
+                <lib-input-number [placeholder]="'Máx.'" [required]="true" class="w-16"
+                  [min]="getMin(columnIndex, productIndex).value" [max]="1000"
+                  [id]="'max-' + columnIndex + '-' + productIndex"
+                  [control]="getMax(columnIndex, productIndex)"></lib-input-number>
+
+                <lib-checkbox [label]="'É sólido'" class="mx-auto my-auto"
+                  [id]="'solid-' + columnIndex + '-' + productIndex"
+                  [control]="getSolid(columnIndex, productIndex)"></lib-checkbox>
+              </div>
+            </td>
+
+            <!-- Remove Button -->
+            <td class="border-b border-zinc-200 dark:border-zinc-700">
+              <lib-button [type]="'button'" [fluid]="true" [icon]="'pi pi-times'" [severity]="'danger'"
+                [loading]="loading" [tooltip]="'Remover produto'"
+                (click)="removeProduct(header, columnIndex, productIndex)"></lib-button>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+  </div>
+</ng-container>

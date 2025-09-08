@@ -1,0 +1,53 @@
+<ng-container [formGroup]="parentForm">
+    <div class="overflow-x-auto min-h-[450px]">
+        <table class="min-w-max border-collapse text-center border-collapse my-10">
+            <thead>
+                <tr>
+                    <th rowspan="2" class="w-32">Período</th>
+                    <th colspan="6">Macronutrientes (g/kg)</th>
+                    <th colspan="5">Micronutrientes (mg/kg)</th>
+                    <th colspan="13">Relações Fisiológicas</th>
+                </tr>
+                <tr>
+                    <ng-container *ngFor="let header of leafHeaders">
+                        <th class="w-32">{{ header }}</th>
+                    </ng-container>
+                </tr>
+            </thead>
+
+            <tbody formArrayName="leafRows">
+                <ng-container *ngFor="let leafRow of leafRows.controls; let i = index">
+                    <tr [formGroupName]="i" class="hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                        <td class=" border-t border-zinc-200 dark:border-zinc-700">{{ periods[i] }}</td>
+
+                        <ng-container formArrayName="leafColumns">
+                            <ng-container *ngFor="let leafColumn of getLeafColumns(i).controls; let j = index">
+                                <td [formGroupName]="j" class=" border-t border-zinc-200 dark:border-zinc-700">
+                                    <div class="flex flex-row gap-1 px-1">
+                                        <lib-input-number 
+                                            [id]="'min-' + i + '-' + j"
+                                            [control]="getMinLeaf(i, j)"
+                                            [placeholder]="'Min.'"
+                                            [required]="true"  
+                                            [min]="0" 
+                                            [max]="10000" 
+                                        ></lib-input-number>
+
+                                        <lib-input-number 
+                                            [id]="'max-' + i + '-' + j"
+                                            [control]="getMaxLeaf(i, j)" 
+                                            [placeholder]="'Máx.'"
+                                            [required]="true"  
+                                            [min]="0" 
+                                            [max]="10000" 
+                                        ></lib-input-number>
+                                    </div>
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</ng-container>

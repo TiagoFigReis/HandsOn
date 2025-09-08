@@ -14,6 +14,7 @@ export class NutrientTablesListComponent implements OnInit {
   columns: Column[];
   loading = false;
   showMoreButton = true;
+  isAdmin = false;
 
   constructor(private facade: NutrientTablesListComponentFacade) {
     this.columns = columns;
@@ -26,6 +27,10 @@ export class NutrientTablesListComponent implements OnInit {
 
     this.facade.nutrientTables$.subscribe((nutrientTables) => {
       this.data = nutrientTables;
+    });
+
+    this.facade.isAdmin$.subscribe((isAdmin) => {
+      this.isAdmin = isAdmin;
     });
 
     this.facade.load();

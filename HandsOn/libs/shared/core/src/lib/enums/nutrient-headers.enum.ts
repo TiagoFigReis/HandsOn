@@ -10,6 +10,7 @@ export enum NutrientHeaders {
   Cu = 'Cu',
   Mn = 'Mn',
   Fe = 'Fe',
+  Mb = 'Mb',
   NP = 'N/P',
   NK = 'N/K',
   NS = 'N/S',

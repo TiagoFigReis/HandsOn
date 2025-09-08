@@ -1,18 +1,26 @@
-<lib-card-table>
+<lib-card [class]="'w-full max-w-[1600px] secondary-background py-12 rounded-md shadow mx-auto relative border primary-border'">
     <a [routerLink]="['/app/fertilizerTables']" class="absolute top-0 left-0 mt-2 ml-2">
         <p class="description flex items-center gap-1 link">
             <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
         </p>
     </a>
 
-    <h1 class="title text-center">
-        {{ title }}
-    </h1>
-    <p class="description text-center mt-2">
-        {{ description }}
-    </p>
-
-    <lib-fertilizer-table-form class="mt-6" [loading]="loading" [selectCulture]="selectCulture"
-        [submitLabel]="submitLabel" [user]="user" [fertilizerTable]="fertilizerTable"
-        (fertilizerTableSubmit)="onSubmit($event)"></lib-fertilizer-table-form>
-</lib-card-table>
+    <div class="px-6">
+        <h1 class="title text-center">
+            {{ title }}
+        </h1>
+        <p class="description text-center mt-2">
+            {{ description }}
+        </p>
+    </div>
+    
+    <lib-fertilizer-table-form 
+        class="mt-6" 
+        [loading]="loading" 
+        [selectCulture]="selectCulture"
+        [submitLabel]="submitLabel" 
+        [user]="user" 
+        [fertilizerTable]="fertilizerTable"
+        (fertilizerTableSubmit)="onSubmit($event)"
+    ></lib-fertilizer-table-form>
+</lib-card>
