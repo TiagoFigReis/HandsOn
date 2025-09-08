@@ -275,3 +275,16 @@ export interface Column {
 export interface ColumnWidths {
   [key: string]: string;
 }
+
+export interface SelectTable{
+  label: string;
+  options: any[];
+  optionLabel: string;
+  rowIdentifier?: string;
+  selectedOption?: string;
+}
+
+export interface selectedOption{
+  identifier: string;
+  selectedOption: string
+}
