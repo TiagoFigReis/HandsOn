@@ -160,13 +160,16 @@ export class ResultAnaliseComponentFacade {
         };
       });
 
-    const rows = plots.map(plot => {
+    const rows = plots.map((plot, index) => {
+      const uniqueId = `${plot.plotName}-${index}`;
+
       const cultureTypeOptions = {
         ...this.selectOptions,
-        rowIdentifier: plot.plotName
+        rowIdentifier: uniqueId
       };
 
       const row: Row = {
+        id: uniqueId,
         plotName: plot.plotName,
         cultureType: cultureTypeOptions,
         expectedProductivity: this.standardProductivity,

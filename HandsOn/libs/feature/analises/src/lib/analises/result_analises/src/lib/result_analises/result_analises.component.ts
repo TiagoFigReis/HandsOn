@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, ProductRecomendations, Spacing, NutrientTable } from '@farm/core';
+import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, ProductRecomendations, NutrientTable } from '@farm/core';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -155,7 +155,7 @@ export class ResultAnalisesComponent implements OnInit {
       });
       return {
         plotName: item['plotName']?.toString() || '',
-        cultureType: this.plotCulture[item['plotName']],
+        cultureType: this.plotCulture[item['id']],
         nutrients
       };
     });
@@ -199,21 +199,14 @@ export class ResultAnalisesComponent implements OnInit {
           };
         });
 
-        const productivityMap = new Map<string, number>();
-        this.data.forEach(row => {
-          productivityMap.set(row['plotName']?.toString() || '', Number(row['expectedProductivity']) || 0);
+        const finalPlots = dataAnalyse.plots.map(serverPlot => {
+            const localRow = this.data.find(r => r['plotName'] === serverPlot.plotName);
+            return {
+                ...serverPlot,
+                expectedProductivity: localRow ? Number(localRow['expectedProductivity']) : 0,
+                spacing: localRow ? { width: Number(localRow['width']), height: Number(localRow['height']) } : undefined
+            };
         });
-
-        const spacingMap = new Map<string, Spacing>();
-        this.data.forEach(row => {
-          spacingMap.set(row['plotName']?.toString() || '', { width: Number(row['width']), height: Number(row['height']) });
-        });
-
-        const finalPlots = dataAnalyse.plots.map(plot => ({
-          ...plot,
-          expectedProductivity: productivityMap.get(plot.plotName || '') || 0,
-          spacing: spacingMap.get(plot.plotName || '')
-        }));
 
         this.resultsData = { ...dataAnalyse, plots: plotsWithMappedNutrients };
 
@@ -254,7 +247,7 @@ export class ResultAnalisesComponent implements OnInit {
   }
 
   onRowUpdate(updatedRow: Row) {
-    const index = this.data.findIndex(row => row['plotName'] === updatedRow['plotName']);
+    const index = this.data.findIndex(row => row['id'] === updatedRow['id']);
     if (index !== -1) {
       this.data[index] = updatedRow;
     }
