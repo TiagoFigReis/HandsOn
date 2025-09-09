@@ -12,6 +12,7 @@ export * from './lib/models/analise.model';
 export * from './lib/models/nutrient-table.model';
 export * from './lib/models/culture.model';
 export * from './lib/models/fertilizer-table.model';
+export * from './lib/models/formulation-table.model';
 
 // services
 export * from './lib/services/authentication/authentication.service';
@@ -24,6 +25,7 @@ export * from './lib/services/dataAnalysis/dataAnalysis.service';
 export * from './lib/services/nutrient-table/nutrient-table.service';
 export * from './lib/services/culture/culture.service';
 export * from './lib/services/fertilizer-table/fertilizer-table.service';
+export * from './lib/services/formulation-table/formulation-table.service';
 
 // facades
 export * from './lib/facades/auth.facade';
@@ -33,6 +35,7 @@ export * from './lib/facades/dataAnalysis.facade';
 export * from './lib/facades/nutrient-table.facade';
 export * from './lib/facades/culture.facade';
 export * from './lib/facades/fertilizer-table.facade';
+export * from './lib/facades/formulation-table.facade';
 
 // guards
 export * from './lib/guards/authenticated/authenticated.guard';

@@ -1,1 +1,10 @@
-<p>FormulationTablesList works!</p>
+<lib-table 
+    [data]="data" 
+    [columns]="columns" 
+    [loading]="loading" 
+    [showMoreButton]="showMoreButton"
+    [registerButton]="isAdmin"
+    [registerLink]="'/app/formulationTables/create'"
+    [registerTooltip]="'Cadastrar Nova Tabela'"
+    (refresh)="refresh()" 
+/>
