@@ -20,8 +20,10 @@ namespace Application.InputModels.FertilizerTableInputModels
                 SoilFertilizerRows = SoilFertilizerRows.Select(c => c.ToEntity()).ToList()
             };
 
-            var fertilizerTable = new FertilizerTable();
-            fertilizerTable.ExpectedBasesSaturation = ExpectedBasesSaturation;
+            var fertilizerTable = new FertilizerTable
+            {
+                ExpectedBasesSaturation = ExpectedBasesSaturation
+            };
 
             fertilizerTable.SetTableData(tableData);
 
@@ -73,6 +75,7 @@ namespace Application.InputModels.FertilizerTableInputModels
         {
             return new LeafFertilizerColumnData
             {
+                Header = Header,
                 Products = Products.Select(p => p.ToEntity()).ToList()
             };
         }

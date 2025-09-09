@@ -41,10 +41,12 @@ namespace Core.Entities
             UserId = user.Id;
         }
 
-        public void Update(FertilizerTableData? tableData = null)
+        public void Update(float? expectedBasesSaturation, FertilizerTableData? tableData = null)
         {
             if (tableData is not null)
                 SetTableData(tableData);
+
+            ExpectedBasesSaturation = expectedBasesSaturation ?? ExpectedBasesSaturation;
 
             UpdatedAt = DateTime.Now;
         }

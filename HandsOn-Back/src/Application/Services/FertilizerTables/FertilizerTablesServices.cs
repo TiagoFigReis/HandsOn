@@ -107,6 +107,7 @@ namespace Application.Services.FertilizerTables
                 throw new ForbiddenException("This Fertilizer Table is inaccessible.");
 
             fertilizerTable.Update(
+                expectedBasesSaturation: inputModel.ExpectedBasesSaturation,
                 tableData: inputModel.ToEntity().GetTableData()
             );
 
