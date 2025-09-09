@@ -313,6 +313,9 @@ namespace Application.Services.DataAnalysis
             const float Vexpected = 70;
 
             float nValue = 0, pValue = 0, kValue = 0;
+            float calagem = 0;
+            string boroRec = "Não é necessário aplicação de Boro (B)";
+            string boroValue = "0 kg/ha";
 
             foreach (var nutrient in inputModel.Nutrients)
             {
@@ -330,17 +333,13 @@ namespace Application.Services.DataAnalysis
 
             var selectedSoilData = soilData.FirstOrDefault(d => expectedProductivity < d.ExpectedProductivity);
             if (selectedSoilData == null) return;
-            
-            void AddRecommendation(string name, string text) =>
-                viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel { Name = name, Recomendation = text });
 
             var nCol = selectedSoilData.SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.N);
             if (nCol != null)
             {
                 nValue = (organicMatter < 3 ? nCol.Value1 : nCol.Value2) * plants / 1000;
-                AddRecommendation("Nitrogênio (N)", $"Pode-se utilizar {nValue:F0} kg/ha/ano de Nitrogênio (N)");
             }
-            
+
             foreach (var nutrient in inputModel.Nutrients)
             {
                 var header = nutrient.Header;
@@ -354,11 +353,6 @@ namespace Application.Services.DataAnalysis
                             pValue = pCol.Value1 * plants / 1000;
                         else if (nutrient.Value > 10 && nutrient.Value < 20)
                             pValue = pCol.Value2 * plants / 1000;
-
-                        if (pValue > 0)
-                            AddRecommendation("Fósforo (P₂O₅)", $"Pode-se utilizar {pValue:F0} kg/ha/ano de P₂O₅");
-                        else
-                            AddRecommendation("Fósforo (P₂O₅)", "Não é necessário aplicação desse nutriente");
                     }
                 }
                 else if (header == NutrientHeader.K.ToFriendlyString())
@@ -373,11 +367,6 @@ namespace Application.Services.DataAnalysis
                             kValue = kCol.Value2 * plants / 1000;
                         else if (perc >= 5 && perc < 7)
                             kValue = kCol.Value3 * plants / 1000;
-
-                        if (kValue > 0)
-                            AddRecommendation("Potássio (K₂O)", $"Pode-se utilizar {kValue:F0} kg/ha/ano de K₂O ");
-                        else
-                            AddRecommendation("Potássio (K₂O)", "Não é necessário aplicação desse nutriente");
                     }
                 }
                 else if (header == NutrientHeader.B.ToFriendlyString())
@@ -385,33 +374,34 @@ namespace Application.Services.DataAnalysis
                     var bCol = soilData[0].SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.B);
                     if (bCol != null)
                     {
-                        string rec = "Não é necessário correção desse nutriente";
                         if (nutrient.Analysis == "Baixo")
-                            rec = $"Pode-se utilizar {bCol.Value1} kg/ha de Boro (B)";
+                        {
+                            boroRec = $"Aplicar {bCol.Value1} kg/ha de Boro (B)";
+                            boroValue = $"{bCol.Value1} kg/ha";
+                        }
                         else if (nutrient.Analysis == "Aceitável")
-                            rec = $"Pode-se utilizar {bCol.Value2} kg/ha de Boro (B)";
+                        {
+                            boroRec = $"Aplicar {bCol.Value2} kg/ha de Boro (B)";
+                            boroValue = $"{bCol.Value2} kg/ha";
+                        }
                         else if (nutrient.Analysis == "Adequado")
-                            rec = $"Pode-se utilizar {bCol.Value3} kg/ha de Boro (B)";
-                        AddRecommendation("Boro (B)", rec);
+                        {
+                            boroRec = $"Aplicar {bCol.Value3} kg/ha de Boro (B)";
+                            boroValue = $"{bCol.Value3} kg/ha";
+                        }
                     }
                 }
             }
 
-            if (V < Vexpected)
+            if (V < Vexpected && T > 0)
             {
-                var calagem = Vexpected / 100 * T - SB;
-                AddRecommendation("Calagem", $"Pode-se utilizar {calagem:F2} t/ha de calcário");
-            }
-            else
-            {
-                AddRecommendation("Calagem", "Não é necessário aplicação de calcário");
+                calagem = Vexpected / 100 * T - SB;
+                if (calagem < 0) calagem = 0;
             }
 
-            AddRecommendation("Micronutrientes", "A correção de micronutrientes é predominantemente feita via foliar. Para isso é necessário uma análise de folhas para que sejam feitas recomendações");
-
-            GenerateFormulationPlan(nValue, pValue, kValue, formulationData, viewModel);
+            GenerateIntegratedRecommendation(nValue, pValue, kValue, calagem, boroRec, boroValue, formulationData, viewModel);
         }
-        
+
         private class FertilizerInfo
         {
             public string Name { get; set; } = string.Empty;
@@ -426,180 +416,194 @@ namespace Application.Services.DataAnalysis
             public double DoseKgHa { get; set; }
         }
 
-        private void GenerateFormulationPlan(float nNeed, float pNeed, float kNeed, FormulationTableData formulationData, PlotFertilizerViewModel viewModel)
+        private void GenerateIntegratedRecommendation(float nNeed, float pNeed, float kNeed, float limingNeed, string boronRec, string boroValue, FormulationTableData formulationData, PlotFertilizerViewModel viewModel)
         {
+            if (nNeed <= 1 && pNeed <= 1 && kNeed <= 1 && limingNeed <= 0 && boronRec.Contains("Não é necessário"))
+            {
+                viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel { Name = "Plano de Fertilização", Recomendation = "O solo apresenta níveis adequados de nutrientes e não necessita de correção ou fertilização no momento." });
+                return;
+            }
+
+            var report = new StringBuilder();
+
+            report.AppendLine("1. Diagnóstico de Necessidades:\n");
+            report.AppendLine("Com base na sua análise de solo e produtividade esperada, calculamos as seguintes necessidades anuais por hectare:");
+            if (nNeed > 1) report.AppendLine($"-Nitrogênio (N): {nNeed:F0} kg/ha");
+            if (pNeed > 1) report.AppendLine($"-Fósforo (P₂O₅): {pNeed:F0} kg/ha");
+            if (kNeed > 1) report.AppendLine($"-Potássio (K₂O): {kNeed:F0} kg/ha");
+            if (limingNeed > 0) report.AppendLine($"-Calcário: {limingNeed:F2} t/ha");
+            if (!boronRec.Contains("Não é necessário")) report.AppendLine($"-Boro (B): {boroValue}\n");
+
+            report.AppendLine("2. Plano de Correção e Fertilização:\n");
+            report.AppendLine("Recomendamos o seguinte plano de aplicação anual:\n");
+            report.AppendLine("Etapa 1: Correção do Solo:");
+            if (limingNeed > 0)
+                report.AppendLine($"-Calagem: Aplicar {limingNeed:F2} t/ha de calcário para elevar a Saturação por Bases (V%) ao nível ideal de 70%.");
+            else
+                report.AppendLine("-Calagem: Não é necessária.");
+            report.AppendLine($"-Boro: {boronRec}.\n");
+            
+            report.AppendLine("Etapa 2: Fertilização NPK:");
+
             var simpleFertilizers = new Dictionary<string, FertilizerInfo>();
             foreach (var simple in formulationData.BasicFormulationRows.SelectMany(row => row.FormulationColumns))
             {
-                if (simple.NAmount == 45) simpleFertilizers["N"] = new FertilizerInfo { Name = "Ureia", N = 0.45 };
+                if (simple.NAmount == 45) simpleFertilizers["N"] = new FertilizerInfo { Name = "Ureia (45% N)", N = 0.45 };
                 if (simple.PAmount == 18) simpleFertilizers["P"] = new FertilizerInfo { Name = "Superfosfato Simples (SSP)", P2O5 = 0.18 };
                 if (simple.KAmount == 60) simpleFertilizers["K"] = new FertilizerInfo { Name = "Cloreto de Potássio (KCL)", K2O = 0.60 };
             }
+
+            List<RecommendationItem> finalPlan = new List<RecommendationItem>();
+            double totalAnnualDose = 0;
+            int numberOfParcels = 1;
+            string justification = "";
+
             int nutrientsNeededCount = 0;
             if (nNeed > 1) nutrientsNeededCount++;
             if (pNeed > 1) nutrientsNeededCount++;
             if (kNeed > 1) nutrientsNeededCount++;
 
-            if (nutrientsNeededCount == 1)
+            if (nutrientsNeededCount == 0)
             {
-                var finalPlan = new List<RecommendationItem>();
-                string justification = "Como a necessidade se concentra em apenas um nutriente, a recomendação é utilizar uma fonte simples.";
+                report.AppendLine("Não é necessária a aplicação de fertilizantes NPK.");
+            }
+            else if (nutrientsNeededCount == 1)
+            {
+                justification = "Como a necessidade se concentra em apenas um nutriente, a recomendação é utilizar uma fonte simples.";
+                report.AppendLine(justification);
 
                 if (nNeed > 1 && simpleFertilizers.ContainsKey("N"))
-                {
                     finalPlan.Add(new RecommendationItem { FertilizerName = simpleFertilizers["N"].Name, DoseKgHa = nNeed / simpleFertilizers["N"].N });
-                }
                 else if (pNeed > 1 && simpleFertilizers.ContainsKey("P"))
-                {
                     finalPlan.Add(new RecommendationItem { FertilizerName = simpleFertilizers["P"].Name, DoseKgHa = pNeed / simpleFertilizers["P"].P2O5 });
-                }
                 else if (kNeed > 1 && simpleFertilizers.ContainsKey("K"))
-                {
                     finalPlan.Add(new RecommendationItem { FertilizerName = simpleFertilizers["K"].Name, DoseKgHa = kNeed / simpleFertilizers["K"].K2O });
+            }
+            else
+            {
+                var commercialFormulas = formulationData.CompoundFormulationRows
+                    .SelectMany(row => row.FormulationColumns)
+                    .Select(col => new FertilizerInfo
+                    {
+                        Name = $"NPK {col.NAmount}-{col.PAmount}-{col.KAmount}",
+                        N = col.NAmount / 100.0,
+                        P2O5 = col.PAmount / 100.0,
+                        K2O = col.KAmount / 100.0
+                    }).ToList();
+
+                FertilizerInfo? bestFormula = null;
+                double bestFormulaDose = 0;
+                double bestOverallScore = double.MaxValue;
+
+                foreach (var formula in commercialFormulas)
+                {
+                    var scenarios = new List<(double dose, double totalSurplus, double totalDeficit)>();
+                    if (formula.N > 0 && nNeed > 0)
+                    {
+                        var dose = nNeed / formula.N;
+                        var surplus = Math.Max(0, (dose * formula.P2O5) - pNeed) + Math.Max(0, (dose * formula.K2O) - kNeed);
+                        var deficit = Math.Max(0, pNeed - (dose * formula.P2O5)) + Math.Max(0, kNeed - (dose * formula.K2O));
+                        scenarios.Add((dose, surplus, deficit));
+                    }
+                    if (formula.P2O5 > 0 && pNeed > 0)
+                    {
+                        var dose = pNeed / formula.P2O5;
+                        var surplus = Math.Max(0, (dose * formula.N) - nNeed) + Math.Max(0, (dose * formula.K2O) - kNeed);
+                        var deficit = Math.Max(0, nNeed - (dose * formula.N)) + Math.Max(0, kNeed - (dose * formula.K2O));
+                        scenarios.Add((dose, surplus, deficit));
+                    }
+                    if (formula.K2O > 0 && kNeed > 0)
+                    {
+                        var dose = kNeed / formula.K2O;
+                        var surplus = Math.Max(0, (dose * formula.N) - nNeed) + Math.Max(0, (dose * formula.P2O5) - pNeed);
+                        var deficit = Math.Max(0, nNeed - (dose * formula.N)) + Math.Max(0, pNeed - (dose * formula.P2O5));
+                        scenarios.Add((dose, surplus, deficit));
+                    }
+
+                    if (!scenarios.Any()) continue;
+                    var bestScenarioForThisFormula = scenarios.OrderBy(s => s.totalSurplus + s.totalDeficit).First();
+                    double currentScore = bestScenarioForThisFormula.totalDeficit + bestScenarioForThisFormula.totalSurplus;
+
+                    if (currentScore < bestOverallScore)
+                    {
+                        bestOverallScore = currentScore;
+                        bestFormula = formula;
+                        bestFormulaDose = bestScenarioForThisFormula.dose;
+                    }
                 }
 
-                if (finalPlan.Any())
+                if (bestFormula != null)
                 {
-                    var recomendationText = new StringBuilder();
-                    double totalAnnualDose = finalPlan.Sum(item => item.DoseKgHa);
+                    justification = $"O formulado base escolhido foi o {bestFormula.Name} por apresentar o balanço mais próximo da sua necessidade. O planejamento de adubação é:\n";
+                    report.AppendLine(justification);
+                    finalPlan.Add(new RecommendationItem { FertilizerName = bestFormula.Name, DoseKgHa = bestFormulaDose });
+
+                    double nApplied = bestFormulaDose * bestFormula.N;
+                    double pApplied = bestFormulaDose * bestFormula.P2O5;
+                    double kApplied = bestFormulaDose * bestFormula.K2O;
                     
-                    int numberOfParcels = 1;
-                    if (totalAnnualDose > 1500) numberOfParcels = 4;
-                    else if (totalAnnualDose > 1000) numberOfParcels = 3;
-                    else if (totalAnnualDose > 500) numberOfParcels = 2;
+                    double nDeficit = nNeed - nApplied;
+                    double pDeficit = pNeed - pApplied;
+                    double kDeficit = kNeed - kApplied;
 
-                    recomendationText.AppendLine($"**{justification}**");
-                    recomendationText.AppendLine("\n**Aplicação Anual Total:**");
-                    foreach (var item in finalPlan)
-                    {
-                        recomendationText.AppendLine($"- **{item.FertilizerName}:** {item.DoseKgHa:F1} kg/ha");
-                    }
-                    recomendationText.AppendLine($"\n**Sugestão de Parcelamento ({numberOfParcels} aplicações):**");
-                    recomendationText.AppendLine($"*Devido à dose total de {totalAnnualDose:F0} kg/ha, recomendamos dividir a aplicação em {numberOfParcels} parcelas para otimizar a absorção e reduzir perdas.*");
-                    foreach (var item in finalPlan)
-                    {
-                        recomendationText.AppendLine($"- **{item.FertilizerName}:** {item.DoseKgHa / numberOfParcels:F1} kg/ha por aplicação");
-                    }
-
-                    viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel
-                    {
-                        Name = "Plano de Formulação",
-                        Recomendation = recomendationText.ToString()
-                    });
-
-                    return;
+                    if (nDeficit > 1 && simpleFertilizers.ContainsKey("N"))
+                        finalPlan.Add(new RecommendationItem { FertilizerName = simpleFertilizers["N"].Name, DoseKgHa = nDeficit / simpleFertilizers["N"].N });
+                    if (pDeficit > 1 && simpleFertilizers.ContainsKey("P"))
+                        finalPlan.Add(new RecommendationItem { FertilizerName = simpleFertilizers["P"].Name, DoseKgHa = pDeficit / simpleFertilizers["P"].P2O5 });
+                    if (kDeficit > 1 && simpleFertilizers.ContainsKey("K"))
+                        finalPlan.Add(new RecommendationItem { FertilizerName = simpleFertilizers["K"].Name, DoseKgHa = kDeficit / simpleFertilizers["K"].K2O });
+                }
+                else
+                {
+                    report.AppendLine("Não foi encontrada uma fórmula comercial adequada para a necessidade. Considere o uso de fontes simples.");
                 }
             }
 
-
-            var commercialFormulas = formulationData.CompoundFormulationRows
-                .SelectMany(row => row.FormulationColumns)
-                .Select(col => new FertilizerInfo
-                {
-                    Name = $"NPK {col.NAmount}-{col.PAmount}-{col.KAmount}",
-                    N = col.NAmount / 100.0,
-                    P2O5 = col.PAmount / 100.0,
-                    K2O = col.KAmount / 100.0
-                }).ToList();
-
-            if (nNeed <= 0 && pNeed <= 0 && kNeed <= 0) return;
-
-            FertilizerInfo? bestFormula = null;
-            double bestFormulaDose = 0;
-            double bestOverallScore = double.MaxValue;
-
-            foreach (var formula in commercialFormulas)
+            if (finalPlan.Any())
             {
-                var scenarios = new List<(double dose, double totalSurplus, double totalDeficit)>();
-                
-                if (formula.N > 0 && nNeed > 0)
+                foreach (var item in finalPlan.Where(i => i.DoseKgHa > 0.1))
                 {
-                    var dose = nNeed / formula.N;
-                    var surplus = Math.Max(0, (dose * formula.P2O5) - pNeed) + Math.Max(0, (dose * formula.K2O) - kNeed);
-                    var deficit = Math.Max(0, pNeed - (dose * formula.P2O5)) + Math.Max(0, kNeed - (dose * formula.K2O));
-                    scenarios.Add((dose, surplus, deficit));
+                    report.AppendLine($"-{item.FertilizerName}: {item.DoseKgHa:F1} kg/ha");
                 }
-                if (formula.P2O5 > 0 && pNeed > 0)
-                {
-                    var dose = pNeed / formula.P2O5;
-                    var surplus = Math.Max(0, (dose * formula.N) - nNeed) + Math.Max(0, (dose * formula.K2O) - kNeed);
-                    var deficit = Math.Max(0, nNeed - (dose * formula.N)) + Math.Max(0, kNeed - (dose * formula.K2O));
-                    scenarios.Add((dose, surplus, deficit));
-                }
-                if (formula.K2O > 0 && kNeed > 0)
-                {
-                    var dose = kNeed / formula.K2O;
-                    var surplus = Math.Max(0, (dose * formula.N) - nNeed) + Math.Max(0, (dose * formula.P2O5) - pNeed);
-                    var deficit = Math.Max(0, nNeed - (dose * formula.N)) + Math.Max(0, pNeed - (dose * formula.P2O5));
-                    scenarios.Add((dose, surplus, deficit));
-                }
-
-                if (!scenarios.Any()) continue;
-                
-                var bestScenarioForThisFormula = scenarios.OrderBy(s => s.totalSurplus + s.totalDeficit).First();
-                
-                double currentScore = bestScenarioForThisFormula.totalDeficit + bestScenarioForThisFormula.totalSurplus;
-
-                if (currentScore < bestOverallScore)
-                {
-                    bestOverallScore = currentScore;
-                    bestFormula = formula;
-                    bestFormulaDose = bestScenarioForThisFormula.dose;
-                }
+                report.AppendLine("");
             }
 
-            if (bestFormula == null) return;
-            
-            var finalPlanComplex = new List<RecommendationItem>
+            totalAnnualDose = finalPlan.Sum(item => item.DoseKgHa);
+            if (totalAnnualDose > 1)
             {
-                new RecommendationItem { FertilizerName = bestFormula.Name, DoseKgHa = bestFormulaDose }
-            };
-            
-            double nApplied = bestFormulaDose * bestFormula.N;
-            double pApplied = bestFormulaDose * bestFormula.P2O5;
-            double kApplied = bestFormulaDose * bestFormula.K2O;
+                if (totalAnnualDose > 1500) numberOfParcels = 4;
+                else if (totalAnnualDose > 1000) numberOfParcels = 3;
+                else if (totalAnnualDose > 500) numberOfParcels = 2;
 
-            double nDeficit = nNeed - nApplied;
-            double pDeficit = pNeed - pApplied;
-            double kDeficit = kNeed - kApplied;
+                report.AppendLine("3. Sugestão de Parcelamento\n");
+                report.AppendLine($"A dose total de fertilizantes é de {totalAnnualDose:F0} kg/ha. Recomendamos dividir a aplicação em {numberOfParcels} parcelas para otimizar a absorção dos nutrientes.\n");
+                report.AppendLine("Aplicação por Parcela:");
+                foreach (var item in finalPlan.Where(i => i.DoseKgHa > 0.1))
+                {
+                    report.AppendLine($"-{item.FertilizerName}: {item.DoseKgHa / numberOfParcels:F1} kg/ha");
+                }
 
-            if (nDeficit > 1 && simpleFertilizers.ContainsKey("N"))
-                finalPlanComplex.Add(new RecommendationItem { FertilizerName = simpleFertilizers["N"].Name, DoseKgHa = nDeficit / simpleFertilizers["N"].N });
-            if (pDeficit > 1 && simpleFertilizers.ContainsKey("P"))
-                finalPlanComplex.Add(new RecommendationItem { FertilizerName = simpleFertilizers["P"].Name, DoseKgHa = pDeficit / simpleFertilizers["P"].P2O5 });
-            if (kDeficit > 1 && simpleFertilizers.ContainsKey("K"))
-                finalPlanComplex.Add(new RecommendationItem { FertilizerName = simpleFertilizers["K"].Name, DoseKgHa = kDeficit / simpleFertilizers["K"].K2O });
-            
-            var recomendationTextComplex = new StringBuilder();
-            double totalAnnualDoseComplex = finalPlanComplex.Sum(item => item.DoseKgHa);
-            
-            int numberOfParcelsComplex = 1;
-            if (totalAnnualDoseComplex > 1500) numberOfParcelsComplex = 4;
-            else if (totalAnnualDoseComplex > 1000) numberOfParcelsComplex = 3;
-            else if (totalAnnualDoseComplex > 500) numberOfParcelsComplex = 2;
-            
-            recomendationTextComplex.AppendLine($"O formulado base escolhido foi o **{bestFormula.Name}** por apresentar o melhor balanço geral, minimizando tanto a falta quanto o excesso de nutrientes para a sua necessidade.");
-            recomendationTextComplex.AppendLine("\n**Aplicação Anual Total:**");
-            foreach (var item in finalPlanComplex.Where(i => i.DoseKgHa > 0))
-            {
-                recomendationTextComplex.AppendLine($"- **{item.FertilizerName}:** {item.DoseKgHa:F1} kg/ha");
+                report.AppendLine("");
             }
-            recomendationTextComplex.AppendLine($"\n**Sugestão de Parcelamento ({numberOfParcelsComplex} aplicações):**");
-            recomendationTextComplex.AppendLine($"*Devido à dose total de {totalAnnualDoseComplex:F0} kg/ha, recomendamos dividir a aplicação em {numberOfParcelsComplex} parcelas para otimizar a absorção e reduzir perdas.*");
-            foreach (var item in finalPlanComplex.Where(i => i.DoseKgHa > 0))
-            {
-                recomendationTextComplex.AppendLine($"- **{item.FertilizerName}:** {item.DoseKgHa / numberOfParcelsComplex:F1} kg/ha por aplicação");
-            }
+
+            report.AppendLine("4. Observações");
+            report.AppendLine("-Micronutrientes: A correção de outros micronutrientes (além do Boro) é predominantemente feita via foliar. Para isso, é necessária uma análise de folhas.");
 
             viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel
             {
-                Name = "Plano de Formulação NPK",
-                Recomendation = recomendationTextComplex.ToString()
+                Name = "Plano de Fertilização e Correção de Solo",
+                Recomendation = report.ToString()
             });
         }
 
         private void LeafRecommendation(FertilizerPlotInputModel inputModel, LeafFertilizerRowData leafData, PlotFertilizerViewModel viewModel)
         {
+            var correctionsBuilder = new StringBuilder();
+            var adequatesBuilder = new StringBuilder();
+            int adequateCount = 0;
+
+            int qtd = 1;
+
             foreach (var nutrient in inputModel.Nutrients)
             {
                 if (nutrient.Header == NutrientHeader.S.ToFriendlyString() ||
@@ -610,51 +614,88 @@ namespace Application.Services.DataAnalysis
                     nutrient.Header == NutrientHeader.Cu.ToFriendlyString())
                 {
                     var data = leafData.LeafFertilizerColumns
-                                    .FirstOrDefault(d => d.Header.ToFriendlyString() == nutrient.Header);
-                    if (data == null) continue;
+                                        .FirstOrDefault(d => d.Header.ToFriendlyString() == nutrient.Header);
+
+                    if (data == null || !data.Products.Any()) continue;
 
                     if (nutrient.Analysis != "Baixo" && nutrient.Analysis != "Aceitável")
                     {
-                        viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel
+                        if (adequateCount > 0)
                         {
-                            Name = nutrient.Header,
-                            Recomendation = "Não é necessário correção desse nutriente"
-                        });
+                            adequatesBuilder.Append(", ");
+                        }
+                        else
+                        {
+                            adequatesBuilder.Append("   ");
+                        }
+                        adequatesBuilder.Append($"{nutrient.Header}");
+                        adequateCount++;
                         continue;
+                    }
+
+                    correctionsBuilder.AppendLine($"{qtd++}. Correção de {nutrient.Header}:");
+                    correctionsBuilder.AppendLine($"    Diagnóstico: Nível {nutrient.Analysis}");
+
+
+                    int productCount = data.Products.Count();
+
+                    if (productCount > 1)
+                    {
+                        correctionsBuilder.AppendLine("    Para corrigir esta deficiência, sugerimos uma das seguintes opções:");
+                    }
+                    else
+                    {
+                        correctionsBuilder.AppendLine("    A recomendação para corrigir esta deficiência é a seguinte:");
                     }
 
                     foreach (var product in data.Products)
                     {
-                        var recommendation = new ProductRecomendationViewModel
-                        {
-                            Name = nutrient.Header
-                        };
-
+                        string recommendationText;
                         if (nutrient.Analysis == "Baixo")
                         {
-                            recommendation.Recomendation = product.Solid
-                                ? $"Pode-se utilizar {product.MaxConcentration}kg de {product.Name} para uma bomba de 400l de água"
-                                : $"Pode-se utilizar {product.MaxConcentration}l de {product.Name} para uma bomba de 400l de água";
+                            recommendationText = product.Solid
+                                ? $"    -{product.Name}: {product.MaxConcentration}kg por 400L de água."
+                                : $"    -{product.Name}: {product.MaxConcentration}l por 400L de água.";
                         }
-                        else if (nutrient.Analysis == "Aceitável")
+                        else
                         {
-                            recommendation.Recomendation = product.Solid
-                                ? $"Pode-se utilizar {product.MinConcentration}kg de {product.Name} para uma bomba de 400l de água"
-                                : $"Pode-se utilizar {product.MinConcentration}l de {product.Name} para uma bomba de 400l de água";
+                            recommendationText = product.Solid
+                                ? $"    -{product.Name}: {product.MinConcentration}kg por 400L de água."
+                                : $"    -{product.Name}: {product.MinConcentration}l por 400L de água.";
                         }
-
-                        viewModel.ProductRecomendations.Add(recommendation);
+                        correctionsBuilder.AppendLine(recommendationText);
                     }
+                    correctionsBuilder.AppendLine("");
                 }
             }
 
-            ProductRecomendationViewModel Others = new ProductRecomendationViewModel
-            {
-                Name = "Macronutrientes",
-                Recomendation = "A correção de macronutrientes é feita via solo. Para isso é necessário uma análise de solo para que sejam feitas recomendações"
-            };
+            var finalReport = new StringBuilder();
 
-            viewModel.ProductRecomendations.Add(Others);
+            if (correctionsBuilder.Length > 0)
+            {
+                finalReport.Append(correctionsBuilder.ToString());
+            }
+
+            if (adequatesBuilder.Length > 0)
+            {
+                finalReport.AppendLine($"{qtd++}. Nutrientes em Níveis Adequados:\n");
+                finalReport.AppendLine("   Os seguintes nutrientes não necessitam de correção foliar no momento:");
+                finalReport.AppendLine(adequatesBuilder.ToString());
+                finalReport.AppendLine("");
+            }
+
+            finalReport.AppendLine($"{qtd}. Observações Gerais");
+            finalReport.AppendLine("    -Macronutrientes: A correção de macronutrientes é feita via solo. Para isso é necessário uma análise de solo para que sejam feitas recomendações.");
+            finalReport.AppendLine("    -Boas Práticas: Recomenda-se sempre fazer um teste de calda antes da mistura de produtos e realizar a aplicação nas horas mais frescas do dia.");
+            
+            if (finalReport.Length > 0)
+            {
+                viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel
+                {
+                    Name = "Recomendação Foliar",
+                    Recomendation = finalReport.ToString()
+                });
+            }
         }
     }       
 }

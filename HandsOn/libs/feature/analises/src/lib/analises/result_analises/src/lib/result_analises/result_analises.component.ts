@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, ProductRecomendations, NutrientTable } from '@farm/core';
+import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, NutrientTable } from '@farm/core';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -129,6 +129,7 @@ export class ResultAnalisesComponent implements OnInit {
         });
       }
     }
+    console.log(chartData);
     return chartData;
   }
 
@@ -220,27 +221,7 @@ export class ResultAnalisesComponent implements OnInit {
       })
     ).subscribe(fertilizers => {
       if (fertilizers) {
-        const processedFertilizers = {
-          ...fertilizers,
-          plots: fertilizers.plots.map(plot => {
-            const recommendationsMap = new Map<string, ProductRecomendations>();
-            if (plot.productRecomendations) {
-              plot.productRecomendations.forEach(rec => {
-                const existingRec = recommendationsMap.get(rec.name);
-                if (existingRec) {
-                  existingRec.recomendation += ` ou ${rec.recomendation.toLowerCase()}`;
-                } else {
-                  recommendationsMap.set(rec.name, { ...rec });
-                }
-              });
-            }
-            return {
-              ...plot,
-              productRecomendations: Array.from(recommendationsMap.values())
-            };
-          })
-        };
-        this.fertilizerRecommendations = processedFertilizers;
+        this.fertilizerRecommendations = fertilizers;
         this.mapDataForCharts();
       }
     });

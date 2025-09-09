@@ -93,11 +93,16 @@
             </p-accordion-header>
 
             <p-accordion-content>
-              <ul class="recommendation-list">
-                <li *ngFor="let rec of plot.productRecomendations">
-                  <strong>{{ rec.name }}:</strong> {{ rec.recomendation }}
-                </li>
-              </ul>
+              <ul class="list-none p-0 m-0">
+                        <li *ngFor="let rec of plot.productRecomendations" class="mb-4">
+                            <strong class="block text-lg mb-1">{{ rec.name }}:</strong>
+                            
+                            <div class="whitespace-pre-wrap text-base">
+                                {{ rec.recomendation }}
+                            </div>
+
+                        </li>
+                </ul>
             </p-accordion-content>
             
           </p-accordion-panel>
