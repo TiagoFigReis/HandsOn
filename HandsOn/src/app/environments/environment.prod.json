@@ -10,5 +10,6 @@
   "dataAnalysisApiUrl": "http://localhost:5143/api/dataAnalysis",
   "nutrientTablesApiUrl": "http://localhost:5143/api/nutrientTables",
   "fertilizerTablesApiUrl": "http://localhost:5143/api/fertilizerTables",
-  "culturesApiUrl": "http://localhost:5143/api/cultures"
+  "culturesApiUrl": "http://localhost:5143/api/cultures",
+  "formulationTablesApiUrl": "http://localhost:5143/api/formulationTables"
 }

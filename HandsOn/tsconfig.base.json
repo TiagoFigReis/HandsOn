@@ -54,6 +54,15 @@
       "@farm/footer": [
         "libs/master-page/src/lib/master-page/footer/src/index.ts"
       ],
+      "@farm/formulation-table": [
+        "libs/feature/formulation-tables/src/lib/formulation-tables/formulation-table/src/index.ts"
+      ],
+      "@farm/formulation-tables": [
+        "libs/feature/formulation-tables/src/index.ts"
+      ],
+      "@farm/formulation-tables-list": [
+        "libs/feature/formulation-tables/src/lib/formulation-tables/formulation-tables-list/src/index.ts"
+      ],
       "@farm/harvest": [
         "libs/feature/harvests/src/lib/harvests/harvest/src/index.ts"
       ],

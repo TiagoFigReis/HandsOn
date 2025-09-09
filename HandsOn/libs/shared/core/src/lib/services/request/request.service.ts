@@ -20,6 +20,7 @@ export class RequestService {
   nutrientTablesApiUrl = '';
   fertilizerTablesApiUrl = '';
   culturesApiUrl = '';
+  formulationTablesApiUrl = '';
 
   public constructor(
     public httpClient: HttpClient,
@@ -33,6 +34,7 @@ export class RequestService {
     this.nutrientTablesApiUrl = this.appConfig.nutrientTablesApiUrl;
     this.fertilizerTablesApiUrl = this.appConfig.fertilizerTablesApiUrl;
     this.culturesApiUrl = this.appConfig.culturesApiUrl;
+    this.formulationTablesApiUrl = this.appConfig.formulationTablesApiUrl;
   }
 
   public httpOptions: {
