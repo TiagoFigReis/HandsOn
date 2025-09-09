@@ -53,6 +53,7 @@ export { BYPASS_INTERCEPTORS } from './lib/interceptors/authentication/authentic
 export * from './lib/utils/form-validators';
 export * from './lib/utils/min-max-validator';
 export * from './lib/utils/min-med-max-validator';
+export * from './lib/utils/descending-values-validator';
 
 // enums
 export * from './lib/enums/user-roles.enum';

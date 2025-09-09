@@ -50,7 +50,7 @@
           >
             <lib-input-number 
               [required]="true" 
-              [min]="0" 
+              [min]="col === 2 ? 0 : getValue(i, 'n', col + 1).value" 
               [max]="10000" 
               [placeholder]="'Qtd. Fert.'"
               [id]="'n-' + i + '-' + col" 
@@ -66,7 +66,7 @@
           >
             <lib-input-number 
               [required]="true" 
-              [min]="0" 
+              [min]="col === 3 ? 0 : getValue(i, 'p', col + 1).value" 
               [max]="10000" 
               [placeholder]="'Qtd. Fert.'"
               [id]="'p-' + i + '-' + col" 
@@ -82,7 +82,7 @@
           >
             <lib-input-number 
               [required]="true" 
-              [min]="0" 
+              [min]="col === 4 ? 0 : getValue(i, 'k', col + 1).value" 
               [max]="10000" 
               [placeholder]="'Qtd. Fert.'"
               [id]="'k-' + i + '-' + col" 
@@ -120,7 +120,7 @@
             <lib-input-number 
               [placeholder]="'Qtd. Fert.'" 
               [required]="true" 
-              [min]="0" 
+              [min]="col === 4 ? 0 : getValue(0, 'b', col + 1).value" 
               [max]="10000"
               [id]="'b-' + 0 + '-' + col" 
               [control]="getValue(0, 'b', col)">

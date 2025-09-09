@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NutrientColumn, NutrientRow, NutrientTable } from '@farm/core';
+import { minMaxValidator, NutrientColumn, NutrientRow, NutrientTable } from '@farm/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
 
@@ -82,15 +82,15 @@ export class NutrientTableLeafFormComponent {
   }
   createLeafColumn(data?: { min: number, max: number }): FormGroup {
     return this.formBuilder.group({
-      min: this.formBuilder.control(data?.min ?? 1, {
+      min: this.formBuilder.control(data?.min ?? null, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      max: this.formBuilder.control(data?.max ?? 2, {
+      max: this.formBuilder.control(data?.max ?? null, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-    });
+    }, {validators: minMaxValidator('min', 'max')});
   }
 
   setRowsBasedOnDivision(value: string): void {

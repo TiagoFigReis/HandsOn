@@ -6,7 +6,7 @@ import { InputNumberComponent } from '../../../../components/input-number/input-
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component';
 import { DividerComponent } from '../../../../components/divider/divider.component';
-import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, SoilFertilizerRow } from '@farm/core';
+import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValidator, SoilFertilizerRow } from '@farm/core';
 
 @Component({
   selector: 'lib-fertilizer-table-leaf-form',
@@ -137,11 +137,11 @@ export class FertilizerTableLeafFormComponent {
         validators: [Validators.required],
         updateOn: 'blur'
       }),
-      min: this.formBuilder.control(data?.min ?? undefined, {
+      min: this.formBuilder.control(data?.min ?? null, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      max: this.formBuilder.control(data?.max ?? undefined, {
+      max: this.formBuilder.control(data?.max ?? null, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
@@ -149,7 +149,7 @@ export class FertilizerTableLeafFormComponent {
         validators: [Validators.required],
         updateOn: 'blur'
       }),
-    });
+    }, { validators: minMaxValidator('min', 'max') });
   }
   addProduct(header: any, columnIndex: number, data?: { name: string, min: number, max: number, solid: boolean }): FormGroup {
     header.products.push({ name: '', min: '', max: '' });

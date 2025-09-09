@@ -33,7 +33,7 @@
                                             [control]="getMed1Soil(header.items[i].id)" 
                                             [placeholder]="'Méd1.'"
                                             [required]="true"  
-                                            [min]="0" 
+                                            [min]="getMinSoil(header.items[i].id).value + 1" 
                                             [max]="10000" 
                                             class="w-16"
                                         ></lib-input-number>
@@ -43,7 +43,7 @@
                                             [control]="getMed2Soil(header.items[i].id)" 
                                             [placeholder]="'Méd2.'"
                                             [required]="true"  
-                                            [min]="0" 
+                                            [min]="getMed1Soil(header.items[i].id).value + 1" 
                                             [max]="10000" 
                                             class="w-16">
                                         </lib-input-number>
@@ -54,7 +54,7 @@
                                         [control]="getMaxSoil(header.items[i].id)"
                                         [placeholder]="'Máx.'"
                                         [required]="true"  
-                                        [min]="0" 
+                                        [min]="header.items[i].complex === true ? getMed2Soil(header.items[i].id).value + 1 : getMinSoil(header.items[i].id).value + 1" 
                                         [max]="10000" 
                                         class="w-16">
                                     </lib-input-number>

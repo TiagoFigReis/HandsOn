@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
-import { FertilizerTable, NutrientHeaders, SoilFertilizerColumn, SoilFertilizerRow } from '@farm/core';
+import { descendingValuesValidator, FertilizerTable, NutrientHeaders, SoilFertilizerColumn, SoilFertilizerRow } from '@farm/core';
 
 @Component({
   selector: 'lib-fertilizer-table-soil-form',
@@ -72,10 +72,13 @@ export class FertilizerTableSoilFormComponent {
   }
   createSoilColumn(numberOfValues: number, column?: SoilFertilizerColumn): FormGroup {
     const columnGroup: { [key: string]: FormControl } = {};
+    const controlNames: string[] = [];
 
     for (let i = 1; i <= numberOfValues; i++) {
       const key = `value${i}`;
       const columnValue = column ? column[key as keyof SoilFertilizerColumn] as number : null;
+
+      controlNames.push(key);
 
       columnGroup[key] = this.formBuilder.control(columnValue, {
         validators: [Validators.required, Validators.min(0)],
@@ -83,7 +86,9 @@ export class FertilizerTableSoilFormComponent {
       });
     }
 
-    return this.formBuilder.group(columnGroup);
+    return this.formBuilder.group(columnGroup, {
+      validators: descendingValuesValidator(controlNames)
+    });
   }
 
   updateFertilizerTableData(): void {

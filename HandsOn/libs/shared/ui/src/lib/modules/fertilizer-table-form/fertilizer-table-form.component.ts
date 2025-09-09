@@ -123,10 +123,8 @@ export class FertilizerTableFormComponent {
   }
 
   onSubmit() {
-    if (this.fertilizerTableForm.invalid) {
-      console.log(this.fertilizerTableForm.value);
+    if (this.fertilizerTableForm.invalid)
       return this.fertilizerTableForm.markAllAsTouched();
-    }
 
     const formValue = this.fertilizerTableForm.value;
     const headerValues = Object.values(NutrientHeaders) as string[];

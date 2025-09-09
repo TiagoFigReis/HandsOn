@@ -38,7 +38,7 @@
                                             [control]="getMaxLeaf(i, j)" 
                                             [placeholder]="'Máx.'"
                                             [required]="true"  
-                                            [min]="0" 
+                                            [min]="getMinLeaf(i, j).value + 1" 
                                             [max]="10000" 
                                         ></lib-input-number>
                                     </div>

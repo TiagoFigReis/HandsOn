@@ -141,10 +141,8 @@ export class NutrientTableFormComponent {
   }
 
   onSubmit() {
-    if (this.nutrientTableForm.invalid) {
-      console.log(this.nutrientTableForm.value);
+    if (this.nutrientTableForm.invalid)
       return this.nutrientTableForm.markAllAsTouched();
-    }
 
     const formValue = this.nutrientTableForm.value;
     const headerValues = Object.values(NutrientHeaders) as string[];
@@ -163,8 +161,6 @@ export class NutrientTableFormComponent {
       leafNutrientRows: leafRows,
       soilNutrientRow: soilRow
     }
-
-    console.log(nutrientTable);
 
     this.nutrientTableSubmit.emit(nutrientTable);
   }

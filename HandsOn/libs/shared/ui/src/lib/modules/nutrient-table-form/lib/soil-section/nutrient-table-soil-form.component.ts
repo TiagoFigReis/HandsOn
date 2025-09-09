@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NutrientRow, NutrientTable } from '@farm/core';
+import { minMedMaxValidator, NutrientRow, NutrientTable } from '@farm/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
 
@@ -105,23 +105,23 @@ export class NutrientTableSoilFormComponent {
   }
   createSoilColumn(complex: boolean, data?: { min: number, med1: number, med2: number, max: number }): FormGroup {
     return this.formBuilder.group({
-      min: this.formBuilder.control(data?.min ?? 1, {
+      min: this.formBuilder.control(data?.min ?? null, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      med1: this.formBuilder.control(complex ? data?.med1 ?? 2 : 0, {
+      med1: this.formBuilder.control(complex ? data?.med1 ?? null : 0, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      med2: this.formBuilder.control(complex ? data?.med2 ?? 3 : 0, {
+      med2: this.formBuilder.control(complex ? data?.med2 ?? null : 0, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      max: this.formBuilder.control(data?.max ?? 4, {
+      max: this.formBuilder.control(data?.max ?? null, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-    });
+    }, { validators: minMedMaxValidator(complex) });
   }
 
   updateNutrientTableData(): void {
@@ -159,7 +159,7 @@ export class NutrientTableSoilFormComponent {
         };
       })
     };
-    
+
     return soilRow;
   }
 }
