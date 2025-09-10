@@ -28,8 +28,8 @@ export class ResultAnaliseComponentFacade {
 
   cultures: Culture[] | undefined = undefined;
   standardProductivity = '30';
-  standardWidth = '3.5';
-  standardHeight = '0.6';
+  standardWidth = '3.6';
+  standardHeight = '0.7';
 
   selectOptions: SelectTable | undefined;
 

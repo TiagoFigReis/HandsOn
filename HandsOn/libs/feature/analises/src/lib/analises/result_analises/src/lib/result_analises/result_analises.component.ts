@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, NutrientTable } from '@farm/core';
+import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, NutrientTable, Plots } from '@farm/core';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -78,16 +78,17 @@ export class ResultAnalisesComponent implements OnInit {
     });
   }
 
-  private mapDataForCharts(): void {
-    if (!this.resultsData?.plots?.length || !this.table) {
-      return;
+   mapDataForCharts(plot : Plots): NutrientAnalysis[] {
+    if (!this.table) {
+      return [];
     }
-    const plotData = this.resultsData.plots[0];
+    const plotData = plot
     if (this.tipo === 0 && this.table.soilNutrientRow) {
-      this.soilChartData = this.transformNutrients(plotData.nutrients || [], this.table.soilNutrientRow.nutrientColumns);
+      return this.transformNutrients(plotData.nutrients || [], this.table.soilNutrientRow.nutrientColumns);
     } else if (this.tipo === 1 && this.table.leafNutrientRows?.length) {
-      this.leafChartData = this.transformNutrients(plotData.nutrients || [], this.table.leafNutrientRows[0].nutrientColumns);
+      return this.transformNutrients(plotData.nutrients || [], this.table.leafNutrientRows[0].nutrientColumns);
     }
+    return []
   }
 
   private transformNutrients(measuredValues: Nutrients[], rangeDefs: any[]): NutrientAnalysis[] {
@@ -129,7 +130,6 @@ export class ResultAnalisesComponent implements OnInit {
         });
       }
     }
-    console.log(chartData);
     return chartData;
   }
 
@@ -222,7 +222,6 @@ export class ResultAnalisesComponent implements OnInit {
     ).subscribe(fertilizers => {
       if (fertilizers) {
         this.fertilizerRecommendations = fertilizers;
-        this.mapDataForCharts();
       }
     });
   }
@@ -234,17 +233,4 @@ export class ResultAnalisesComponent implements OnInit {
     }
   }
 
-  getColor(phrase: string | undefined) {
-    if (!phrase) return;
-    const lowerPhrase = phrase.toLowerCase();
-    if (lowerPhrase.includes('aceitável') || lowerPhrase.includes('médio')) {
-      return 'text-blue-600';
-    } else if (lowerPhrase.includes('baixo') || lowerPhrase.includes('pouco')) {
-      return 'text-red-600';
-    } else if (lowerPhrase.includes('adequado') || lowerPhrase.includes('adequada') || lowerPhrase.includes('bom')) {
-      return 'text-green-600';
-    } else {
-      return 'text-orange-600';
-    }
-  }
 }
