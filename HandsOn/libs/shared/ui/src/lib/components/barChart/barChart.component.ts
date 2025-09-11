@@ -15,6 +15,8 @@ export interface NutrientAnalysis {
   scaleMax: number;
 }
 
+type NutrientLevel = 'low' | 'medium' | 'adequate' | 'high' | 'all';
+
 @Component({
   selector: 'lib-bar-chart',
   standalone: true,
@@ -23,10 +25,31 @@ export interface NutrientAnalysis {
   styleUrl: './barChart.component.css',
 })
 export class BarChartComponent {
-  
+
   @Input() analysisData: NutrientAnalysis[] = [];
+  
+  public activeFilter: NutrientLevel = 'all';
 
   constructor(private sanitizer: DomSanitizer) {}
+
+  get filteredData(): NutrientAnalysis[] {
+    if (this.activeFilter === 'all') {
+      return this.analysisData;
+    }
+    return this.analysisData.filter(item => this.getNutrientLevel(item) === this.activeFilter);
+  }
+
+  setFilter(filter: NutrientLevel): void {
+    this.activeFilter = this.activeFilter === filter ? 'all' : filter;
+  }
+
+  private getNutrientLevel(item: NutrientAnalysis): Omit<NutrientLevel, 'all'> {
+    const { value, ranges } = item;
+    if (value <= ranges.low.max) return 'low';
+    if (value <= ranges.medium.max) return 'medium';
+    if (value <= ranges.adequate.max) return 'adequate';
+    return 'high';
+  }
 
   getValuePercentage(value: number, scaleMax: number): number {
     if (scaleMax === 0) return 0;
@@ -37,10 +60,10 @@ export class BarChartComponent {
   getRangeGradient(item: NutrientAnalysis): SafeStyle {
     const { ranges, scaleMax } = item;
     
-    const lowColor = '#e74c3c';      // Vermelho
-    const mediumColor = '#3498db';    // Azul
-    const adequateColor = '#2ecc71'; // Verde
-    const highColor = '#f39c12';      // laranja
+    const lowColor = '#e74c3c';
+    const mediumColor = '#3498db';
+    const adequateColor = '#2ecc71';
+    const highColor = '#f39c12';
 
     const lowEnd = (ranges.low.max / scaleMax) * 100;
     const mediumStart = lowEnd;

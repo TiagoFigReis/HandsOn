@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, Culture, NutrientTableFacade, NutrientTable } from '@farm/core';
+import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, Culture, NutrientTableFacade, NutrientTable, Analise } from '@farm/core';
 import { Column, Row, SelectTable } from '@farm/ui';
 import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
 
@@ -12,6 +12,7 @@ export class ResultAnaliseComponentFacade {
   private dataAnalyseSubject = new BehaviorSubject<DadosAnalise | null>(null);
   private fertilizersSubject = new BehaviorSubject<RecommendFertilizers | null>(null);
   private analiseSubject = new BehaviorSubject<Row[] | undefined>(undefined);
+  private infosAnaliseSubject = new BehaviorSubject<Analise | undefined>(undefined);
   private columnsSubject = new BehaviorSubject<Column[] | undefined>(undefined);
   private nutrientTableSubject = new BehaviorSubject<NutrientTable | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -20,6 +21,7 @@ export class ResultAnaliseComponentFacade {
   id: string | undefined;
   nutrientTable$: Observable<NutrientTable | null> = this.nutrientTableSubject.asObservable();
   analise$: Observable<Row[] | undefined> = this.analiseSubject.asObservable();
+  infosAnalise$: Observable<Analise | undefined> = this.infosAnaliseSubject.asObservable();
   columns$: Observable<Column[] | undefined> = this.columnsSubject.asObservable();
   dataAnalyse$: Observable<DadosAnalise | null> = this.dataAnalyseSubject.asObservable();
   fertilizers$: Observable<RecommendFertilizers | null> = this.fertilizersSubject.asObservable();
@@ -99,6 +101,7 @@ export class ResultAnaliseComponentFacade {
     }
     this.id = id;
     this.analiseSubject.next(undefined);
+    this.infosAnaliseSubject.next(undefined);
     this.columnsSubject.next(undefined);
     this.loadingSubject.next(true);
     this.tipoSubject.next(0);
@@ -110,6 +113,7 @@ export class ResultAnaliseComponentFacade {
             if (analise.tipo == "Foliar") {
               this.tipoSubject.next(1);
             }
+            this.infosAnaliseSubject.next(analise)
             const { rows, columns } = this.transformDataForTable(analise.dadosAnalise.plots, true);
             this.analiseSubject.next(rows);
             this.columnsSubject.next(columns);

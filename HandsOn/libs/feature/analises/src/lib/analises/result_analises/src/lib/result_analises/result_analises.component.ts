@@ -14,10 +14,14 @@ import { EMPTY } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
 import { BarChartComponent } from '@farm/ui';
 import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP, NutrientInfo } from '@farm/core';
+import {RecommendationDisplayComponent} from './recommendation-display/recommendation-display.component';
+import { LeafRecommendationDisplayComponent } from './leaf-recommendation-display/leaf-recommendation-display.component';
 
 @Component({
   selector: 'lib-result-analises',
-  imports: [CommonModule, TableModule, CardModule, ButtonComponent, InputNumberModule, InputTextModule, FormsModule, SpinnerComponent, RouterModule, TableComponent, AccordionModule, BarChartComponent],
+  imports: [CommonModule, TableModule, CardModule, ButtonComponent, InputNumberModule, InputTextModule, 
+    FormsModule, SpinnerComponent, RouterModule, TableComponent, AccordionModule, BarChartComponent,
+     RecommendationDisplayComponent, LeafRecommendationDisplayComponent],
   templateUrl: './result_analises.component.html',
   styleUrl: './result_analises.component.css',
 })
@@ -62,6 +66,12 @@ export class ResultAnalisesComponent implements OnInit {
         this.data = analiseData;
       }
     });
+
+    this.dataAnalyseFacade.infosAnalise$.subscribe((analise) => {
+      if(analise){
+        this.analise = analise
+      }
+    })
 
     this.dataAnalyseFacade.tipo$.subscribe((tipo) => {
       this.tipo = tipo;
