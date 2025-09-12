@@ -28,16 +28,6 @@ namespace Application.InputModels.DataAnalysisInputModels
         [Range(0, int.MaxValue, ErrorMessage = "Expected productivity cannot be negative")]
         public int ExpectedProductivity { get; set; }
 
-        [Required(ErrorMessage = "Spacing is required.")]
-        public Spacing Spacing { get; set; } = new();
-
-        [Required(ErrorMessage = "Leaf inputs are required.")]
-        public ICollection<RecomendFertilizerGenericInputModel> Nutrients { get; set; } = [];
-
-    }
-
-    public class Spacing
-    {
         [Required(ErrorMessage = "Width is required.")]
         [Range(0, float.MaxValue, ErrorMessage = "Width cannot be negative")]
         public float Width { get; set; }
@@ -45,7 +35,12 @@ namespace Application.InputModels.DataAnalysisInputModels
         [Required(ErrorMessage = "Height is required.")]
         [Range(0, float.MaxValue, ErrorMessage = "Height cannot be negative")]
         public float Height { get; set; }
+
+        [Required(ErrorMessage = "Leaf inputs are required.")]
+        public ICollection<RecomendFertilizerGenericInputModel> Nutrients { get; set; } = [];
+
     }
+
 
     public class RecomendFertilizerGenericInputModel
     {

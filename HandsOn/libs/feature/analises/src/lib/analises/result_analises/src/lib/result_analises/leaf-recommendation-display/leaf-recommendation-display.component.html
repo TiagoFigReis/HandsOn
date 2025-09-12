@@ -1,13 +1,10 @@
 <div *ngIf="leafRecommendation" class="font-sans text-gray-100 rounded-lg">
-  <p-accordion multiple="true" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
-    
-    <p-accordionTab *ngIf="leafRecommendation.corrections?.length">
-      <ng-template pTemplate="header">
-        <div class="flex items-center gap-2 text-gray-200">
-          <i class="pi pi-wrench text-orange-400"></i>
-          <span class="font-bold">Correções Necessárias</span>
-        </div>
-      </ng-template>
+  
+     
+      <div class="flex items-center gap-2 text-gray-200">
+        <i class="pi pi-wrench text-orange-400"></i>
+        <span class="font-bold">Correções Necessárias</span>
+      </div>
       <div class="p-4 space-y-4">
         <div *ngFor="let correction of leafRecommendation.corrections" 
              class="p-4 bg-gray-700 rounded-lg border border-gray-600">
@@ -28,24 +25,4 @@
           </ul>
         </div>
       </div>
-    </p-accordionTab>
-
-    <p-accordionTab *ngIf="leafRecommendation.adequateNutrients">
-    <ng-template pTemplate="header">
-        <div class="flex items-center gap-2 text-gray-200">
-        <i class="pi pi-check-circle text-green-400"></i>
-        <span class="font-bold">{{ leafRecommendation.adequateNutrients.title }}</span>
-        </div>
-    </ng-template>
-    <div class="p-4">
-        <p class="mb-4 text-gray-300">{{ leafRecommendation.adequateNutrients.description }}</p>
-        <div class="flex flex-wrap gap-2">
-            <p-tag *ngFor="let nutrient of leafRecommendation.adequateNutrients.nutrients" 
-                [value]="nutrient" 
-                severity="secondary"></p-tag>
-        </div>
-    </div>
-    </p-accordionTab>
-
-  </p-accordion>
 </div>

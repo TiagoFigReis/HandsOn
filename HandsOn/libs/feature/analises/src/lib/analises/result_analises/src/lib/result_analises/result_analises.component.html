@@ -78,6 +78,7 @@
             <div>
               <p class="font-bold text-white">Atenção:</p>
               <ul class="mt-2 list-disc list-inside text-sm text-amber-200">
+                <li>Os cálculos são feitos com base na cultura do <strong>café</strong>, as recomendações podem não ser tão eficazes para talhões destinados a outras culturas.</li>
                 <li>Verifique se os dados da análise estão preenchidas corretamente na tabela abaixo.</li>
                 <li>A <strong>produtividade esperada</strong> da safra é crucial para o cálculo da necessidade de nutrientes.</li>
                 <li>O <strong>espaçamento da lavoura</strong> define a população de plantas por hectare, impactando a dose final dos fertilizantes.</li>
@@ -94,10 +95,10 @@
           (refresh)="refresh()"
           [editable]="editable"
           (rowUpdate)="onRowUpdate($event)"
-          (optionSelected)="selectedOption($event)"
+          [ShowSaveButton]="true"
+          (save)="onSave()"
         >
         </lib-table>
-        <small *ngIf="cultureError" class="error text-center">Todos os talhões devem ter uma cultura associada</small>
 
       <lib-button [label]="'Solicitar recomendações'" (click)="solicitar_recomendacoes()"></lib-button>
     

@@ -80,7 +80,6 @@ namespace Application.ViewModels.DataAnalysisViewModels
     public class LeafRecommendationViewModel
 {
     public List<CorrectionViewModel> Corrections { get; set; } = new();
-    public AdequateNutrientsViewModel? AdequateNutrients { get; set; }
 }
 
 public class CorrectionViewModel
@@ -97,10 +96,4 @@ public class ProductOptionViewModel
     public string RecommendationText { get; set; } = string.Empty;
 }
 
-public class AdequateNutrientsViewModel
-{
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public List<string> Nutrients { get; set; } = new();
-}
 }

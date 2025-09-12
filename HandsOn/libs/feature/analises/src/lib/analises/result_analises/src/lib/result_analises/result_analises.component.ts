@@ -8,12 +8,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { ResultAnaliseComponentFacade } from './result_analises.component.facade';
-import { Column, Row, TableComponent, ButtonComponent, SpinnerComponent, selectedOption, NutrientAnalysis } from '@farm/ui';
+import { Column, Row, TableComponent, ButtonComponent, SpinnerComponent, NutrientAnalysis } from '@farm/ui';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
 import { BarChartComponent } from '@farm/ui';
-import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP, NutrientInfo } from '@farm/core';
+import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
 import {RecommendationDisplayComponent} from './recommendation-display/recommendation-display.component';
 import { LeafRecommendationDisplayComponent } from './leaf-recommendation-display/leaf-recommendation-display.component';
 
@@ -31,7 +31,7 @@ export class ResultAnalisesComponent implements OnInit {
   formData = new FormData();
   tipoAnalise = 0;
   resultsData: DadosAnalise | null = null;
-  showMoreButton = false;
+  showMoreButton = true;
   analise: Analise | undefined;
   data: Row[] = [];
   columns: Column[] = [];
@@ -39,10 +39,8 @@ export class ResultAnalisesComponent implements OnInit {
   tipo = 0;
   fertilizerRecommendations: RecommendFertilizers | undefined;
   table: NutrientTable | undefined;
-  cultureError = false;
   leafChartData: NutrientAnalysis[] = [];
   soilChartData: NutrientAnalysis[] = [];
-  plotCulture: Record<string, string> = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -56,17 +54,14 @@ export class ResultAnalisesComponent implements OnInit {
       return;
     }
 
-    this.dataAnalyseFacade.getCultures().pipe(
-      switchMap(() => {
-        this.dataAnalyseFacade.loadAnalyse(this.id);
-        return this.dataAnalyseFacade.analise$;
-      })
-    ).subscribe((analiseData) => {
+    this.dataAnalyseFacade.loadAnalyse(this.id)
+
+    this.dataAnalyseFacade.analise$.subscribe((analiseData) => {
       if (analiseData) {
         this.data = analiseData;
-      }
-    });
-
+      }}
+    );
+    
     this.dataAnalyseFacade.infosAnalise$.subscribe((analise) => {
       if(analise){
         this.analise = analise
@@ -143,33 +138,32 @@ export class ResultAnalisesComponent implements OnInit {
     return chartData;
   }
 
-  selectedOption(selectedOption: selectedOption) {
-    this.plotCulture[selectedOption.identifier] = selectedOption.selectedOption;
-  }
-
   refresh() {
     this.dataAnalyseFacade.loadAnalyse(this.id);
   }
 
-  solicitar_recomendacoes() {
-    if (this.data.length !== Object.keys(this.plotCulture).length) {
-      this.cultureError = true;
-      return;
-    }
-    this.cultureError = false;
+  plotsForAnalysis(): Plots[] {
     const activeNutrientMap = this.tipo ? LEAF_NUTRIENT_MAP : SOIL_NUTRIENT_MAP;
 
-    const plotsForAnalysis = this.data.map((item) => {
+    return this.data.map((item) => {
       const nutrients = Object.entries(activeNutrientMap).map(([nutrientCode, info]) => {
         const value = Number(item[info.displayName]) || 0;
         return { header: Number(nutrientCode), value: value };
       });
       return {
-        plotName: item['plotName']?.toString() || '',
-        cultureType: this.plotCulture[item['id']],
+        plotName: item['plotName']?.toString(),
+        cultureType: item['cultureType']?.toString(),
+        expectedProductivity: Number(item['expectedProductivity']),
+        width: Number(item['width']),
+        height: Number(item['height']),
         nutrients
-      };
+      } as Plots;
     });
+  }
+
+  solicitar_recomendacoes() {
+    
+    const plotsForAnalysis : Plots[] = this.plotsForAnalysis()
 
     const dadosAnalise = {
       month: '-',
@@ -194,36 +188,11 @@ export class ResultAnalisesComponent implements OnInit {
       switchMap(({ dataAnalyse, table }) => {
         this.table = table;
 
-        const symbolToInfoMap = new Map<string, NutrientInfo>(
-            Object.values(activeNutrientMap).map(info => [info.symbol, info])
-        );
-
-        const plotsWithMappedNutrients = dataAnalyse.plots.map((item) => {
-          const nutrients: Nutrients[] = item.nutrients?.map(n => {
-            const info = symbolToInfoMap.get(String(n.header));
-            return { ...n, header: info ? info.displayName : String(n.header) };
-          }) || [];
-          return {
-            plotName: item['plotName']?.toString() || '',
-            cultureType: item['cultureType']?.toString() || '',
-            nutrients
-          };
-        });
-
-        const finalPlots = dataAnalyse.plots.map(serverPlot => {
-            const localRow = this.data.find(r => r['plotName'] === serverPlot.plotName);
-            return {
-                ...serverPlot,
-                expectedProductivity: localRow ? Number(localRow['expectedProductivity']) : 0,
-                spacing: localRow ? { width: Number(localRow['width']), height: Number(localRow['height']) } : undefined
-            };
-        });
-
-        this.resultsData = { ...dataAnalyse, plots: plotsWithMappedNutrients };
+        this.resultsData = { ...dataAnalyse, plots: dataAnalyse.plots };
 
         const fertilizersPayload: RecommendFertilizers = {
           soilRecomendation: !this.tipo,
-          plots: finalPlots
+          plots: dataAnalyse.plots
         };
 
         this.dataAnalyseFacade.recommendFertilizers(fertilizersPayload);
@@ -236,11 +205,17 @@ export class ResultAnalisesComponent implements OnInit {
     });
   }
 
+  onSave(){
+    if (this.analise && this.analise.dadosAnalise) {
+        this.analise.dadosAnalise.plots = this.plotsForAnalysis();
+        this.dataAnalyseFacade.updateAnalyse(this.analise);
+    }
+  }
+
   onRowUpdate(updatedRow: Row) {
     const index = this.data.findIndex(row => row['id'] === updatedRow['id']);
     if (index !== -1) {
       this.data[index] = updatedRow;
     }
   }
-
 }

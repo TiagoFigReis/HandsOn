@@ -40,7 +40,10 @@ namespace Application.Services.DataAnalysis
                 var plotViewModel = new PlotAnalysisViewModel
                 {
                     CultureType = plotInputModel.CultureType!,
-                    PlotName = plotInputModel.PlotName!
+                    PlotName = plotInputModel.PlotName!,
+                    ExpectedProductivity = plotInputModel.ExpectedProductivity,
+                    Width = plotInputModel.Width,
+                    Height = plotInputModel.Height,
                 };
 
                 var plotCulture = await _culturesRepository.GetByNameAsync(plotInputModel.CultureType!)
@@ -304,8 +307,8 @@ namespace Application.Services.DataAnalysis
 
         private void SoilRecommendation(FertilizerPlotInputModel inputModel, List<SoilFertilizerRowData> soilData, FormulationTableData formulationData, PlotFertilizerViewModel viewModel)
         {
-            var width = inputModel.Spacing.Width;
-            var height = inputModel.Spacing.Height;
+            var width = inputModel.Width;
+            var height = inputModel.Height;
             var plants = 10000 / (width * height);
             var expectedProductivity = 480 * inputModel.ExpectedProductivity / plants;
 
@@ -381,7 +384,7 @@ namespace Application.Services.DataAnalysis
             {
                 viewModel.ProductRecomendations.Add(recommendationProduct);
             }
-}
+        }
 
         private class FertilizerInfo
         {
@@ -673,17 +676,7 @@ namespace Application.Services.DataAnalysis
                 }
             }
             
-            if (adequateNutrients.Any())
-            {
-                leafRecData.AdequateNutrients = new AdequateNutrientsViewModel
-                {
-                    Title = "Nutrientes em Níveis Adequados",
-                    Description = "Os seguintes nutrientes não necessitam de correção foliar no momento:",
-                    Nutrients = adequateNutrients
-                };
-            }
-            
-            if (leafRecData.Corrections.Any() || leafRecData.AdequateNutrients != null)
+            if (leafRecData.Corrections.Any())
             {
                 viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel
                 {

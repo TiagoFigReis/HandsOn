@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, Culture, NutrientTableFacade, NutrientTable, Analise } from '@farm/core';
-import { Column, Row, SelectTable } from '@farm/ui';
-import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
+import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, NutrientTableFacade, NutrientTable, Analise } from '@farm/core';
+import { Column, Row, Action} from '@farm/ui';
+import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP, ConfirmationService } from '@farm/core';
 
 @Injectable({
   providedIn: 'root',
@@ -28,18 +28,12 @@ export class ResultAnaliseComponentFacade {
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
   tipo$: Observable<number> = this.tipoSubject.asObservable();
 
-  cultures: Culture[] | undefined = undefined;
-  standardProductivity = '30';
-  standardWidth = '3.6';
-  standardHeight = '0.7';
-
-  selectOptions: SelectTable | undefined;
-
   constructor(
     private analiseFacade: AnaliseFacade,
     private dataAnalyseFacade: DataAnalyseFacade,
     private cultureFacade: CultureFacade,
     private nutrientTableFacade: NutrientTableFacade,
+    private confirmationService: ConfirmationService,
   ) {}
 
   load(data: DadosAnalise) {
@@ -52,18 +46,6 @@ export class ResultAnaliseComponentFacade {
         this.loadingSubject.next(false);
       }),
     ).subscribe();
-  }
-
-  getCultures(): Observable<Culture[]> {
-    return this.cultureFacade.getAllCultures().pipe(
-      tap(cultures => {
-        this.selectOptions = {
-          label: "Selecione uma cultura",
-          options: cultures,
-          optionLabel: "name"
-        };
-      })
-    );
   }
 
   getNutrientTable(culture: string) {
@@ -132,7 +114,6 @@ export class ResultAnaliseComponentFacade {
 
     const staticColumns: Column[] = [
       { field: 'plotName', header: 'Talhão', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
-      { field: 'cultureType', header: 'Cultura', type: 'select', sortable: true, filterable: true, visible: true, showToUser: true, editable: false },
       { field: 'expectedProductivity', header: 'Produtividade Esperada (sc/ha)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'width', header: 'Espaçamento entre ruas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'height', header: 'Espaçamento entre plantas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable }
@@ -165,20 +146,28 @@ export class ResultAnaliseComponentFacade {
       });
 
     const rows = plots.map((plot, index) => {
-      const uniqueId = `${plot.plotName}-${index}`;
-
-      const cultureTypeOptions = {
-        ...this.selectOptions,
-        rowIdentifier: uniqueId
-      };
-
       const row: Row = {
-        id: uniqueId,
+        id: index,
         plotName: plot.plotName,
-        cultureType: cultureTypeOptions,
-        expectedProductivity: this.standardProductivity,
-        width: this.standardWidth,
-        height: this.standardHeight
+        cultureType: plot.cultureType,
+        expectedProductivity: plot.expectedProductivity,
+        width: plot.width,
+        height: plot.height,
+        actions: [
+          { tooltip: 'Excluir',
+            icon: 'pi pi-fw pi-trash',
+            iconClass: 'error',
+            command: (event, data) => {
+              this.confirmationService.confirm({
+                  header: 'Remover Talhão',
+                  message: `Deseja remover o talhão da análise ?`,
+                  accept: () => {
+                    this.deleteRowById(data['id']);
+                  },
+                });
+            },
+          },
+        ] as Action[],
       };
 
       plot.nutrients?.forEach(nutrient => {
@@ -194,6 +183,21 @@ export class ResultAnaliseComponentFacade {
     });
 
     return { rows, columns: [...staticColumns, ...DynamicColumns] };
+  }
+
+  deleteRowById(rowId: string) {
+    const currentRows = this.analiseSubject.getValue();
+    if (!currentRows) {
+      return; 
+    }
+
+    const updatedRows = currentRows.filter(row => row['id'] !== rowId);
+
+    this.analiseSubject.next(updatedRows);
+  }
+
+  updateAnalyse(analise : Analise){
+    this.analiseFacade.update(analise).subscribe();
   }
 
   getHeaderMap(): { [key: string]: string } {

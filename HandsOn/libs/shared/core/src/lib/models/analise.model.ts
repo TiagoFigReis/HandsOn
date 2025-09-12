@@ -59,28 +59,18 @@ export interface Correction {
   productOptions: ProductOption[];
 }
 
-export interface AdequateNutrients {
-  title: string;
-  description: string;
-  nutrients: string[];
-}
 
 export interface LeafRecommendation {
   corrections: Correction[];
-  adequateNutrients?: AdequateNutrients;
-}
-
-export interface Spacing{
-  width: number;
-  height:number;
 }
 
 export interface Plots{
   cultureType?: string;
   plotName?: string
-  expectedProductivity?: number
+  expectedProductivity?: number;
+  width?: number;
+  height?: number;
   nutrients?: Nutrients[];
-  spacing? : Spacing;
   productRecomendations? : ProductRecomendations[]
 }
 

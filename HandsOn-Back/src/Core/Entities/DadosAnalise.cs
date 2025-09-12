@@ -21,8 +21,6 @@ namespace Core.Entities
         [JsonPropertyName("identificacao_talhao")]
         public string? IdentificacaoTalhao { get; set; }
 
-        [JsonPropertyName("cultura")]
-        public string? Cultura { get; set; }
 
         [JsonPropertyName("fosforo_p")]
         public decimal? FosforoP { get; set; }
@@ -84,8 +82,6 @@ namespace Core.Entities
         [JsonPropertyName("identificacao_talhao")]
         public string? IdentificacaoTalhao { get; set; }
 
-        [JsonPropertyName("cultura")]
-        public string? Cultura { get; set; }
 
         [JsonPropertyName("fosforo_p")]
         public decimal? FosforoP { get; set; }
@@ -130,11 +126,16 @@ namespace Core.Entities
 
     public class AnalisePlot
     {
-        [JsonPropertyName("cultureType")]
-        public string? CultureType { get; set; }
+        public string? CultureType { get; set; } = "Café";
 
         [JsonPropertyName("plotName")]
         public string? PlotName { get; set; }
+
+        public int ExpectedProductivity { get; set; } = 30;
+
+        public float Width { get; set; } = 3.5f;
+
+        public float Height { get; set; } = 0.6f;
 
         [JsonPropertyName("nutrients")]
         public List<Nutrient> Nutrients { get; set; } = [];
@@ -167,7 +168,6 @@ namespace Core.Entities
             {
                 var plot = new AnalisePlot
                 {
-                    CultureType = amostra.Cultura,
                     PlotName = amostra.IdentificacaoTalhao,
                     Nutrients = new List<Nutrient>
                 {
@@ -214,7 +214,6 @@ namespace Core.Entities
         {
             var plot = new AnalisePlot
             {
-                CultureType = amostra.Cultura,
                 PlotName = amostra.IdentificacaoTalhao,
                 Nutrients = new List<Nutrient>
                 {
