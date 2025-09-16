@@ -18,6 +18,8 @@ namespace Application.ViewModels.DataAnalysisViewModels
 
         public float Height { get; set; } 
 
+        public float PRNT { get; set; } 
+
         public ICollection<SingleNutrientAnalysisViewModel> Nutrients { get; set; } = new List<SingleNutrientAnalysisViewModel>();
     }
 

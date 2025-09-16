@@ -35,6 +35,9 @@ namespace Application.InputModels.DataAnalysisInputModels
         [Required(ErrorMessage = "Height is required.")]
         public float Height { get; set; }
 
+        [Required(ErrorMessage = "PRNT is required.")]
+        public float PRNT { get; set; }
+
         public ICollection<AnalyseSingleNutrientInputModel> Nutrients { get; set; } = new List<AnalyseSingleNutrientInputModel>();
     }
 

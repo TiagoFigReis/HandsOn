@@ -36,6 +36,10 @@ namespace Application.InputModels.DataAnalysisInputModels
         [Range(0, float.MaxValue, ErrorMessage = "Height cannot be negative")]
         public float Height { get; set; }
 
+        [Required(ErrorMessage = "PRNT is required.")]
+        [Range(0, float.MaxValue, ErrorMessage = "PRNT cannot be negative")]
+        public float PRNT { get; set; }
+
         [Required(ErrorMessage = "Leaf inputs are required.")]
         public ICollection<RecomendFertilizerGenericInputModel> Nutrients { get; set; } = [];
 

@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { TagModule } from 'primeng/tag';
-import { LeafRecommendation } from '@farm/core'; // Ajuste o caminho conforme necessário
+import { LEAF_NUTRIENT_MAP, LeafRecommendation } from '@farm/core'; // Ajuste o caminho conforme necessário
 
 @Component({
   selector: 'lib-leaf-recommendation-display',
@@ -20,5 +20,15 @@ export class LeafRecommendationDisplayComponent {
       return 'warn';
     }
     return 'info';
+  }
+
+  getLeafNutrientDisplayName(symbol: string): string {
+    const nutrientInfo = Object.values(LEAF_NUTRIENT_MAP).find(info => info.symbol === symbol);
+
+    if (nutrientInfo) {
+      return `${nutrientInfo.name} (${nutrientInfo.symbol})`;
+    }
+
+    return symbol;
   }
 }

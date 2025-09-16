@@ -44,6 +44,7 @@ namespace Application.Services.DataAnalysis
                     ExpectedProductivity = plotInputModel.ExpectedProductivity,
                     Width = plotInputModel.Width,
                     Height = plotInputModel.Height,
+                    PRNT = plotInputModel.PRNT,
                 };
 
                 var plotCulture = await _culturesRepository.GetByNameAsync(plotInputModel.CultureType!)
@@ -284,15 +285,12 @@ namespace Application.Services.DataAnalysis
                 var fertilizerTable = await _fertilizerTablesRepository.GetByCultureAsync(plotCulture.Id, user)
                     ?? throw new NotFoundException("Nutrient Table not found");
 
-                var formulationTable = await _formulationTableRepository.GetByCultureAsync(plotCulture.Id, user)
-                    ?? throw new NotFoundException("Formulation Table not found");;
-
                 var tableData = fertilizerTable.GetTableData();
-                var formulationTableData = formulationTable.GetTableData();
 
                 if (inputModel.SoilRecomendation)
                 {
-                    SoilRecommendation(plotInputModel, tableData.SoilFertilizerRows, formulationTableData, plotViewModel);
+                    float Vexpected = fertilizerTable.ExpectedBasesSaturation;
+                    SoilRecommendation(plotInputModel, Vexpected, tableData.SoilFertilizerRows, plotViewModel);
                 }
                 else
                 {
@@ -305,20 +303,15 @@ namespace Application.Services.DataAnalysis
             return fertilizerViewModel;
         }
 
-        private void SoilRecommendation(FertilizerPlotInputModel inputModel, List<SoilFertilizerRowData> soilData, FormulationTableData formulationData, PlotFertilizerViewModel viewModel)
+        private void SoilRecommendation(FertilizerPlotInputModel inputModel, float Vexpected,  List<SoilFertilizerRowData> soilData, PlotFertilizerViewModel viewModel)
         {
             var width = inputModel.Width;
             var height = inputModel.Height;
+            var PRNT = inputModel.PRNT;
             var plants = 10000 / (width * height);
             var expectedProductivity = 480 * inputModel.ExpectedProductivity / plants;
 
-            float SB = 0, T = 0, organicMatter = 0, V = 0;
-            const float Vexpected = 70;
-
-            float nValue = 0, pValue = 0, kValue = 0;
-            float calagem = 0;
-            string boroRec = "Não é necessário aplicação de Boro (B)";
-            string boroValue = "0 kg/ha";
+            float SB = 0, T = 0, organicMatter = 0, V = 0, nValue = 0, pValue = 0, kValue = 0, bValue = 0, calagem = 0;
 
             foreach (var nutrient in inputModel.Nutrients)
             {
@@ -328,6 +321,7 @@ namespace Application.Services.DataAnalysis
                 else if (header == NutrientHeader.OrganicMatter.ToFriendlyString()) organicMatter = nutrient.Value;
                 else if (header == NutrientHeader.BasesSaturation.ToFriendlyString()) V = nutrient.Value;
             }
+
 
             var selectedSoilData = soilData.FirstOrDefault(d => expectedProductivity < d.ExpectedProductivity);
             if (selectedSoilData == null) return;
@@ -366,20 +360,20 @@ namespace Application.Services.DataAnalysis
                     var bCol = soilData[0].SoilFertilizerColumns.FirstOrDefault(c => c.Header == NutrientHeader.B);
                     if (bCol != null)
                     {
-                        if (nutrient.Analysis == "Baixo") { boroRec = $"Aplicar {bCol.Value1} kg/ha de Boro (B)"; boroValue = $"{bCol.Value1} kg/ha"; }
-                        else if (nutrient.Analysis == "Aceitável") { boroRec = $"Aplicar {bCol.Value2} kg/ha de Boro (B)"; boroValue = $"{bCol.Value2} kg/ha"; }
-                        else if (nutrient.Analysis == "Adequado") { boroRec = $"Aplicar {bCol.Value3} kg/ha de Boro (B)"; boroValue = $"{bCol.Value3} kg/ha"; }
+                        if (nutrient.Analysis == "Baixo") { bValue = bCol.Value1; }
+                        else if (nutrient.Analysis == "Aceitável") { bValue = bCol.Value2; }
+                        else if (nutrient.Analysis == "Adequado") { bValue = bCol.Value3; }
                     }
                 }
             }
 
             if (V < Vexpected && T > 0)
             {
-                calagem = Vexpected / 100 * T - SB;
+                calagem = (Vexpected - V) * T / PRNT;
                 if (calagem < 0) calagem = 0;
             }
 
-            var recommendationProduct = GenerateIntegratedRecommendation(nValue, pValue, kValue, calagem, boroRec, boroValue, formulationData);
+            var recommendationProduct = GenerateIntegratedRecommendation(nValue, pValue, kValue, bValue ,calagem);
             if (recommendationProduct != null)
             {
                 viewModel.ProductRecomendations.Add(recommendationProduct);
@@ -392,6 +386,7 @@ namespace Application.Services.DataAnalysis
             public double N { get; set; }
             public double P2O5 { get; set; }
             public double K2O { get; set; }
+            public double B { get; set; }
         }
 
         private class RecommendationItem
@@ -400,9 +395,9 @@ namespace Application.Services.DataAnalysis
             public double DoseKgHa { get; set; }
         }
 
-        private ProductRecomendationViewModel GenerateIntegratedRecommendation(float nNeed, float pNeed, float kNeed, float limingNeed, string boronRec, string boroValue, FormulationTableData formulationData)
+        private ProductRecomendationViewModel GenerateIntegratedRecommendation(float nNeed, float pNeed, float kNeed, float bNeed, float limingNeed)
         {
-            if (nNeed <= 1 && pNeed <= 1 && kNeed <= 1 && limingNeed <= 0 && boronRec.Contains("Não é necessário"))
+            if (nNeed <= 1 && pNeed <= 1 && kNeed <= 1 && limingNeed <= 0 && bNeed <= 1)
             {
                 return new ProductRecomendationViewModel
                 {
@@ -431,29 +426,44 @@ namespace Application.Services.DataAnalysis
             if (nNeed > 1) recommendationData.Diagnosis.Needs.Add(new NutrientNeedViewModel { Name = "Nitrogênio (N)", Value = $"{nNeed:F0} kg/ha" });
             if (pNeed > 1) recommendationData.Diagnosis.Needs.Add(new NutrientNeedViewModel { Name = "Fósforo (P₂O₅)", Value = $"{pNeed:F0} kg/ha" });
             if (kNeed > 1) recommendationData.Diagnosis.Needs.Add(new NutrientNeedViewModel { Name = "Potássio (K₂O)", Value = $"{kNeed:F0} kg/ha" });
+            
             if (limingNeed > 0) recommendationData.Diagnosis.Needs.Add(new NutrientNeedViewModel { Name = "Calcário", Value = $"{limingNeed:F2} t/ha" });
 
-            if (!boronRec.Contains("Não é necessário")) recommendationData.Diagnosis.Needs.Add(new NutrientNeedViewModel { Name = "Boro (B)", Value = boroValue });
+            if (bNeed > 1)
+            {
+                recommendationData.Diagnosis.Needs.Add(new NutrientNeedViewModel { Name = "Boro(B)", Value = $"{bNeed:F0} kg/ha" });
+            }
             
+
+            var simpleFertilizers = new Dictionary<string, FertilizerInfo>();
+
+            simpleFertilizers["N"] = new FertilizerInfo { Name = "Ureia (45% N)", N = 0.45 };
+            simpleFertilizers["P"] = new FertilizerInfo { Name = "Superfosfato Simples (SSP)", P2O5 = 0.18 };
+            simpleFertilizers["K"] = new FertilizerInfo { Name = "Cloreto de Potássio (KCL)", K2O = 0.60 };
+            simpleFertilizers["B"] = new FertilizerInfo { Name = "Ulexita", B = 0.1 };
+
             var correctionStep = new ApplicationStepViewModel { Title = "Correção do Solo", Details = new List<string>() };
+
+            double bSupplied = 0;
+
+            if (bNeed > 1)
+            {
+                bSupplied = bNeed / simpleFertilizers["B"].B;
+            }
+            else
+                correctionStep.Details.Add("Boro: Não é necessária a aplicação de boro.");
+            
             if (limingNeed > 0)
                 correctionStep.Details.Add($"Calagem: Aplicar {limingNeed:F2} t/ha de calcário para elevar a Saturação por Bases (V%) ao nível ideal de 70%.");
             else
                 correctionStep.Details.Add("Calagem: Não é necessária.");
 
-            correctionStep.Details.Add($"Boro: {boronRec}.");
+            
             recommendationData.Plan.Steps.Add(correctionStep);
 
             var npkStep = new ApplicationStepViewModel { Title = "Fertilização NPK", Details = new List<string>() };
             List<RecommendationItem> finalPlan = new List<RecommendationItem>();
             
-            var simpleFertilizers = new Dictionary<string, FertilizerInfo>();
-            foreach (var simple in formulationData.BasicFormulationRows.SelectMany(row => row.FormulationColumns))
-            {
-                if (simple.NAmount == 45) simpleFertilizers["N"] = new FertilizerInfo { Name = "Ureia (45% N)", N = 0.45 };
-                if (simple.PAmount == 18) simpleFertilizers["P"] = new FertilizerInfo { Name = "Superfosfato Simples (SSP)", P2O5 = 0.18 };
-                if (simple.KAmount == 60) simpleFertilizers["K"] = new FertilizerInfo { Name = "Cloreto de Potássio (KCL)", K2O = 0.60 };
-            }
 
             int nutrientsNeededCount = (nNeed > 1 ? 1 : 0) + (pNeed > 1 ? 1 : 0) + (kNeed > 1 ? 1 : 0);
 
@@ -503,9 +513,15 @@ namespace Application.Services.DataAnalysis
                                 double kDeficit = kNeed - kSupplied;
                                 
                                 double supplementPenalty = 0;
-                                if ((pDeficit > 15) || (kDeficit > 15))
+
+                                if (pDeficit > pNeed * 0.1)
                                 {
-                                    supplementPenalty = 1000;
+                                    supplementPenalty += 500;
+                                }
+
+                                if (kDeficit > kNeed * 0.1)
+                                {
+                                    supplementPenalty += 500;
                                 }
 
                                 double finalScore = (concentrationScore * 3) + deviationScore + supplementPenalty;
@@ -539,6 +555,8 @@ namespace Application.Services.DataAnalysis
                 }
             }
 
+            finalPlan.Add(new RecommendationItem { FertilizerName = simpleFertilizers["B"].Name, DoseKgHa = bSupplied });
+
             if (finalPlan.Any())
             {
                 foreach (var item in finalPlan.Where(i => i.DoseKgHa > 0.1))
@@ -546,6 +564,7 @@ namespace Application.Services.DataAnalysis
                     npkStep.Details.Add($"{item.FertilizerName}: {item.DoseKgHa:F1} kg/ha");
                 }
             }
+
             recommendationData.Plan.Steps.Add(npkStep);
 
             if (finalPlan.Any())
@@ -563,9 +582,10 @@ namespace Application.Services.DataAnalysis
                         });
                     }
                 }
+
                 allFertilizers.AddRange(simpleFertilizers.Values);
 
-                double totalNApplied = 0, totalPApplied = 0, totalKApplied = 0;
+                double totalNApplied = 0, totalPApplied = 0, totalKApplied = 0, totoalBApplied = bSupplied * simpleFertilizers["B"].B;
                 
                 foreach (var item in finalPlan)
                 {
@@ -589,28 +609,43 @@ namespace Application.Services.DataAnalysis
                     });
                 };
 
+                addBalanceItem("Boro (B)", totoalBApplied, bNeed);
                 addBalanceItem("Nitrogênio (N)", totalNApplied, nNeed);
                 addBalanceItem("Fósforo (P₂O₅)", totalPApplied, pNeed);
                 addBalanceItem("Potássio (K₂O)", totalKApplied, kNeed);
             }
             
             double totalAnnualDose = finalPlan.Sum(item => item.DoseKgHa);
+
             if (totalAnnualDose > 1)
             {
-                int numberOfParcels = 1;
-                if (totalAnnualDose > 1500) numberOfParcels = 4;
-                else if (totalAnnualDose > 1000) numberOfParcels = 3;
-                else if (totalAnnualDose > 500) numberOfParcels = 2;
+                int GetParcels(double dose)
+                {
+                    if (dose > 1500) return 4;
+                    else if (dose > 1000) return 3;
+                    else if (dose > 500) return 2;
+                    else return 1;
+                }
+
+                int maxParcels = finalPlan
+                    .Select(item => GetParcels(item.DoseKgHa))
+                    .DefaultIfEmpty(1)
+                    .Max();
 
                 recommendationData.Installments = new InstallmentViewModel
                 {
                     TotalAnnualDose = $"{totalAnnualDose:F0} kg/ha",
-                    NumberOfInstallments = numberOfParcels,
-                    Description = $"A dose total de fertilizantes é de {totalAnnualDose:F0} kg/ha. Recomendamos dividir a aplicação em {numberOfParcels} parcelas para otimizar a absorção dos nutrientes.",
-                    Details = finalPlan.Where(i => i.DoseKgHa > 0.1).Select(item => new InstallmentDetailViewModel
+                    NumberOfInstallments = maxParcels, 
+                    Description = $"A dose total de fertilizantes é de {totalAnnualDose:F0} kg/ha. " +
+                                $"Recomendamos dividir a aplicação em {maxParcels} parcelas para otimizar a absorção dos nutrientes.",
+                    Details = finalPlan.Where(i => i.DoseKgHa > 0.1).Select(item =>
                     {
-                        FertilizerName = item.FertilizerName,
-                        DosePerInstallment = $"{item.DoseKgHa / numberOfParcels:F1} kg/ha"
+                        int nutrientParcels = GetParcels(item.DoseKgHa); 
+                        return new InstallmentDetailViewModel
+                        {
+                            FertilizerName = item.FertilizerName,
+                            DosePerInstallment = $"{nutrientParcels} {(nutrientParcels > 1 ? " parcelas" : " parcela")} de {item.DoseKgHa / nutrientParcels:F1} kg/ha"
+                        };
                     }).ToList()
                 };
             }
@@ -629,6 +664,12 @@ namespace Application.Services.DataAnalysis
 
             foreach (var nutrient in inputModel.Nutrients)
             {
+                
+                if (nutrient.Analysis == "Adequado")
+                {
+                    adequateNutrients.Add(nutrient.Header);
+                }
+                
                 if (nutrient.Header == NutrientHeader.S.ToFriendlyString() ||
                     nutrient.Header == NutrientHeader.Zn.ToFriendlyString() ||
                     nutrient.Header == NutrientHeader.B.ToFriendlyString() ||
@@ -636,47 +677,54 @@ namespace Application.Services.DataAnalysis
                     nutrient.Header == NutrientHeader.Fe.ToFriendlyString() ||
                     nutrient.Header == NutrientHeader.Cu.ToFriendlyString())
                 {
-                    var data = leafData.LeafFertilizerColumns
-                                    .FirstOrDefault(d => d.Header.ToFriendlyString() == nutrient.Header);
-
-                    if (data == null || !data.Products.Any()) continue;
-
-                    if (nutrient.Analysis != "Baixo" && nutrient.Analysis != "Aceitável")
-                    {
-                        adequateNutrients.Add(nutrient.Header);
-                        continue;
-                    }
                     
-                    var correction = new CorrectionViewModel
+                    if (nutrient.Analysis == "Baixo" || nutrient.Analysis == "Aceitável")
                     {
-                        NutrientName = nutrient.Header,
-                        DiagnosisLevel = $"Nível {nutrient.Analysis}"
-                    };
+                        var data = leafData.LeafFertilizerColumns
+                                        .FirstOrDefault(d => d.Header.ToFriendlyString() == nutrient.Header);
 
-                    int productCount = data.Products.Count();
-                    correction.RecommendedActionTitle = productCount > 1
-                        ? "Para corrigir esta deficiência, sugerimos uma das seguintes opções:"
-                        : "A recomendação para corrigir esta deficiência é a seguinte:";
+                        if (data == null || !data.Products.Any()) continue;
 
-                    foreach (var product in data.Products)
-                    {
-                        string dose = nutrient.Analysis == "Baixo"
-                            ? product.MaxConcentration.ToString()
-                            : product.MinConcentration.ToString();
-                        
-                        string unit = product.Solid ? "kg" : "l";
-
-                        correction.ProductOptions.Add(new ProductOptionViewModel
+                        var correction = new CorrectionViewModel
                         {
-                            Name = product.Name,
-                            RecommendationText = $"{dose}{unit} por 400L de água."
-                        });
+                            NutrientName = nutrient.Header,
+                            DiagnosisLevel = $"Nível {nutrient.Analysis}"
+                        };
+
+                        int productCount = data.Products.Count();
+                        correction.RecommendedActionTitle = productCount > 1
+                            ? "Para corrigir esta deficiência, sugerimos uma das seguintes opções:"
+                            : "A recomendação para corrigir esta deficiência é a seguinte:";
+
+                        foreach (var product in data.Products)
+                        {
+                            string dose = nutrient.Analysis == "Baixo"
+                                ? product.MaxConcentration.ToString()
+                                : product.MinConcentration.ToString();
+                            string unit = product.Solid ? "kg" : "l";
+                            correction.ProductOptions.Add(new ProductOptionViewModel
+                            {
+                                Name = product.Name,
+                                RecommendationText = $"{dose}{unit} por 400L de água."
+                            });
+                        }
+                        leafRecData.Corrections.Add(correction);
                     }
-                    leafRecData.Corrections.Add(correction);
                 }
             }
+
+            if (adequateNutrients.Count() > 1)
+            {
+                leafRecData.Maintenance = new MaintenanceViewModel
+                {
+                    Title = "Manutenção Nutricional",
+                    AdequateNutrients = adequateNutrients,
+                    RecommendationText = "Para manter estes nutrientes em níveis ótimos, considere a aplicação de um fertilizante foliar misto de forma preventiva. Siga sempre a dose e a recomendação do fabricante do produto."
+                };
+            }
             
-            if (leafRecData.Corrections.Any())
+            
+            if (leafRecData.Corrections.Any() || leafRecData.Maintenance != null)
             {
                 viewModel.ProductRecomendations.Add(new ProductRecomendationViewModel
                 {
