@@ -109,7 +109,7 @@ export class FertilizerTableComponentFacade {
 
     private updateFertilizerTable(fertilizerTable: FertilizerTable) {
         this.fertilizerTableFacade.updateFertilizerTable(fertilizerTable).subscribe(() => {
-
+            this.router.navigate(['/app/fertilizerTables']);
         });
     }
 }

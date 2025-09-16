@@ -153,14 +153,18 @@ export class NutrientTableFormComponent {
     //criar a aprte do solo
     const soilRow = this.soilComponent.onSubmit(formValue, headerValues);
 
+    console.log(formValue.tableDivision.value);
+
     const nutrientTable: NutrientTable = {
       id: this.nutrientTable?.id,
       cultureId: formValue.cultureType.value,
       standard: this.user?.role == 'Admin' ? true : false,
-      division: formValue.division,
+      division: Number(formValue.tableDivision.value),
       leafNutrientRows: leafRows,
       soilNutrientRow: soilRow
     }
+
+    console.log(nutrientTable);
 
     this.nutrientTableSubmit.emit(nutrientTable);
   }

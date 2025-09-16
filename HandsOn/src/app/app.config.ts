@@ -70,7 +70,6 @@ function environmentFactory(): Environment {
     nutrientTablesApiUrl: '',
     fertilizerTablesApiUrl: '',
     culturesApiUrl: '',
-    formulationTablesApiUrl: '',
     clientId: '',
     redirectUri: '',
   };

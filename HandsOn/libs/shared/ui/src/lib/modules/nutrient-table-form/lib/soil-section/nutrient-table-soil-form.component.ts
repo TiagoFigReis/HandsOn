@@ -21,30 +21,30 @@ export class NutrientTableSoilFormComponent {
     {
       title: "Macronutrientes",
       items: [
-        { label: 'P<br>(ppm)', complex: true, id: 0, inverted: false },
-        { label: 'K<br>(Cmolc/dm3)', complex: true, id: 1, inverted: false },
-        { label: 'Ca<br>(Cmolc/dm3)', complex: false, id: 2, inverted: false },
-        { label: 'Mg<br>(Cmolc/dm3)', complex: false, id: 3, inverted: false },
-        { label: 'S<br>(ppm)', complex: false, id: 4, inverted: false }
+        { label: 'P', complex: true, id: 0, inverted: false },
+        { label: 'K', complex: true, id: 1, inverted: false },
+        { label: 'Ca', complex: false, id: 2, inverted: false },
+        { label: 'Mg', complex: false, id: 3, inverted: false },
+        { label: 'S', complex: false, id: 4, inverted: false }
       ]
     },
     {
       title: 'Micronutrientes',
       items: [
-        { label: 'Zn<br>(ppm)', complex: false, id: 5, inverted: false },
-        { label: 'B<br>(ppm)', complex: false, id: 6, inverted: false },
-        { label: 'Cu<br>(ppm)', complex: false, id: 7, inverted: false },
-        { label: 'Mn<br>(ppm)', complex: false, id: 8, inverted: false },
-        { label: 'Fe<br>(ppm)', complex: false, id: 9, inverted: false }
+        { label: 'Zn', complex: false, id: 5, inverted: false },
+        { label: 'B', complex: false, id: 6, inverted: false },
+        { label: 'Cu', complex: false, id: 7, inverted: false },
+        { label: 'Mn', complex: false, id: 8, inverted: false },
+        { label: 'Fe', complex: false, id: 9, inverted: false }
       ]
     },
     {
       title: 'Fertilidade',
       items: [
-        { label: 'Matéria Orgânica<br>(%)', complex: true, id: 10, inverted: false },
-        { label: 'Soma de Bases<br>(Cmolc/dm3)', complex: true, id: 11, inverted: false },
-        { label: 'CTC<br>(Cmolc/dm3)', complex: true, id: 12, inverted: false },
-        { label: 'Sat. por Bases<br>(%)', complex: true, id: 13, inverted: false }
+        { label: 'Matéria Orgânica', complex: true, id: 10, inverted: false },
+        { label: 'Soma de Bases', complex: true, id: 11, inverted: false },
+        { label: 'CTC', complex: true, id: 12, inverted: false },
+        { label: 'Sat. por Bases', complex: true, id: 13, inverted: false }
       ]
     },
     {
@@ -52,7 +52,7 @@ export class NutrientTableSoilFormComponent {
       items: [
         { label: 'pH em Água', complex: false, id: 14, inverted: false },
         { label: 'Saturação por Al', complex: true, id: 15, inverted: true },
-        { label: 'Acidez Potencial<br>(Cmolc/dm3)', complex: true, id: 16, inverted: true }
+        { label: 'Acidez Potencial', complex: true, id: 16, inverted: true }
       ]
     }
   ];
@@ -105,19 +105,19 @@ export class NutrientTableSoilFormComponent {
   }
   createSoilColumn(complex: boolean, data?: { min: number, med1: number, med2: number, max: number }): FormGroup {
     return this.formBuilder.group({
-      min: this.formBuilder.control(data?.min ?? null, {
+      min: this.formBuilder.control(data?.min ?? 1, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      med1: this.formBuilder.control(complex ? data?.med1 ?? null : 0, {
+      med1: this.formBuilder.control(complex ? data?.med1 ?? 2 : 0, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      med2: this.formBuilder.control(complex ? data?.med2 ?? null : 0, {
+      med2: this.formBuilder.control(complex ? data?.med2 ?? 3 : 0, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      max: this.formBuilder.control(data?.max ?? null, {
+      max: this.formBuilder.control(data?.max ?? 4, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),

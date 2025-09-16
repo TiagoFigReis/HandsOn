@@ -82,11 +82,11 @@ export class NutrientTableLeafFormComponent {
   }
   createLeafColumn(data?: { min: number, max: number }): FormGroup {
     return this.formBuilder.group({
-      min: this.formBuilder.control(data?.min ?? null, {
+      min: this.formBuilder.control(data?.min ?? 1, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
-      max: this.formBuilder.control(data?.max ?? null, {
+      max: this.formBuilder.control(data?.max ?? 2, {
         validators: [Validators.required, Validators.min(0)],
         updateOn: 'blur'
       }),
@@ -168,7 +168,7 @@ export class NutrientTableLeafFormComponent {
       const nutrientColumns: NutrientColumn[] = leafRow.leafColumns.map((leafColumn: any, colIndex: number) => ({
         header: colIndex,
         min: leafColumn.min,
-        max: leafColumn.max,
+        max: leafColumn.max
       }));
 
       return {

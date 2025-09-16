@@ -19,7 +19,7 @@ export class NutrientTableComponent implements OnInit, OnDestroy{
   selectCulture = false;
 
   title = 'Criar Tabela de Nutrientes';
-  description = '';
+  description = 'Preencha os campos abaixo para criar a tabela';
   submitLabel = 'Cadastrar';
 
   constructor(

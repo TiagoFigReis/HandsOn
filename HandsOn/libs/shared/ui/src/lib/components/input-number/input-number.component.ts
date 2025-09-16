@@ -48,6 +48,7 @@ export class InputNumberComponent implements ControlValueAccessor {
   @Input() minFractionDigits = 0;
   @Input() maxFractionDigits = 3;
   @Input() prefix = '';
+  @Input() suffix = '';
   @Input() variant: 'outlined' | 'filled' = 'filled';
   @Input() showButtons = false;
   @Input() showErrorMessage = false;

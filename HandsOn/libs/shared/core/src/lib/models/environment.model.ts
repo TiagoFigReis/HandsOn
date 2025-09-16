@@ -17,5 +17,4 @@ export interface Environment {
   nutrientTablesApiUrl: string;
   fertilizerTablesApiUrl: string;
   culturesApiUrl: string;
-  formulationTablesApiUrl: string;
 }

@@ -19,7 +19,7 @@ export class FertilizerTableComponent implements OnInit, OnDestroy {
   selectCulture = false;
 
   title = 'Criar Tabela de Fertilizantes';
-  description = '';
+  description = 'Preencha os campos abaixo para criar a tabela';
   submitLabel = 'Cadastrar';
 
   constructor(

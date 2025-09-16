@@ -5,8 +5,8 @@ import { InputComponent } from '../../../../components/input/input.component';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component';
-import { DividerComponent } from '../../../../components/divider/divider.component';
 import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValidator, SoilFertilizerRow } from '@farm/core';
+import { DividerComponent } from '../../../../components/divider/divider.component';
 
 @Component({
   selector: 'lib-fertilizer-table-leaf-form',

@@ -37,10 +37,6 @@ export const masterPageRoutes: Route[] = [
         loadChildren: () => import('@farm/cultures').then((m) => m.culturesRoutes)
       },
       {
-        path: 'formulationTables',
-        loadChildren: () => import('@farm/formulation-tables').then((m) => m.formulationTablesRoutes)
-      },
-      {
         path: 'settings',
         loadChildren: () =>
           import('@farm/settings').then((m) => m.settingsRoutes),

@@ -115,11 +115,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
             label: 'Gerenciar Tabelas de Fertilizantes',
             icon: 'pi pi-fw pi-bolt',
             routerLink: '/app/fertilizerTables'
-          },
-          {
-            label: 'Gerenciar Tabelas de Formulados',
-            icon: 'pi pi-fw pi-chart-line',
-            routerLink: '/app/formulationTables'
           }
         ]
       })

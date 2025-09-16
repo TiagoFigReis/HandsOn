@@ -27,4 +27,4 @@ export * from './lib/modules/user-form/user-form.component';
 export * from './lib/modules/analise-form/analise-form.component';
 export * from './lib/modules/nutrient-table-form/nutrient-table-form.component';
 export * from './lib/modules/culture-form/culture-form.component';
-export * from './lib/modules/fertilizer-table-form/fertilizer-table-form.component';;
+export * from './lib/modules/fertilizer-table-form/fertilizer-table-form.component';

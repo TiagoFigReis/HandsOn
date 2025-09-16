@@ -13,14 +13,12 @@ namespace Application.Services.DataAnalysis
     public class DataAnalysisServices(
         INutrientTablesRepository nutrientTablesRepository,
         IFertilizerTablesRepository fertilizerTablesRepository,
-        IFormulationTablesRepository formulationTableRepository,
         ICulturesRepository culturesRepository,
         IUsersRepository usersRepository
     ) : IDataAnalysisServices
     {
         private readonly INutrientTablesRepository _nutrientTablesRepository = nutrientTablesRepository;
         private readonly IFertilizerTablesRepository _fertilizerTablesRepository = fertilizerTablesRepository;
-        private readonly IFormulationTablesRepository _formulationTableRepository = formulationTableRepository;
         private readonly ICulturesRepository _culturesRepository = culturesRepository;
         private readonly IUsersRepository _usersRepository = usersRepository;
 

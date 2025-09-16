@@ -68,7 +68,7 @@ export class NutrientTableComponentFacade {
   submit(nutrientTable: NutrientTable) {
     let message = '';
     let action = () => { }
-    
+
 
     //Caso seja edição
     if (this.id) {
@@ -110,7 +110,7 @@ export class NutrientTableComponentFacade {
 
   private updateNutrientTable(nutrientTable: NutrientTable) {
     this.nutrientTableFacade.updateNutrientTable(nutrientTable).subscribe(() => {
-      
+      this.router.navigate(['/app/nutrientTables']);
     });
   }
 }
