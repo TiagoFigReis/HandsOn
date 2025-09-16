@@ -59,9 +59,15 @@ export interface Correction {
   productOptions: ProductOption[];
 }
 
+export interface Maintenance {
+  title: string;
+  adequateNutrients: string[]; 
+  recommendationText: string;
+}
 
 export interface LeafRecommendation {
   corrections: Correction[];
+  maintenance?: Maintenance;
 }
 
 export interface Plots{
@@ -70,6 +76,7 @@ export interface Plots{
   expectedProductivity?: number;
   width?: number;
   height?: number;
+  prnt?: number;
   nutrients?: Nutrients[];
   productRecomendations? : ProductRecomendations[]
 }

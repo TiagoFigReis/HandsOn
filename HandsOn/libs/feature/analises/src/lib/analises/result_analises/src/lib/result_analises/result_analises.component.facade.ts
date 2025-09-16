@@ -116,7 +116,8 @@ export class ResultAnaliseComponentFacade {
       { field: 'plotName', header: 'Talhão', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'expectedProductivity', header: 'Produtividade Esperada (sc/ha)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
       { field: 'width', header: 'Espaçamento entre ruas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
-      { field: 'height', header: 'Espaçamento entre plantas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable }
+      { field: 'height', header: 'Espaçamento entre plantas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
+      { field: 'prnt', header: 'PRNT do Cálcário (%)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable }
     ];
 
     const nutrientHeaders = new Set<string>();
@@ -153,6 +154,7 @@ export class ResultAnaliseComponentFacade {
         expectedProductivity: plot.expectedProductivity,
         width: plot.width,
         height: plot.height,
+        prnt: plot.prnt,
         actions: [
           { tooltip: 'Excluir',
             icon: 'pi pi-fw pi-trash',

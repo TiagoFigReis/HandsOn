@@ -137,6 +137,8 @@ namespace Core.Entities
 
         public float Height { get; set; } = 0.6f;
 
+        public float PRNT { get; set; } = 85f;
+
         [JsonPropertyName("nutrients")]
         public List<Nutrient> Nutrients { get; set; } = [];
     }

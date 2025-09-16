@@ -82,19 +82,7 @@ namespace Application.InputModels.NutrientTableInputModels
         {
             if (Med1 != 0 && Med2 != 0)
             {
-                if (Inverted)
-                {
-                    if (!(Min > Med1 && Med1 > Med2 && Med2 > Max))
-                    {
-                        yield return new ValidationResult
-                        (
-                            "Invalid Values: Min > Med1 > Med2 > Max.",
-                            new[] { nameof(Min), nameof(Med1), nameof(Med2), nameof(Max) }
-                        );
-                    }
-                }
-                else
-                {
+                
                     if (!(Min < Med1 && Med1 < Med2 && Med2 < Max))
                     {
                         yield return new ValidationResult
@@ -103,7 +91,7 @@ namespace Application.InputModels.NutrientTableInputModels
                             new[] { nameof(Min), nameof(Med1), nameof(Med2), nameof(Max) }
                         );
                     }
-                }
+                
             }
 
             else if (Min >= Max)

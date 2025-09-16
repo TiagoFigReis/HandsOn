@@ -9,7 +9,7 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { ResultAnaliseComponentFacade } from './result_analises.component.facade';
 import { Column, Row, TableComponent, ButtonComponent, SpinnerComponent, NutrientAnalysis } from '@farm/ui';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap, take } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
 import { BarChartComponent } from '@farm/ui';
@@ -96,47 +96,59 @@ export class ResultAnalisesComponent implements OnInit {
     return []
   }
 
-  private transformNutrients(measuredValues: Nutrients[], rangeDefs: any[]): NutrientAnalysis[] {
+private transformNutrients(measuredValues: Nutrients[], rangeDefs: any[]): NutrientAnalysis[] {
     const chartData: NutrientAnalysis[] = [];
     const activeNutrientMap = this.tipo ? LEAF_NUTRIENT_MAP : SOIL_NUTRIENT_MAP;
 
     for (const info of Object.values(activeNutrientMap)) {
-      if (info.name.includes('/')) continue;
+        if (info.name.includes('/')) continue;
+        const measured = measuredValues.find(m => m.header === info.symbol || m.header === info.name);
+        const rangeDef = rangeDefs.find(r => r.header === info.symbol || r.header === info.name);
 
-      const measured = measuredValues.find(m => {
-        return m.header === info.displayName || m.header === info.name
-      });
-      const rangeDef = rangeDefs.find(r => {
-        return r.header === info.symbol || r.header === info.name
-      });
+        if (measured && measured.value && rangeDef) {
+            const min = parseFloat(rangeDef.min.toFixed(2));
+            const max = parseFloat(rangeDef.max.toFixed(2));
+            const inverted = !!rangeDef.inverted;
+            const veryGoodMaxFinal = parseFloat((max * 1.3).toFixed(2));
+            const clear = (str: string) => str.replace(/\s+[A-Za-z%µ/²³]+$/, "");
 
-      if (measured && measured.value && rangeDef) {
-        const lowMax = parseFloat(rangeDef.min.toFixed(2));
-        const mediumMax = parseFloat((rangeDef.med1 !== 0 ? rangeDef.med1 : (rangeDef.min + rangeDef.max) / 2).toFixed(2));
-        const adequateMax = parseFloat((rangeDef.med2 !== 0 ? rangeDef.med2 : rangeDef.max).toFixed(2));
-        const highMin = adequateMax;
-        const scaleMaximum = parseFloat((adequateMax * 1.3).toFixed(2));
+            if (rangeDef.med1 !== 0 && rangeDef.med2 !== 0) {
+                const med1 = parseFloat(rangeDef.med1.toFixed(2));
+                const med2 = parseFloat(rangeDef.med2.toFixed(2));
+                const veryGoodMax = parseFloat((max * 1.2).toFixed(2));
 
-        const clear = (str : string) =>{
-          return str.replace(/\s+[A-Za-z%µ/²³]+$/, "")
+                chartData.push({
+                    name: clear(info.displayName), value: measured.value, unit: info.unit, inverted: inverted,
+                    isSimpleRange: false,
+                    ranges: {
+                        veryLow:  { min: 0,    max: min },
+                        low:      { min: min,  max: med1 },
+                        medium:   { min: med1, max: med2 },
+                        good:     { min: med2, max: max },
+                        veryGood: { min: max,  max: veryGoodMax },
+                    },
+                    veryLowMin: 0, veryHighMax: veryGoodMax, scaleMax: veryGoodMax
+                });
+            } else {
+                const midpoint = parseFloat(((min + max) / 2).toFixed(2));
+                const highMax = parseFloat((max * 1.2).toFixed(2));
+
+                chartData.push({
+                    name: clear(info.displayName), value: measured.value, unit: info.unit, inverted: inverted,
+                    isSimpleRange: true,
+                    ranges: {
+                        low:      { min: 0,        max: min },
+                        medium:   { min: min,      max: midpoint },
+                        adequate: { min: midpoint, max: max },
+                        high:     { min: max,      max: highMax },
+                    },
+                    veryLowMin: 0, veryHighMax: veryGoodMaxFinal, scaleMax: veryGoodMaxFinal
+                });
+            }
         }
-
-        chartData.push({
-          name: clear(info.displayName),
-          value: measured.value,
-          unit: info.unit,
-          ranges: {
-            low: { min: 0, max: lowMax },
-            medium: { min: lowMax, max: mediumMax },
-            adequate: { min: mediumMax, max: adequateMax },
-            high: { min: highMin, max: scaleMaximum },
-          },
-          scaleMax: scaleMaximum
-        });
-      }
     }
     return chartData;
-  }
+}
 
   refresh() {
     this.dataAnalyseFacade.loadAnalyse(this.id);
@@ -156,14 +168,14 @@ export class ResultAnalisesComponent implements OnInit {
         expectedProductivity: Number(item['expectedProductivity']),
         width: Number(item['width']),
         height: Number(item['height']),
+        prnt: Number(item['prnt']),
         nutrients
       } as Plots;
     });
   }
 
   solicitar_recomendacoes() {
-    
-    const plotsForAnalysis : Plots[] = this.plotsForAnalysis()
+    const plotsForAnalysis: Plots[] = this.plotsForAnalysis();
 
     const dadosAnalise = {
       month: '-',
@@ -175,6 +187,7 @@ export class ResultAnalisesComponent implements OnInit {
 
     this.dataAnalyseFacade.dataAnalyse$.pipe(
       filter(dataAnalyse => !!dataAnalyse?.plots),
+      take(1),
       switchMap(dataAnalyse => {
         if (!dataAnalyse) return EMPTY;
         const cultureType = dataAnalyse.plots[0]?.cultureType;
@@ -182,12 +195,12 @@ export class ResultAnalisesComponent implements OnInit {
         this.dataAnalyseFacade.getNutrientTable(cultureType);
         return this.dataAnalyseFacade.nutrientTable$.pipe(
           filter(table => !!table),
+          take(1),
           map(table => ({ dataAnalyse, table }))
         );
       }),
       switchMap(({ dataAnalyse, table }) => {
         this.table = table;
-
         this.resultsData = { ...dataAnalyse, plots: dataAnalyse.plots };
 
         const fertilizersPayload: RecommendFertilizers = {
@@ -196,7 +209,10 @@ export class ResultAnalisesComponent implements OnInit {
         };
 
         this.dataAnalyseFacade.recommendFertilizers(fertilizersPayload);
-        return this.dataAnalyseFacade.fertilizers$;
+        return this.dataAnalyseFacade.fertilizers$.pipe(
+            filter(fertilizers => !!fertilizers),
+            take(1)
+        );
       })
     ).subscribe(fertilizers => {
       if (fertilizers) {

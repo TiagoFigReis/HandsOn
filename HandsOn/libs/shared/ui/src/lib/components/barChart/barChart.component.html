@@ -1,65 +1,62 @@
 <div class="bg-gray-800 text-white p-4 md:p-6 rounded-lg font-sans max-w-4xl mx-auto">
   
   <div class="flex flex-col items-center mt-4">
-    <h3 class="text-sm font-semibold text-gray-300 mb-3">
-        Filtrar por nível:
-    </h3>
+    <h3 class="text-sm font-semibold text-gray-300 mb-3">Filtrar por nível:</h3>
     <div class="flex justify-center flex-wrap gap-2 md:gap-3">
-        <button
-          (click)="setFilter('all')"
-          [ngClass]="{
-            'bg-blue-600 text-white font-semibold': activeFilter === 'all', 
-            'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white': activeFilter !== 'all'
-          }"
+        <button (click)="setFilter('all')"
+          [ngClass]="{ 'bg-blue-600 text-white font-semibold': activeFilter === 'all', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'all' }"
           class="px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
           Mostrar Todos
         </button>
-        <button 
-          (click)="setFilter('low')"
-          [ngClass]="{
-            'bg-[#e74c3c] text-white font-semibold ring-2 ring-offset-2 ring-offset-gray-800 ring-red-400': activeFilter === 'low',
-            'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white': activeFilter !== 'low'
-          }"
+        <button (click)="setFilter('Muito Baixo')"
+          [ngClass]="{ 'bg-red-800 text-white font-semibold ring-2 ring-red-600': activeFilter === 'Muito Baixo', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'Muito Baixo' }"
+          class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
+          <span class="w-3 h-3 rounded-full" style="background-color: #a93226;"></span> Muito Baixo
+        </button>
+        <button (click)="setFilter('Baixo')"
+          [ngClass]="{ 'bg-[#e74c3c] text-white font-semibold ring-2 ring-red-400': activeFilter === 'Baixo', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'Baixo' }"
           class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
           <span class="w-3 h-3 rounded-full" style="background-color: #e74c3c;"></span> Baixo
         </button>
-        <button 
-          (click)="setFilter('medium')"
-          [ngClass]="{
-            'bg-[#3498db] text-white font-semibold ring-2 ring-offset-2 ring-offset-gray-800 ring-sky-400': activeFilter === 'medium',
-            'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white': activeFilter !== 'medium'
-          }"
+        <button (click)="setFilter('Aceitável')"
+          [ngClass]="{ 'bg-[#3498db] text-white font-semibold ring-2 ring-sky-400': activeFilter === 'Aceitável', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'Aceitável' }"
           class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
-          <span class="w-3 h-3 rounded-full" style="background-color: #3498db;"></span> Médio ou Aceitável
+          <span class="w-3 h-3 rounded-full" style="background-color: #3498db;"></span> Aceitável ou Médio
         </button>
-        <button
-          (click)="setFilter('adequate')"
-          [ngClass]="{
-            'bg-[#2ecc71] text-white font-semibold ring-2 ring-offset-2 ring-offset-gray-800 ring-green-400': activeFilter === 'adequate',
-            'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white': activeFilter !== 'adequate'
-          }"
+        <button (click)="setFilter('Adequado')"
+          [ngClass]="{ 'bg-[#2ecc71] text-white font-semibold ring-2 ring-green-400': activeFilter === 'Adequado', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'Adequado' }"
           class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
-          <span class="w-3 h-3 rounded-full" style="background-color: #2ecc71;"></span> Adequado
+          <span class="w-3 h-3 rounded-full" style="background-color: #2ecc71;"></span> Adequado ou Bom
         </button>
-        <button
-          (click)="setFilter('high')"
-          [ngClass]="{
-            'bg-[#f39c12] text-white font-semibold ring-2 ring-offset-2 ring-offset-gray-800 ring-orange-400': activeFilter === 'high',
-            'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white': activeFilter !== 'high'
-          }"
+        <button (click)="setFilter('Muito Bom')"
+          [ngClass]="{ 'bg-green-800 text-white font-semibold ring-2 ring-green-600': activeFilter === 'Muito Bom', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'Muito Bom' }"
+          class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
+          <span class="w-3 h-3 rounded-full" style="background-color: #27ae60;"></span> Muito Bom
+        </button>
+        <button (click)="setFilter('Alto')"
+          [ngClass]="{ 'bg-[#f39c12] text-white font-semibold ring-2 ring-orange-400': activeFilter === 'Alto', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'Alto' }"
           class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
           <span class="w-3 h-3 rounded-full" style="background-color: #f39c12;"></span> Alto
         </button>
+        <button (click)="setFilter('Muito Alto')"
+          [ngClass]="{ 'bg-orange-700 text-white font-semibold ring-2 ring-orange-600': activeFilter === 'Muito Alto', 'bg-gray-700 text-gray-300 hover:bg-gray-600': activeFilter !== 'Muito Alto' }"
+          class="flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-full transition-all duration-200">
+          <span class="w-3 h-3 rounded-full" style="background-color: #d35400;"></span> Muito Alto
+        </button>
     </div>
-</div>
+  </div>
   
   <div class="mt-8 space-y-8">
     <div *ngFor="let item of filteredData" 
          class="flex flex-col md:grid md:grid-cols-[150px_1fr_120px] md:items-center md:gap-4">
       
-      <div class="flex justify-between items-baseline mb-2 md:mb-0 md:contents">
-        <div class="text-base md:text-lg font-medium text-gray-200">
-          {{ item.name }}
+      <div class="flex justify-between items-center mb-2 md:mb-0 md:contents">
+        <div class="text-base md:text-lg font-medium text-gray-200 flex items-center gap-2">
+           {{ item.name }}
+           <span class="text-xs font-semibold px-2 py-0.5 rounded-full text-white" 
+                 [style.background-color]="getCurrentColors(item)[getNutrientLevel(item)]">
+             {{ getDisplayLevel(item) }}
+           </span>
         </div>
         <div class="text-base md:text-lg font-bold text-right text-gray-200 md:col-start-3">
           {{ item.value }} 
@@ -69,39 +66,31 @@
 
       <div class="w-full md:col-start-2 md:row-start-1">
         <div class="relative h-6 flex items-center">
-          <div 
-            class="w-full h-4 rounded-full"
-            [style.background]="getRangeGradient(item)">
-          </div>
-          <div 
-            class="absolute w-1 h-6 bg-white bg-opacity-80 rounded-full shadow-lg transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.value, item.scaleMax)">
+          <div class="w-full h-4 rounded-full" [style.background]="getRangeGradient(item)"></div>
+          <div class="absolute w-1 h-6 bg-white bg-opacity-80 rounded-full shadow-lg transform -translate-x-1/2" 
+               [style.left.%]="getValuePercentage(item.value, item)">
           </div>
         </div>
 
         <div class="relative h-4 mt-1 text-xs text-gray-400">
-          <span 
-            *ngIf="item.ranges.low.max > 0"
-            class="absolute transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.ranges.low.max, item.scaleMax)">
-            {{ item.ranges.low.max }}
-          </span>
-          <span 
-            class="absolute transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.ranges.medium.max, item.scaleMax)">
-            {{ item.ranges.medium.max }}
-          </span>
-          <span 
-            class="absolute transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.ranges.adequate.max, item.scaleMax)">
-            {{ item.ranges.adequate.max }}
-          </span>
+          <ng-container *ngIf="item.isSimpleRange">
+            <span class="absolute transform -translate-x-1/2" [style.left.%]="getValuePercentage(item.ranges.low!.max, item)">{{ item.ranges.low!.max }}</span>
+            <span class="absolute transform -translate-x-1/2" [style.left.%]="getValuePercentage(item.ranges.medium!.max, item)">{{ item.ranges.medium!.max }}</span>
+            <span class="absolute transform -translate-x-1/2" [style.left.%]="getValuePercentage(item.ranges.adequate!.max, item)">{{ item.ranges.adequate!.max }}</span>
+          </ng-container>
+
+          <ng-container *ngIf="!item.isSimpleRange">
+            <span class="absolute transform -translate-x-1/2" [style.left.%]="getValuePercentage(item.ranges.veryLow!.max, item)">{{ item.ranges.veryLow!.max }}</span>
+            <span class="absolute transform -translate-x-1/2" [style.left.%]="getValuePercentage(item.ranges.low!.max, item)">{{ item.ranges.low!.max }}</span>
+            <span class="absolute transform -translate-x-1/2" [style.left.%]="getValuePercentage(item.ranges.medium!.max, item)">{{ item.ranges.medium!.max }}</span>
+            <span class="absolute transform -translate-x-1/2" [style.left.%]="getValuePercentage(item.ranges.good!.max, item)">{{ item.ranges.good!.max }}</span>
+          </ng-container>
         </div>
       </div>
     </div>
 
     <div *ngIf="filteredData.length === 0" class="text-center text-gray-400 py-8">
-        Nenhum nutriente encontrado para o nível selecionado.
+      Nenhum nutriente encontrado para o nível selecionado.
     </div>
   </div>
 

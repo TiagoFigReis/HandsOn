@@ -76,24 +76,32 @@ namespace Application.ViewModels.DataAnalysisViewModels
         public string FertilizerName { get; set; } = string.Empty;
         public string DosePerInstallment { get; set; } = string.Empty;
     }
-    
+
     public class LeafRecommendationViewModel
-{
-    public List<CorrectionViewModel> Corrections { get; set; } = new();
-}
+    {
+        public List<CorrectionViewModel> Corrections { get; set; } = [];
+        public MaintenanceViewModel? Maintenance { get; set; }
+    }
 
-public class CorrectionViewModel
-{
-    public string NutrientName { get; set; } = string.Empty;
-    public string DiagnosisLevel { get; set; } = string.Empty;
-    public string RecommendedActionTitle { get; set; } = string.Empty;
-    public List<ProductOptionViewModel> ProductOptions { get; set; } = new();
-}
+    public class CorrectionViewModel
+    {
+        public string NutrientName { get; set; } = string.Empty;
+        public string DiagnosisLevel { get; set; } = string.Empty;
+        public string RecommendedActionTitle { get; set; } = string.Empty;
+        public List<ProductOptionViewModel> ProductOptions { get; set; } = [];
+    }
 
-public class ProductOptionViewModel
-{
-    public string Name { get; set; } = string.Empty;
-    public string RecommendationText { get; set; } = string.Empty;
-}
+    public class ProductOptionViewModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string RecommendationText { get; set; } = string.Empty;
+    }
+    
+    public class MaintenanceViewModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public List<string> AdequateNutrients { get; set; } = [];
+        public string RecommendationText { get; set; } = string.Empty;
+    }
 
 }
