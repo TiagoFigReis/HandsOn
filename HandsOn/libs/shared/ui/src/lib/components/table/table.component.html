@@ -43,6 +43,14 @@
           (click)="onClearFilter()"
           *ngIf="showClearFilterButton"
         ></lib-button>
+        <lib-button
+          [variant]="'text'"
+          [severity]="'primary'"
+          [icon]="'pi pi-save'"
+          [label]="'Salvar'"
+          (click)="onSave()"
+          *ngIf="ShowSaveButton"
+        ></lib-button>
       </div>
 
       <div class="w-3/5 flex items-center justify-end gap-2">

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 
 namespace Application.Services
@@ -77,14 +78,14 @@ namespace Application.Services
                 type = 1;
             }
 
-            var dados = await InterpretingFileService.GetTransformedDadosAnalise(inputModel.Analise, type);
+            var dados = await InterpretingFileService.GetTransformedDadosAnalise(inputModel.Analise!, type);
 
             if (dados != null)
             {
                 analise.DadosAnalise = dados;
             }
 
-            await FileService.SaveFileAsync(inputModel.Analise, analise.Id, userId, _httpContextAccessor.HttpContext!);
+            await FileService.SaveFileAsync(inputModel.Analise!, analise.Id, userId, _httpContextAccessor.HttpContext!);
 
             await _analiseRepository.Add(analise);
             return AnaliseViewModel.FromEntity(analise);
@@ -96,55 +97,84 @@ namespace Application.Services
             var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
 
             var analise = await _analiseRepository.GetByIdAsync(Id,userId) ?? throw new NotFoundException("Análise not found");
-
-            var directoryPath = Path.Combine(
-                Directory.GetParent(Directory.GetCurrentDirectory())!.FullName,
-                "Infrastructure", "Files", userId.ToString()
-            );
-
-            var originalFile = FileService.GetFile(analise.Id, directoryPath);
-
-            bool arquivosIguais = false;
-
-            if (originalFile is FileStreamResult fsResult)
+            
+            PlotsData? dadosAnalise = null;
+            
+            if (!string.IsNullOrEmpty(inputModel.DadosAnalise))
             {
-                arquivosIguais = FileService.ArquivosSaoIguais(fsResult.FileStream, inputModel.Analise);
 
-                fsResult.FileStream.Dispose();
+                dadosAnalise = JsonSerializer.Deserialize<PlotsData>(inputModel.DadosAnalise, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
             }
 
-            if (!arquivosIguais)
+            if (dadosAnalise?.Plots.Count > 0)
             {
-                await FileService.DeleteFileAsync(analise.Id, userId);
+                Console.WriteLine("entrou ali");
+                analise.Update(
+                    inputModel.Tipo,
+                    inputModel.Lab,
+                    inputModel.Proprietario,
+                    inputModel.Propriedade,
+                    inputModel.DataAnalise,
+                    userId
+                );
 
-                await FileService.SaveFileAsync(inputModel.Analise, analise.Id, userId, _httpContextAccessor.HttpContext!);
+                analise.DadosAnalise = dadosAnalise;
             }
-
-            analise.Update(
-                inputModel.Tipo,
-                inputModel.Lab,
-                inputModel.Proprietario,
-                inputModel.Propriedade,
-                inputModel.DataAnalise,
-                userId
-            );
-
-            if (!arquivosIguais)
+            else
             {
-                var type = 0;
+                Console.WriteLine("entrou aqui");
+                var directoryPath = Path.Combine(
+                    Directory.GetParent(Directory.GetCurrentDirectory())!.FullName,
+                    "Infrastructure", "Files", userId.ToString()
+                );
 
-                if (analise.Tipo == Tipo.Foliar)
+                var originalFile = FileService.GetFile(analise.Id, directoryPath);
+
+                bool arquivosIguais = false;
+
+                if (originalFile is FileStreamResult fsResult)
                 {
-                    type = 1;
+                    arquivosIguais = FileService.ArquivosSaoIguais(fsResult.FileStream, inputModel.Analise!);
+
+                    fsResult.FileStream.Dispose();
                 }
 
-                var dados = await InterpretingFileService.GetTransformedDadosAnalise(inputModel.Analise, type);
-
-                if (dados != null)
+                if (!arquivosIguais)
                 {
-                    analise.DadosAnalise = dados;
+                    await FileService.DeleteFileAsync(analise.Id, userId);
+
+                    await FileService.SaveFileAsync(inputModel.Analise!, analise.Id, userId, _httpContextAccessor.HttpContext!);
                 }
-                
+
+                analise.Update(
+                    inputModel.Tipo,
+                    inputModel.Lab,
+                    inputModel.Proprietario,
+                    inputModel.Propriedade,
+                    inputModel.DataAnalise,
+                    userId
+                );
+
+                if (!arquivosIguais)
+                {
+                    var type = 0;
+
+                    if (analise.Tipo == Tipo.Foliar)
+                    {
+                        type = 1;
+                    }
+
+                    var dados = await InterpretingFileService.GetTransformedDadosAnalise(inputModel.Analise!, type);
+
+                    if (dados != null)
+                    {
+                        analise.DadosAnalise = dados;
+                    }
+
+                }
             }
 
             await _analiseRepository.Update(analise);

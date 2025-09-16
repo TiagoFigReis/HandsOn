@@ -57,10 +57,16 @@ export class AnaliseService extends RequestService {
     if(analise.tipo){
       formData.append('Tipo', analise.tipo.toString());
     }
+
+    if(analise.dadosAnalise){
+      formData.append('DadosAnalise', JSON.stringify(analise.dadosAnalise));
+    }
+
     formData.append('Proprietario', analise.proprietario);
     formData.append('Propriedade', analise.propriedade);
     formData.append('DataAnalise', analise.dataAnalise.toString());
-    formData.append('Analise', analise.file);
+
+    if(analise.file) formData.append('Analise', analise.file);
 
     return this.httpClient
         .put<Analise>(`${this.analiseApiUrl}/${analise.id}`, formData)

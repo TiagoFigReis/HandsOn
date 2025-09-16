@@ -26,9 +26,10 @@ namespace Application.InputModels.InputModelsAnalise
         public string Propriedade { get; set; } = string.Empty;
         [Required(ErrorMessage = "É necessário uma data em que a amostra foi retirada")]
         public DateOnly DataAnalise { get; set; }
+
+        public string? DadosAnalise { get; set; }
         
-        [Required(ErrorMessage = "É necessário um arquivo de análise")]
-        public required IFormFile Analise { get; set; }
+        public IFormFile? Analise { get; set; }
 
     }
 }

@@ -53,6 +53,7 @@ export class TableComponent implements AfterViewInit, OnInit {
   @Input() currencyCode: 'BRL' | 'USD' | 'EUR' = 'BRL';
   @Input() showMoreButton = false;
   @Input() editable = false;
+  @Input() ShowSaveButton = false
 
   @Input() registerButton: true | false = false;
   @Input() registerLink = "";
@@ -64,6 +65,7 @@ export class TableComponent implements AfterViewInit, OnInit {
   @Output() rowSelect: EventEmitter<Row> = new EventEmitter();
   @Output() rowUnselect: EventEmitter<Row> = new EventEmitter();
   @Output() refresh: EventEmitter<void> = new EventEmitter();
+  @Output() save: EventEmitter<void> = new EventEmitter();
 
   @ViewChild(Table) table: Table | undefined;
 
@@ -197,6 +199,10 @@ export class TableComponent implements AfterViewInit, OnInit {
     this.table.exportCSV({
       allValues: true,
     });
+  }
+
+  onSave(){
+    this.save.emit();
   }
 
   onRefresh() {
