@@ -76,7 +76,6 @@ namespace Infrastructure.Persistence.Context
             Guid coffeeCultureId = new Guid("8a3a7b72-2b6a-4b7e-b8d2-3b8d6f6e8a3a");
             Guid systemUserId = users[0].Id;
 
-
             modelBuilder.Entity<Culture>().HasData(
                 new Culture { Id = coffeeCultureId, Name = "Café", NormalizedName = "cafe" }
             );
@@ -92,7 +91,6 @@ namespace Infrastructure.Persistence.Context
                 entity.HasOne(e => e.Culture).WithMany().HasForeignKey(e => e.CultureId).OnDelete(DeleteBehavior.Cascade);
                 entity.Property(e => e.LeafData).HasColumnType("LONGTEXT");
             });
-
 
             modelBuilder.Entity<Analise>(entity =>
             {
@@ -207,6 +205,46 @@ namespace Infrastructure.Persistence.Context
                 {
                     new LeafFertilizerColumnData
                     {
+                        Header = (NutrientHeader)0,
+                        Products = new List<LeafFertilizerProductData>
+                        {
+
+                        }
+                    },
+                    new LeafFertilizerColumnData
+                    {
+                        Header = (NutrientHeader)1,
+                        Products = new List<LeafFertilizerProductData>
+                        {
+
+                        }
+                    },
+                    new LeafFertilizerColumnData
+                    {
+                        Header = (NutrientHeader)2,
+                        Products = new List<LeafFertilizerProductData>
+                        {
+
+                        }
+                    },
+                    new LeafFertilizerColumnData
+                    {
+                        Header = (NutrientHeader)3,
+                        Products = new List<LeafFertilizerProductData>
+                        {
+
+                        }
+                    },
+                    new LeafFertilizerColumnData
+                    {
+                        Header = (NutrientHeader)4,
+                        Products = new List<LeafFertilizerProductData>
+                        {
+
+                        }
+                    },
+                    new LeafFertilizerColumnData
+                    {
                         Header = (NutrientHeader)5,
                         Products = new List<LeafFertilizerProductData>
                         {
@@ -302,6 +340,14 @@ namespace Infrastructure.Persistence.Context
                                 MaxConcentration = 2.0f
                             }
                         }
+                    },
+                    new LeafFertilizerColumnData
+                    {
+                        Header = (NutrientHeader)11,
+                        Products = new List<LeafFertilizerProductData>
+                        {
+                            
+                        }
                     }
                 }
             };
@@ -314,9 +360,9 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 56, Value2 = 45 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 10, Value2 = 6 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 46, Value2 = 37, Value3 = 27 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)7, NumberOfValues = 2, Value1 = 6, Value2 = 4 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 10, Value2 = 6, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 46, Value2 = 37, Value3 = 27, Value4 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)7, NumberOfValues = 4, Value1 = 6, Value2 = 4, Value3 = 0, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -325,20 +371,18 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 72, Value2 = 58 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 13, Value2 = 9 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 65, Value2 = 51, Value3 = 38 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 13, Value2 = 9, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 65, Value2 = 51, Value3 = 38, Value4 = 0 }
                     }
                 },
-                // Continue com os demais soilFertilizerRows seguindo o mesmo padrão
-                // Adicione os outros 8 objetos (para expectedProductivity de 6 a 20)
                 new SoilFertilizerRowData
                 {
                     ExpectedProductivity = 6.0f,
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 88, Value2 = 70 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 16, Value2 = 11 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 83, Value2 = 66, Value3 = 50 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 16, Value2 = 11, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 83, Value2 = 66, Value3 = 50, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -347,8 +391,8 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 104, Value2 = 83 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 19, Value2 = 13 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 102, Value2 = 81, Value3 = 61 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 19, Value2 = 13, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 102, Value2 = 81, Value3 = 61, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -357,8 +401,8 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 120, Value2 = 96 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 22, Value2 = 15 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 119, Value2 = 96, Value3 = 72 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 22, Value2 = 15, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 119, Value2 = 96, Value3 = 72, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -367,8 +411,8 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 136, Value2 = 109 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 26, Value2 = 18 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 138, Value2 = 110, Value3 = 82 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 26, Value2 = 18, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 138, Value2 = 110, Value3 = 82, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -377,8 +421,8 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 152, Value2 = 122 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 29, Value2 = 20 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 156, Value2 = 125, Value3 = 94 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 29, Value2 = 20, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 156, Value2 = 125, Value3 = 94, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -387,8 +431,8 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 168, Value2 = 134 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 32, Value2 = 22 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 174, Value2 = 140, Value3 = 105 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 32, Value2 = 22, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 174, Value2 = 140, Value3 = 105, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -397,8 +441,8 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 184, Value2 = 147 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 35, Value2 = 24 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 193, Value2 = 154, Value3 = 116 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 35, Value2 = 24, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 193, Value2 = 154, Value3 = 116, Value4 = 0 }
                     }
                 },
                 new SoilFertilizerRowData
@@ -407,8 +451,8 @@ namespace Infrastructure.Persistence.Context
                     SoilFertilizerColumns = new List<SoilFertilizerColumnData>
                     {
                         new SoilFertilizerColumnData { Header = (NutrientHeader)0, NumberOfValues = 2, Value1 = 200, Value2 = 160 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 2, Value1 = 38, Value2 = 26 },
-                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 3, Value1 = 211, Value2 = 170, Value3 = 127 }
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)1, NumberOfValues = 3, Value1 = 38, Value2 = 26, Value3 = 0 },
+                        new SoilFertilizerColumnData { Header = (NutrientHeader)2, NumberOfValues = 4, Value1 = 211, Value2 = 170, Value3 = 127, Value4 = 0 }
                     }
                 }
             };

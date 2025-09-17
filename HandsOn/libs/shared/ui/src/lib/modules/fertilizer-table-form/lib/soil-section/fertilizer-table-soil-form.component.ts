@@ -76,7 +76,7 @@ export class FertilizerTableSoilFormComponent {
 
     for (let i = 1; i <= numberOfValues; i++) {
       const key = `value${i}`;
-      const columnValue = column ? column[key as keyof SoilFertilizerColumn] as number : null;
+      const columnValue = column ? column[key as keyof SoilFertilizerColumn] as number : 1;
 
       controlNames.push(key);
 
@@ -93,6 +93,8 @@ export class FertilizerTableSoilFormComponent {
 
   updateFertilizerTableData(): void {
     if (!this.fertilizerTable) return;
+
+    console.log(this.fertilizerTable);
 
     while (this.soilRows.length)
       this.soilRows.removeAt(0);
@@ -163,6 +165,8 @@ export class FertilizerTableSoilFormComponent {
         soilFertilizerColumns: soilFertilizerColumns
       };
     });
+
+    console.log(soilRows);
 
     return soilRows;
   }

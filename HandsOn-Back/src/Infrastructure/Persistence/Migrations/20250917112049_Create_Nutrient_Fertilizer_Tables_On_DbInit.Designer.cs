@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20250907221727_Add_Formulation_Table")]
-    partial class Add_Formulation_Table
+    [Migration("20250917112049_Create_Nutrient_Fertilizer_Tables_On_DbInit")]
+    partial class Create_Nutrient_Fertilizer_Tables_On_DbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,7 +103,7 @@ namespace Infrastructure.Persistence.Migrations
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Café",
                             NormalizedName = "cafe",
-                            UpdatedAt = new DateTime(2025, 9, 7, 19, 17, 27, 2, DateTimeKind.Local).AddTicks(5127)
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 49, 147, DateTimeKind.Local).AddTicks(8997)
                         });
                 });
 
@@ -146,44 +146,20 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("FertilizerTables");
-                });
 
-            modelBuilder.Entity("Core.Entities.FormulationTable", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("BasicFormulationRows")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("CompoundFormulationRows")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("CultureId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("Standard")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CultureId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FormulationTables");
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b28c4810-f53e-49af-a6c4-0657610b603b"),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CultureId = new Guid("8a3a7b72-2b6a-4b7e-b8d2-3b8d6f6e8a3a"),
+                            ExpectedBasesSaturation = 70f,
+                            LeafParameters = "{\"LeafFertilizerColumns\":[{\"Header\":0,\"Products\":[]},{\"Header\":1,\"Products\":[]},{\"Header\":2,\"Products\":[]},{\"Header\":3,\"Products\":[]},{\"Header\":4,\"Products\":[]},{\"Header\":5,\"Products\":[{\"Name\":\"enxofre l\\u00EDquido\",\"Solid\":false,\"MinConcentration\":0.5,\"MaxConcentration\":1}]},{\"Header\":6,\"Products\":[{\"Name\":\"sulfato de zinco\",\"Solid\":true,\"MinConcentration\":1,\"MaxConcentration\":2},{\"Name\":\"zinco l\\u00EDquido\",\"Solid\":false,\"MinConcentration\":0.5,\"MaxConcentration\":1}]},{\"Header\":7,\"Products\":[{\"Name\":\"\\u00E1cido b\\u00F3rico\",\"Solid\":true,\"MinConcentration\":1,\"MaxConcentration\":2},{\"Name\":\"boro l\\u00EDquido\",\"Solid\":false,\"MinConcentration\":0.5,\"MaxConcentration\":1}]},{\"Header\":8,\"Products\":[{\"Name\":\"fungicida c\\u00FAprico\",\"Solid\":false,\"MinConcentration\":1,\"MaxConcentration\":2}]},{\"Header\":9,\"Products\":[{\"Name\":\"sulfato de mangan\\u00EAs\",\"Solid\":true,\"MinConcentration\":1,\"MaxConcentration\":2}]},{\"Header\":10,\"Products\":[{\"Name\":\"ferro quelatizado\",\"Solid\":false,\"MinConcentration\":1,\"MaxConcentration\":2}]},{\"Header\":11,\"Products\":[]}]}",
+                            SoilParameters = "[{\"ExpectedProductivity\":2,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":56,\"Value2\":45,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":10,\"Value2\":6,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":46,\"Value2\":37,\"Value3\":27,\"Value4\":0},{\"Header\":7,\"NumberOfValues\":4,\"Value1\":6,\"Value2\":4,\"Value3\":0,\"Value4\":0}]},{\"ExpectedProductivity\":4,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":72,\"Value2\":58,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":13,\"Value2\":9,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":65,\"Value2\":51,\"Value3\":38,\"Value4\":0}]},{\"ExpectedProductivity\":6,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":88,\"Value2\":70,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":16,\"Value2\":11,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":83,\"Value2\":66,\"Value3\":50,\"Value4\":0}]},{\"ExpectedProductivity\":8,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":104,\"Value2\":83,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":19,\"Value2\":13,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":102,\"Value2\":81,\"Value3\":61,\"Value4\":0}]},{\"ExpectedProductivity\":10,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":120,\"Value2\":96,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":22,\"Value2\":15,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":119,\"Value2\":96,\"Value3\":72,\"Value4\":0}]},{\"ExpectedProductivity\":12,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":136,\"Value2\":109,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":26,\"Value2\":18,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":138,\"Value2\":110,\"Value3\":82,\"Value4\":0}]},{\"ExpectedProductivity\":14,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":152,\"Value2\":122,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":29,\"Value2\":20,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":156,\"Value2\":125,\"Value3\":94,\"Value4\":0}]},{\"ExpectedProductivity\":16,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":168,\"Value2\":134,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":32,\"Value2\":22,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":174,\"Value2\":140,\"Value3\":105,\"Value4\":0}]},{\"ExpectedProductivity\":18,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":184,\"Value2\":147,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":35,\"Value2\":24,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":193,\"Value2\":154,\"Value3\":116,\"Value4\":0}]},{\"ExpectedProductivity\":20,\"SoilFertilizerColumns\":[{\"Header\":0,\"NumberOfValues\":2,\"Value1\":200,\"Value2\":160,\"Value3\":0,\"Value4\":0},{\"Header\":1,\"NumberOfValues\":3,\"Value1\":38,\"Value2\":26,\"Value3\":0,\"Value4\":0},{\"Header\":2,\"NumberOfValues\":4,\"Value1\":211,\"Value2\":170,\"Value3\":127,\"Value4\":0}]}]",
+                            Standard = true,
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 49, 178, DateTimeKind.Local).AddTicks(33),
+                            UserId = new Guid("dc2e8a59-709d-4e59-8b51-4ee3023c9dfc")
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.NutrientTable", b =>
@@ -225,6 +201,20 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("NutrientTables");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b28c4809-f53e-49af-a6c4-0657610b603b"),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CultureId = new Guid("8a3a7b72-2b6a-4b7e-b8d2-3b8d6f6e8a3a"),
+                            Division = 0,
+                            LeafData = "[{\"NutrientColumns\":[{\"Header\":0,\"Inverted\":false,\"Min\":28,\"Med1\":0,\"Med2\":0,\"Max\":31},{\"Header\":1,\"Inverted\":false,\"Min\":1.7,\"Med1\":0,\"Med2\":0,\"Max\":1.9},{\"Header\":2,\"Inverted\":false,\"Min\":22,\"Med1\":0,\"Med2\":0,\"Max\":25},{\"Header\":3,\"Inverted\":false,\"Min\":10,\"Med1\":0,\"Med2\":0,\"Max\":13},{\"Header\":4,\"Inverted\":false,\"Min\":2.7,\"Med1\":0,\"Med2\":0,\"Max\":3.5},{\"Header\":5,\"Inverted\":false,\"Min\":1.8,\"Med1\":0,\"Med2\":0,\"Max\":2.3},{\"Header\":6,\"Inverted\":false,\"Min\":10,\"Med1\":0,\"Med2\":0,\"Max\":20},{\"Header\":7,\"Inverted\":false,\"Min\":50,\"Med1\":0,\"Med2\":0,\"Max\":60},{\"Header\":8,\"Inverted\":false,\"Min\":10,\"Med1\":0,\"Med2\":0,\"Max\":15},{\"Header\":9,\"Inverted\":false,\"Min\":100,\"Med1\":0,\"Med2\":0,\"Max\":150},{\"Header\":10,\"Inverted\":false,\"Min\":120,\"Med1\":0,\"Med2\":0,\"Max\":200},{\"Header\":11,\"Inverted\":false,\"Min\":15,\"Med1\":0,\"Med2\":0,\"Max\":18},{\"Header\":12,\"Inverted\":false,\"Min\":1.1,\"Med1\":0,\"Med2\":0,\"Max\":1.4},{\"Header\":13,\"Inverted\":false,\"Min\":12,\"Med1\":0,\"Med2\":0,\"Max\":17},{\"Header\":14,\"Inverted\":false,\"Min\":467,\"Med1\":0,\"Med2\":0,\"Max\":620},{\"Header\":15,\"Inverted\":false,\"Min\":1867,\"Med1\":0,\"Med2\":0,\"Max\":3100},{\"Header\":16,\"Inverted\":false,\"Min\":0.5,\"Med1\":0,\"Med2\":0,\"Max\":0.7},{\"Header\":17,\"Inverted\":false,\"Min\":85,\"Med1\":0,\"Med2\":0,\"Max\":190},{\"Header\":18,\"Inverted\":false,\"Min\":1.7,\"Med1\":0,\"Med2\":0,\"Max\":2.5},{\"Header\":19,\"Inverted\":false,\"Min\":6,\"Med1\":0,\"Med2\":0,\"Max\":9},{\"Header\":20,\"Inverted\":false,\"Min\":146,\"Med1\":0,\"Med2\":0,\"Max\":250},{\"Header\":21,\"Inverted\":false,\"Min\":2.8,\"Med1\":0,\"Med2\":0,\"Max\":4.8},{\"Header\":22,\"Inverted\":false,\"Min\":67,\"Med1\":0,\"Med2\":0,\"Max\":130},{\"Header\":23,\"Inverted\":false,\"Min\":0.8,\"Med1\":0,\"Med2\":0,\"Max\":2}]}]",
+                            SoilData = "{\"NutrientColumns\":[{\"Header\":1,\"Inverted\":false,\"Min\":10,\"Med1\":0,\"Med2\":0,\"Max\":30},{\"Header\":2,\"Inverted\":false,\"Min\":0.15,\"Med1\":0,\"Med2\":0,\"Max\":0.3},{\"Header\":3,\"Inverted\":false,\"Min\":2,\"Med1\":0,\"Med2\":0,\"Max\":5},{\"Header\":4,\"Inverted\":false,\"Min\":0.5,\"Med1\":0,\"Med2\":0,\"Max\":1.5},{\"Header\":5,\"Inverted\":false,\"Min\":5,\"Med1\":0,\"Med2\":0,\"Max\":20},{\"Header\":6,\"Inverted\":false,\"Min\":2,\"Med1\":0,\"Med2\":0,\"Max\":6},{\"Header\":7,\"Inverted\":false,\"Min\":0.5,\"Med1\":0,\"Med2\":0,\"Max\":2},{\"Header\":8,\"Inverted\":false,\"Min\":0.5,\"Med1\":0,\"Med2\":0,\"Max\":10},{\"Header\":9,\"Inverted\":false,\"Min\":10,\"Med1\":0,\"Med2\":0,\"Max\":100},{\"Header\":10,\"Inverted\":false,\"Min\":10,\"Med1\":0,\"Med2\":0,\"Max\":40},{\"Header\":24,\"Inverted\":false,\"Min\":5,\"Med1\":0,\"Med2\":0,\"Max\":6.5},{\"Header\":25,\"Inverted\":true,\"Min\":0.2,\"Med1\":0.5,\"Med2\":1,\"Max\":2},{\"Header\":26,\"Inverted\":true,\"Min\":1,\"Med1\":2.5,\"Med2\":5,\"Max\":9},{\"Header\":27,\"Inverted\":false,\"Min\":0.7,\"Med1\":2,\"Med2\":4,\"Max\":7},{\"Header\":28,\"Inverted\":false,\"Min\":0.6,\"Med1\":1.8,\"Med2\":3.6,\"Max\":6},{\"Header\":29,\"Inverted\":false,\"Min\":1.6,\"Med1\":4.3,\"Med2\":8.6,\"Max\":15},{\"Header\":30,\"Inverted\":false,\"Min\":20,\"Med1\":40,\"Med2\":60,\"Max\":80}]}",
+                            Standard = true,
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 49, 173, DateTimeKind.Local).AddTicks(838),
+                            UserId = new Guid("dc2e8a59-709d-4e59-8b51-4ee3023c9dfc")
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.User", b =>
@@ -311,10 +301,10 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("835ee2ee-a450-40cc-b1b6-20f8b0d1e0f8"),
+                            Id = new Guid("dc2e8a59-709d-4e59-8b51-4ee3023c9dfc"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1c613d08-7ea8-4bff-a237-2194bc88816f",
-                            CreatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8398),
+                            ConcurrencyStamp = "41615b30-d7fd-4288-8648-5e676d3843c2",
+                            CreatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(722),
                             Email = "example1@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "John",
@@ -322,21 +312,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE1@GMAIL.COM",
                             NormalizedUserName = "JOHN",
-                            PasswordHash = "$2a$11$1aVo9gpw0LR/35RHTv3Zquxe0RqEvBmYCbH6Za67DIQ4Jb.NQRLK6",
+                            PasswordHash = "$2a$11$UOOuNoCypwkOXJ/g4/V2fuoKOlTjal5Sa4rKF3weTyRDLtW0eEGH.",
                             PhoneNumber = "(99) 99999-9991",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2fdeb789-31cd-4654-a220-00ee193bdce7",
+                            SecurityStamp = "9eeb6f42-f372-41b1-b189-a2f62863ccb7",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(7030),
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 390, DateTimeKind.Local).AddTicks(9172),
                             UserName = "john"
                         },
                         new
                         {
-                            Id = new Guid("4d542a3e-7311-471b-a4c5-52b89145376d"),
+                            Id = new Guid("e58aa8e9-4f03-4957-843b-a51c78cf70b5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1929765c-3e2d-44b7-86be-9a124158c543",
-                            CreatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8584),
+                            ConcurrencyStamp = "a11227b6-4555-4976-adcc-41c7b0d5389d",
+                            CreatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(929),
                             Email = "example2@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Jane",
@@ -344,21 +334,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE2@GMAIL.COM",
                             NormalizedUserName = "JANE",
-                            PasswordHash = "$2a$11$/kYhsZj8tdOMBNod4lUPg..2iTFo7LsDRzvlFdcpOWcxCh2L5lhry",
+                            PasswordHash = "$2a$11$5YDyXd5PWwEFXb3I/QO26.W5dNrlwnc2hqzdT153vURDMi90Cmcaa",
                             PhoneNumber = "(99) 99999-9992",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ab83559b-292f-4e8e-8832-f06eb51710e5",
+                            SecurityStamp = "3159e17a-d5cd-418e-af98-b9b38ae9ca5d",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8571),
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(911),
                             UserName = "jane"
                         },
                         new
                         {
-                            Id = new Guid("246a92c7-5253-46e3-b1f5-e68bdb47f938"),
+                            Id = new Guid("7e16a336-80ce-4da5-8123-d97ec7992be1"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8c0ea6b1-f50d-4134-bd2e-5a5a4a40b0eb",
-                            CreatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8587),
+                            ConcurrencyStamp = "4bb02210-ea71-4a6a-8919-5964c19fec85",
+                            CreatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(939),
                             Email = "example3@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Alice",
@@ -366,21 +356,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE3@GMAIL.COM",
                             NormalizedUserName = "ALICE",
-                            PasswordHash = "$2a$11$Rc2PWc43i9gHulya2fpwvugOvaR/HSypJXxO6Xkogwex0W4z4DB0G",
+                            PasswordHash = "$2a$11$rzQt2H4GBJ7XgBLdHKp53eNCOlRXJd4JI0YaTOd/F6U6AyZKtmwtG",
                             PhoneNumber = "(99) 99999-9993",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fe94485d-5439-4cf7-8516-0b50336de685",
+                            SecurityStamp = "09218002-ae71-4f9e-ad44-457bad89949c",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8585),
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(930),
                             UserName = "alice"
                         },
                         new
                         {
-                            Id = new Guid("343d92d4-3a40-4ee4-a3e6-7fc04ec9877f"),
+                            Id = new Guid("7b9dc903-4eba-41c7-89d6-b120b57124bf"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f14dcfe4-9c70-45eb-bfd2-c4064c2a4623",
-                            CreatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8590),
+                            ConcurrencyStamp = "d1086ac3-971e-40a6-8093-e57ebd5e6692",
+                            CreatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(959),
                             Email = "example4@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Bob",
@@ -388,21 +378,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE4@GMAIL.COM",
                             NormalizedUserName = "BOB",
-                            PasswordHash = "$2a$11$duh7Fo05X7SgobfGBkM1pORsPyyy/XV0pmhg4G32kJWtlQTCL9psi",
+                            PasswordHash = "$2a$11$shCkks.VNeM1W5mgu60x8OfydrOzD6/lKnjG.XaxsXlaagJysRN8S",
                             PhoneNumber = "(99) 99999-9994",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "32d2bf35-689a-437c-ab7f-5ca23e94f431",
+                            SecurityStamp = "ae8c77eb-029c-4e71-9f73-3502e2612e81",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8588),
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(952),
                             UserName = "bob"
                         },
                         new
                         {
-                            Id = new Guid("b46610d4-9f49-4812-91c3-870bfe3a5c9b"),
+                            Id = new Guid("27a5fc22-4cb4-4af7-b949-e7296472fd72"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a0c9b307-12ef-4117-a1c0-f1219af4732f",
-                            CreatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8597),
+                            ConcurrencyStamp = "2982c3c9-07cf-4efe-84fb-a198f1764f4a",
+                            CreatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(963),
                             Email = "example5@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Charlie",
@@ -410,13 +400,13 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE5@GMAIL.COM",
                             NormalizedUserName = "CHARLIE",
-                            PasswordHash = "$2a$11$yipidSoqpeo7oItx0TCtkO/AWujMHFt99/Rhmk3EsAICSAfHuRXk6",
+                            PasswordHash = "$2a$11$K.GX3QS6e.Fn/vRPEaJEyuTqtdh6GGInWB1bxfqpPWSvAqRtweNZS",
                             PhoneNumber = "(99) 99999-9995",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d1652962-e794-4557-85c6-c5ac8d7f00f2",
+                            SecurityStamp = "efc46f81-c7f5-428b-9c86-1a52d3e0be7d",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 9, 7, 19, 17, 26, 345, DateTimeKind.Local).AddTicks(8591),
+                            UpdatedAt = new DateTime(2025, 9, 17, 8, 20, 48, 391, DateTimeKind.Local).AddTicks(960),
                             UserName = "charlie"
                         });
                 });
@@ -450,36 +440,36 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4c73c00e-d370-4110-b752-8cab173511d2"),
-                            ConcurrencyStamp = "5096e0df-90d4-4cf9-bbf4-c4203669316d",
+                            Id = new Guid("e5d56861-e071-4f7a-be34-2a6d416aa2d6"),
+                            ConcurrencyStamp = "553b0f14-1920-4125-88bd-a1c8705e21e5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("bb29a436-5e41-4799-849b-0aac4b43a5cb"),
-                            ConcurrencyStamp = "676a38f8-03b5-4c3f-8613-325f10f075bf",
+                            Id = new Guid("e2231ea4-61e8-42cc-b345-dff04884b84b"),
+                            ConcurrencyStamp = "09c6437f-a9e7-4c98-a8da-88a31f6bba7f",
                             Name = "Owner",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = new Guid("c9ee0adb-cea5-46fd-b474-c39be3d8e13c"),
-                            ConcurrencyStamp = "764b1498-e29c-473c-8ebe-b11c8f92134d",
+                            Id = new Guid("911f5414-6bce-4ac3-9460-bbb4242f0d52"),
+                            ConcurrencyStamp = "3778cea8-0628-4f93-a8ea-0687d25b4aec",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         },
                         new
                         {
-                            Id = new Guid("0527c785-2ab6-4377-b3a7-dc1f3e1fe57e"),
-                            ConcurrencyStamp = "4d29bdf9-19da-460c-b072-8264bba6eaa3",
+                            Id = new Guid("163c418f-6f3a-4269-9f14-bb29a929e5cb"),
+                            ConcurrencyStamp = "14aeade6-b8c9-47b3-91ad-72073462d128",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = new Guid("2f0ccda2-1756-4f2e-aba5-5e698d757e89"),
-                            ConcurrencyStamp = "647e318b-0a4a-4e95-abe2-3206cdbc5a31",
+                            Id = new Guid("4f38c233-3155-43d4-afd0-1bee7c30f199"),
+                            ConcurrencyStamp = "29e6004e-33e9-4a48-b680-6542c38bfcb3",
                             Name = "Collaborator",
                             NormalizedName = "COLLABORATOR"
                         });
@@ -571,28 +561,28 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("835ee2ee-a450-40cc-b1b6-20f8b0d1e0f8"),
-                            RoleId = new Guid("4c73c00e-d370-4110-b752-8cab173511d2")
+                            UserId = new Guid("dc2e8a59-709d-4e59-8b51-4ee3023c9dfc"),
+                            RoleId = new Guid("e5d56861-e071-4f7a-be34-2a6d416aa2d6")
                         },
                         new
                         {
-                            UserId = new Guid("4d542a3e-7311-471b-a4c5-52b89145376d"),
-                            RoleId = new Guid("bb29a436-5e41-4799-849b-0aac4b43a5cb")
+                            UserId = new Guid("e58aa8e9-4f03-4957-843b-a51c78cf70b5"),
+                            RoleId = new Guid("e2231ea4-61e8-42cc-b345-dff04884b84b")
                         },
                         new
                         {
-                            UserId = new Guid("246a92c7-5253-46e3-b1f5-e68bdb47f938"),
-                            RoleId = new Guid("c9ee0adb-cea5-46fd-b474-c39be3d8e13c")
+                            UserId = new Guid("7e16a336-80ce-4da5-8123-d97ec7992be1"),
+                            RoleId = new Guid("911f5414-6bce-4ac3-9460-bbb4242f0d52")
                         },
                         new
                         {
-                            UserId = new Guid("343d92d4-3a40-4ee4-a3e6-7fc04ec9877f"),
-                            RoleId = new Guid("0527c785-2ab6-4377-b3a7-dc1f3e1fe57e")
+                            UserId = new Guid("7b9dc903-4eba-41c7-89d6-b120b57124bf"),
+                            RoleId = new Guid("163c418f-6f3a-4269-9f14-bb29a929e5cb")
                         },
                         new
                         {
-                            UserId = new Guid("b46610d4-9f49-4812-91c3-870bfe3a5c9b"),
-                            RoleId = new Guid("2f0ccda2-1756-4f2e-aba5-5e698d757e89")
+                            UserId = new Guid("27a5fc22-4cb4-4af7-b949-e7296472fd72"),
+                            RoleId = new Guid("4f38c233-3155-43d4-afd0-1bee7c30f199")
                         });
                 });
 
@@ -625,25 +615,6 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("Core.Entities.FertilizerTable", b =>
-                {
-                    b.HasOne("Core.Entities.Culture", "Culture")
-                        .WithMany()
-                        .HasForeignKey("CultureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Culture");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Core.Entities.FormulationTable", b =>
                 {
                     b.HasOne("Core.Entities.Culture", "Culture")
                         .WithMany()

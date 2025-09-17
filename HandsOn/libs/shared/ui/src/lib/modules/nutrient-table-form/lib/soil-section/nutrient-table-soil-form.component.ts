@@ -21,8 +21,8 @@ export class NutrientTableSoilFormComponent {
     {
       title: "Macronutrientes",
       items: [
-        { label: 'P', complex: true, id: 0, inverted: false },
-        { label: 'K', complex: true, id: 1, inverted: false },
+        { label: 'P', complex: false, id: 0, inverted: false },
+        { label: 'K', complex: false, id: 1, inverted: false },
         { label: 'Ca', complex: false, id: 2, inverted: false },
         { label: 'Mg', complex: false, id: 3, inverted: false },
         { label: 'S', complex: false, id: 4, inverted: false }
@@ -41,7 +41,7 @@ export class NutrientTableSoilFormComponent {
     {
       title: 'Fertilidade',
       items: [
-        { label: 'Matéria Orgânica', complex: true, id: 10, inverted: false },
+        { label: 'Matéria Orgânica', complex: false, id: 10, inverted: false },
         { label: 'Soma de Bases', complex: true, id: 11, inverted: false },
         { label: 'CTC', complex: true, id: 12, inverted: false },
         { label: 'Sat. por Bases', complex: true, id: 13, inverted: false }
