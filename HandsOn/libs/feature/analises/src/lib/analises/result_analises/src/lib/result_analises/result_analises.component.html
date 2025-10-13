@@ -1,162 +1,131 @@
+<p-toast></p-toast>
+<p-confirmDialog header="Confirmação" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
-<a [routerLink]="['/app/analises']">
-      <p class="description flex items-center gap-1 link">
-        <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
-      </p>
-</a>
+<div class="flex flex-col md:flex-row min-h-screen rounded-xl font-sans bg-slate-900 text-slate-100" *ngIf="!loading && analise; else loadingOrError">
 
-<div *ngIf="loading; else tableContent" class="flex justify-center items-center">
-    <lib-spinner></lib-spinner>
-</div>
-
-<ng-template #tableContent >
-  <div class="flex flex-col gap-2">
-    <h1 class="font-bold text-xl">Informações da análise</h1>
-    <div class="flex flex-col items-center justify-center gap-3">
-      <div *ngIf="analise" class="bg-slate-800/80 border-l-4 border-slate-500 text-slate-300 p-4 rounded-r-lg my-4 w-full">
-        <div class="flex">
-          <div class="pr-4">
-              <i class="pi pi-file text-2xl text-slate-400"></i>
-          </div>
-
-          <div class="flex-grow">
-            <p class="font-bold text-white mb-3">Resumo</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-
-              <div>
-                  <span class="block text-slate-400 text-xs">Tipo</span>
-                  <p class="font-semibold text-white">{{ analise.tipo }}</p>
-              </div>
-              
-              <div>
-                  <span class="block text-slate-400 text-xs">Proprietário</span>
-                  <p class="font-semibold text-white">{{ analise.proprietario }}</p>
-              </div>
-              
-              <div>
-                  <span class="block text-slate-400 text-xs">Propriedade</span>
-                  <p class="font-semibold text-white">{{ analise.propriedade }}</p>
-              </div>
-
-              <div>
-                  <span class="block text-slate-400 text-xs">Laboratório</span>
-                  <p class="font-semibold text-white">{{ analise.lab }}</p>
-              </div>
-
-              <div>
-                  <span class="block text-slate-400 text-xs">Data da Análise</span>
-                  <p class="font-semibold text-white">{{ analise.dataAnalise | date:'dd/MM/yyyy' }}</p>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
+  <aside class="w-full md:w-72 flex-shrink-0 rounded-xl bg-slate-900 border-b md:border-b-0 md:border-r border-slate-700 p-4 md:p-6 flex flex-col">
+    <div class="flex items-center gap-3 text-xl font-semibold mb-6">
+      {{ tipo ? 'Análise de Foliar' : 'Análise de Solo' }}
+    </div>
+    <nav>
+      <h3 class="px-4 text-xs font-bold uppercase text-slate-500 tracking-wider mb-3">Talhões Analisados</h3>
+      <div class="flex flex-row md:flex-col gap-1 overflow-x-auto pb-2">
+        <button *ngFor="let plot of allPlots" (click)="selectPlot(plot)" class="block w-full text-left py-2.5 px-4 rounded-lg font-medium cursor-pointer transition-colors duration-200"
+          [ngClass]="{
+            'bg-teal-500 text-slate-900 shadow-md': plot.plotName === selectedPlot?.plotName,
+            'text-slate-400 hover:bg-slate-800 hover:text-slate-100': plot.plotName !== selectedPlot?.plotName
+          }">
+          {{ plot.plotName }} ({{ plot.cultureType }})
+        </button>
       </div>
-      <div class="bg-slate-800/80 border-l-4 border-slate-500 text-slate-300 p-4 rounded-r-lg my-4 w-full" role="note">
-          <div class="flex items-center">
-            
-            <i class="pi pi-lightbulb text-2xl text-slate-400 mr-4"></i>
+    </nav>
+  </aside>
 
-            <div>
-              <p class="font-bold text-white">Observações Importantes</p>
-              <ul class="mt-2 list-disc list-inside text-sm text-slate-300">
-                <li *ngIf="!tipo">A correção de micronutrientes (além do Boro) é predominantemente feita via foliar. Para isso, é necessária uma análise de folhas. </li>
-                <li *ngIf="tipo">A correção de macronutrientes é feita via solo. Para isso é necessário uma análise de solo para que sejam feitas recomendações.</li>
-                <li *ngIf="tipo">Recomenda-se sempre fazer um teste de calda antes da mistura de produtos e realizar a aplicação nas horas mais frescas do dia.</li>
-              </ul>
-            </div>
+  <main class="flex-grow p-4 md:p-10 overflow-y-auto" *ngIf="selectedPlot; else noPlotSelected">
+    <header class="mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white">Análise do Talhão: {{ selectedPlot.plotName }}</h1>
+      <p class="text-slate-400 mt-1 text-sm md:text-base">Análise de {{ analise.dataAnalise | date:'dd/MM/yyyy' }} • Cultura: {{ selectedPlot.cultureType }}</p>
+    </header>
 
+    <div class="flex border-b border-slate-700">
+      <button (click)="setActiveTab('analise')" class="py-3 px-4 md:px-6 font-semibold transition-colors duration-200 text-sm md:text-base"
+        [ngClass]="activeTab === 'analise' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-slate-400 hover:text-slate-100 border-b-2 border-transparent'">
+        Análise e Edição
+      </button>
+      <button (click)="setActiveTab('recomendacao')" [disabled]="!fertilizerRecommendations"
+        class="py-3 px-4 md:px-6 font-semibold transition-colors duration-200 disabled:text-slate-600 disabled:cursor-not-allowed text-sm md:text-base"
+        [ngClass]="activeTab === 'recomendacao' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-slate-400 hover:text-slate-100 border-b-2 border-transparent'">
+        Plano de Recomendação
+      </button>
+    </div>
+
+    <div *ngIf="activeTab === 'analise'" class="mt-8">
+      <div class="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700 mb-8">
+        <h2 class="text-xl font-semibold text-white mb-4">Informações do Talhão</h2>
+        <div class="flex items-start gap-3 bg-amber-900/50 border border-amber-700/80 text-amber-200 text-sm rounded-lg p-3 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+            <p>Preencha todas as configurações do talhão corretamente. A precisão destes dados é crucial para a geração de uma recomendação adequada.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <label for="cultureType" class="block text-sm font-medium text-slate-400 mb-1">Cultura</label>
+            <input type="text" id="cultureType" [(ngModel)]="selectedPlot.cultureType" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+          </div>
+          <div>
+            <label for="expectedProductivity" class="block text-sm font-medium text-slate-400 mb-1">Prod. Esperada (sc/ha)</label>
+            <input type="number" id="expectedProductivity" [(ngModel)]="selectedPlot.expectedProductivity" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+          </div>
+          <div>
+            <label for="prnt" class="block text-sm font-medium text-slate-400 mb-1">PRNT do Calcário (%)</label>
+            <input type="number" id="prnt" [(ngModel)]="selectedPlot.prnt" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+          </div>
+          <div>
+            <label for="width" class="block text-sm font-medium text-slate-400 mb-1">Espaç. Ruas (m)</label>
+            <input type="number" id="width" [(ngModel)]="selectedPlot.width" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+          </div>
+          <div>
+            <label for="height" class="block text-sm font-medium text-slate-400 mb-1">Espaç. Plantas (m)</label>
+            <input type="number" id="height" [(ngModel)]="selectedPlot.height" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
           </div>
         </div>
-        <div class="bg-amber-900/50 border-l-4 border-amber-500 text-amber-100 p-4 rounded-r-lg my-4 w-full" role="alert">
-          <div class="flex items-center">
-            
-            <i class="pi pi-info-circle text-2xl text-amber-500 mr-4"></i>
-
-            <div>
-              <p class="font-bold text-white">Atenção:</p>
-              <ul class="mt-2 list-disc list-inside text-sm text-amber-200">
-                <li>Os cálculos são feitos com base na cultura do <strong>café</strong>, as recomendações podem não ser tão eficazes para talhões destinados a outras culturas.</li>
-                <li>Verifique se os dados da análise estão preenchidos corretamente na tabela abaixo.</li>
-                <li>A <strong>produtividade esperada</strong> da safra é crucial para o cálculo da necessidade de nutrientes.</li>
-                <li>O <strong>espaçamento da lavoura</strong> define a população de plantas por hectare, impactando a dose final dos fertilizantes.</li>
-              </ul>
-            </div>
-
-          </div>
-        </div>
-        <lib-table
-          [data]="data"
-          [columns]="columns"
-          [loading]="loading"
-          [showMoreButton]="showMoreButton"
-          (refresh)="refresh()"
-          [editable]="editable"
-          (rowUpdate)="onRowUpdate($event)"
-          [ShowSaveButton]="true"
-          (save)="onSave()"
-        >
-        </lib-table>
-
-      <lib-button [label]="'Solicitar recomendações'" (click)="solicitar_recomendacoes()"></lib-button>
-    
-    </div>  
-
-    <div *ngIf="resultsData" class="w-full ">
-        <p-card header="Resultados da Análise">
-
-        <p-accordion  multiple="true" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
-
-          <p-accordion-panel *ngFor="let plot of resultsData.plots; let i = index" [value]="i">
-
-            <p-accordion-header>
-              {{ plot.plotName }} ({{ plot.cultureType }})
-            </p-accordion-header>
-
-            <p-accordion-content>
-              <div class="flex flex-col md:flex-row w-full gap-4">
-
-              <div class="w-full">
-                <lib-bar-chart 
-                  [analysisData]="mapDataForCharts(plot)">
-                </lib-bar-chart>
-              </div>
-            </div>
-
-            </p-accordion-content>
-            
-          </p-accordion-panel>
-        </p-accordion>
-
-      </p-card>
       </div>
       
+      <div class="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700">
+        <h2 class="text-xl font-semibold text-white mb-2">Análise de Nutrientes</h2>
+         <div class="flex items-start gap-3 bg-amber-900/50 border border-amber-700/80 text-amber-200 text-sm rounded-lg p-3 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+            <p>Verifique se os valores dos nutrientes correspondem exatamente aos do laudo original (PDF). Valores incorretos podem levar a recomendações imprecisas.</p>
+        </div>
+        <div *ngFor="let nutrient of editableNutrientData; trackBy: trackByName">
+          <lib-bar-chart 
+            [analysisData]="nutrient"
+            (valueChanged)="onNutrientValueChange($event)">
+          </lib-bar-chart>
+        </div>
+      </div>
 
-    <div *ngIf="fertilizerRecommendations && fertilizerRecommendations.plots.length > 0" class="mt-4">
-      <p-card header="Recomendações de Fertilizantes">
-
-        <p-accordion  multiple="true" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
-
-          <p-accordion-panel *ngFor="let plot of fertilizerRecommendations.plots; let i = index" [value]="i">
-
-            <p-accordion-header>
-              {{ plot.plotName }} ({{ plot.cultureType }})
-            </p-accordion-header>
-
-            <p-accordion-content>
-              <div *ngFor="let rec of plot.productRecomendations" class="mb-4">
-                <lib-recommendation-display *ngIf="!tipo"  [recommendation]="rec.recommendation" />
-                <lib-leaf-recommendation-display *ngIf="tipo" [leafRecommendation]="rec.leafRecommendation" />
-              </div>
-            </p-accordion-content>
-            
-          </p-accordion-panel>
-        </p-accordion>
-
-      </p-card>
+      <div class="flex flex-col sm:flex-row justify-end gap-4 mt-8">
+        <button (click)="onDeletePlot()" class="w-full sm:w-auto px-6 py-3 font-semibold text-slate-100 bg-red-600 hover:bg-red-500 rounded-lg transition-colors">
+          Excluir Talhão
+        </button>
+        <button (click)="onSave()" class="w-full sm:w-auto px-6 py-3 font-semibold text-slate-900 bg-green-600 hover:bg-green-500 rounded-lg transition-colors">
+          Salvar Alterações
+        </button>
+        <button (click)="solicitar_recomendacoes()" class="w-full sm:w-auto px-6 py-3 font-semibold text-slate-900 bg-blue-500 hover:bg-blue-400 rounded-lg transition-colors">
+          Gerar Recomendação
+        </button>
+      </div>
     </div>
-  </div>
 
+    <div *ngIf="activeTab === 'recomendacao' && fertilizerRecommendations" class="mt-8">
+        <div *ngFor="let plot of fertilizerRecommendations.plots">
+            <ng-container *ngIf="plot.plotName === selectedPlot.plotName">
+                <div *ngFor="let rec of plot.productRecomendations">
+                    <lib-recommendation-display *ngIf="!tipo" [recommendation]="rec.recommendation"></lib-recommendation-display>
+                    <lib-leaf-recommendation-display *ngIf="tipo" [leafRecommendation]="rec.leafRecommendation"></lib-leaf-recommendation-display>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+  </main>
+</div>
+
+<ng-template #loadingOrError>
+  <div class="flex flex-col justify-center items-center h-screen bg-slate-900 text-slate-400 p-4 text-center">
+    <lib-spinner *ngIf="loading"></lib-spinner>
+    <p *ngIf="!loading && !analise" class="text-lg">Não foi possível carregar os dados da análise.</p>
+  </div>
 </ng-template>
+
+<ng-template #noPlotSelected>
+    <div class="flex flex-col justify-center items-center h-full text-slate-400 p-4 text-center">
+        <svg class="w-16 h-16 mb-4 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.226 2.226 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122" /></svg>
+        <h2 class="text-xl font-semibold text-white">Nenhum talhão para exibir</h2>
+        <p class="mt-1">Todos os talhões foram removidos da análise.</p>
+    </div>
+</ng-template>
+

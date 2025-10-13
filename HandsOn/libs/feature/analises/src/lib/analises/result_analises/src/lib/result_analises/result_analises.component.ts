@@ -1,50 +1,53 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, NutrientTable, Plots } from '@farm/core';
+import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, NutrientTable, Plots, LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
 import { FormsModule } from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
 import { ResultAnaliseComponentFacade } from './result_analises.component.facade';
-import { Column, Row, TableComponent, ButtonComponent, SpinnerComponent, NutrientAnalysis } from '@farm/ui';
-import { filter, map, switchMap, take } from 'rxjs/operators';
-import { EMPTY } from 'rxjs';
-import { AccordionModule } from 'primeng/accordion';
+import { SpinnerComponent } from '@farm/ui';
+import { filter, take } from 'rxjs/operators';
 import { BarChartComponent } from '@farm/ui';
-import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
-import {RecommendationDisplayComponent} from './recommendation-display/recommendation-display.component';
+import { RecommendationDisplayComponent } from './recommendation-display/recommendation-display.component';
 import { LeafRecommendationDisplayComponent } from './leaf-recommendation-display/leaf-recommendation-display.component';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+
+export type NutrientAnalysis = any;
 
 @Component({
   selector: 'lib-result-analises',
-  imports: [CommonModule, TableModule, CardModule, ButtonComponent, InputNumberModule, InputTextModule, 
-    FormsModule, SpinnerComponent, RouterModule, TableComponent, AccordionModule, BarChartComponent,
-     RecommendationDisplayComponent, LeafRecommendationDisplayComponent],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    SpinnerComponent,
+    BarChartComponent,
+    RecommendationDisplayComponent,
+    LeafRecommendationDisplayComponent,
+    ToastModule,
+    ConfirmDialogModule,
+  ],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './result_analises.component.html',
-  styleUrl: './result_analises.component.css',
 })
 export class ResultAnalisesComponent implements OnInit {
   id: string | undefined = undefined;
   loading = true;
-  formData = new FormData();
-  tipoAnalise = 0;
-  resultsData: DadosAnalise | null = null;
-  showMoreButton = true;
   analise: Analise | undefined;
-  data: Row[] = [];
-  columns: Column[] = [];
-  editable = true;
-  tipo = 0;
+  allPlots: Plots[] = [];
+  selectedPlot: Plots | undefined;
+  activeTab: 'analise' | 'recomendacao' = 'analise';
+  editableNutrientData: NutrientAnalysis[] = [];
   fertilizerRecommendations: RecommendFertilizers | undefined;
   table: NutrientTable | undefined;
-  leafChartData: NutrientAnalysis[] = [];
-  soilChartData: NutrientAnalysis[] = [];
+  tipo = 0; 
 
   constructor(
     private route: ActivatedRoute,
-    private dataAnalyseFacade: ResultAnaliseComponentFacade,
+    public dataAnalyseFacade: ResultAnaliseComponentFacade,
+    private confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit() {
@@ -54,184 +57,193 @@ export class ResultAnalisesComponent implements OnInit {
       return;
     }
 
-    this.dataAnalyseFacade.loadAnalyse(this.id)
-
-    this.dataAnalyseFacade.analise$.subscribe((analiseData) => {
-      if (analiseData) {
-        this.data = analiseData;
-      }}
-    );
-    
-    this.dataAnalyseFacade.infosAnalise$.subscribe((analise) => {
-      if(analise){
-        this.analise = analise
-      }
-    })
-
-    this.dataAnalyseFacade.tipo$.subscribe((tipo) => {
-      this.tipo = tipo;
-    });
-
-    this.dataAnalyseFacade.columns$.subscribe((cols) => {
-      if (cols) {
-        this.columns = cols;
-      }
-    });
-
-    this.dataAnalyseFacade.loading$.subscribe((loading) => {
-      this.loading = loading;
-    });
-  }
-
-   mapDataForCharts(plot : Plots): NutrientAnalysis[] {
-    if (!this.table) {
-      return [];
-    }
-    const plotData = plot
-    if (this.tipo === 0 && this.table.soilNutrientRow) {
-      return this.transformNutrients(plotData.nutrients || [], this.table.soilNutrientRow.nutrientColumns);
-    } else if (this.tipo === 1 && this.table.leafNutrientRows?.length) {
-      return this.transformNutrients(plotData.nutrients || [], this.table.leafNutrientRows[0].nutrientColumns);
-    }
-    return []
-  }
-
-private transformNutrients(measuredValues: Nutrients[], rangeDefs: any[]): NutrientAnalysis[] {
-    const chartData: NutrientAnalysis[] = [];
-    const activeNutrientMap = this.tipo ? LEAF_NUTRIENT_MAP : SOIL_NUTRIENT_MAP;
-
-    for (const info of Object.values(activeNutrientMap)) {
-        if (info.name.includes('/')) continue;
-        const measured = measuredValues.find(m => m.header === info.symbol || m.header === info.name);
-        const rangeDef = rangeDefs.find(r => r.header === info.symbol || r.header === info.name);
-
-        if (measured && measured.value && rangeDef) {
-            const min = parseFloat(rangeDef.min.toFixed(2));
-            const max = parseFloat(rangeDef.max.toFixed(2));
-            const inverted = !!rangeDef.inverted;
-            const veryGoodMaxFinal = parseFloat((max * 1.3).toFixed(2));
-            const clear = (str: string) => str.replace(/\s+[A-Za-z%µ/²³]+$/, "");
-
-            if (rangeDef.med1 !== 0 && rangeDef.med2 !== 0) {
-                const med1 = parseFloat(rangeDef.med1.toFixed(2));
-                const med2 = parseFloat(rangeDef.med2.toFixed(2));
-                const veryGoodMax = parseFloat((max * 1.2).toFixed(2));
-
-                chartData.push({
-                    name: clear(info.displayName), value: measured.value, unit: info.unit, inverted: inverted,
-                    isSimpleRange: false,
-                    ranges: {
-                        veryLow:  { min: 0,    max: min },
-                        low:      { min: min,  max: med1 },
-                        medium:   { min: med1, max: med2 },
-                        good:     { min: med2, max: max },
-                        veryGood: { min: max,  max: veryGoodMax },
-                    },
-                    veryLowMin: 0, veryHighMax: veryGoodMax, scaleMax: veryGoodMax
-                });
-            } else {
-                const midpoint = parseFloat(((min + max) / 2).toFixed(2));
-                const highMax = parseFloat((max * 1.2).toFixed(2));
-
-                chartData.push({
-                    name: clear(info.displayName), value: measured.value, unit: info.unit, inverted: inverted,
-                    isSimpleRange: true,
-                    ranges: {
-                        low:      { min: 0,        max: min },
-                        medium:   { min: min,      max: midpoint },
-                        adequate: { min: midpoint, max: max },
-                        high:     { min: max,      max: highMax },
-                    },
-                    veryLowMin: 0, veryHighMax: veryGoodMaxFinal, scaleMax: veryGoodMaxFinal
-                });
-            }
-        }
-    }
-    return chartData;
-}
-
-  refresh() {
     this.dataAnalyseFacade.loadAnalyse(this.id);
+
+    this.dataAnalyseFacade.plots$.subscribe((plots) => {
+      if (plots) {
+        this.allPlots = plots;
+        if (!this.selectedPlot || !this.allPlots.some(p => p.plotName === this.selectedPlot?.plotName)) {
+            this.selectPlot(this.allPlots.length > 0 ? this.allPlots[0] : undefined);
+        }
+      }
+    });
+
+    this.dataAnalyseFacade.infosAnalise$.subscribe(analise => {
+      if (analise) this.analise = analise;
+    });
+
+    this.dataAnalyseFacade.tipo$.subscribe(tipo => this.tipo = tipo);
+    this.dataAnalyseFacade.loading$.subscribe(loading => this.loading = loading);
+
+    this.dataAnalyseFacade.fertilizers$.subscribe(fertilizers => {
+      if (fertilizers) {
+        this.fertilizerRecommendations = fertilizers;
+        this.setActiveTab('recomendacao');
+      }
+    });
+
+    this.dataAnalyseFacade.nutrientTable$.subscribe(table => {
+      if (table) this.table = table;
+    });
   }
 
-  plotsForAnalysis(): Plots[] {
-    const activeNutrientMap = this.tipo ? LEAF_NUTRIENT_MAP : SOIL_NUTRIENT_MAP;
-
-    return this.data.map((item) => {
-      const nutrients = Object.entries(activeNutrientMap).map(([nutrientCode, info]) => {
-        const value = Number(item[info.displayName]) || 0;
-        return { header: Number(nutrientCode), value: value };
+  onNutrientValueChange(updatedNutrient: NutrientAnalysis) {
+    const index = this.editableNutrientData.findIndex(n => n.name === updatedNutrient.name);
+    if (index !== -1) {
+      this.editableNutrientData[index] = updatedNutrient;
+    }
+    if (this.selectedPlot && this.selectedPlot.nutrients) {
+      const activeNutrientMap = this.tipo === 1 ? LEAF_NUTRIENT_MAP : SOIL_NUTRIENT_MAP;
+      const nutrientEntry = Object.entries(activeNutrientMap).find(([, info]) => {
+        const cleanedName = info.displayName.replace(/\s+[A-Za-z%µ/²³]+$/, "");
+        return cleanedName === updatedNutrient.name;
       });
-      return {
-        plotName: item['plotName']?.toString(),
-        cultureType: item['cultureType']?.toString(),
-        expectedProductivity: Number(item['expectedProductivity']),
-        width: Number(item['width']),
-        height: Number(item['height']),
-        prnt: Number(item['prnt']),
-        nutrients
-      } as Plots;
-    });
+      if (nutrientEntry) {
+        const nutrientKey = nutrientEntry[0];
+        const nutrientInPlot = this.selectedPlot.nutrients.find(n => n.header == nutrientKey);
+        if (nutrientInPlot) {
+          nutrientInPlot.value = Number(updatedNutrient.value);
+        }
+      }
+    }
   }
 
   solicitar_recomendacoes() {
-    const plotsForAnalysis: Plots[] = this.plotsForAnalysis();
-
-    const dadosAnalise = {
+    if (!this.selectedPlot) return;
+    const dadosAnalise: DadosAnalise = {
       month: '-',
-      soilAnalysis: !this.tipo,
-      plots: plotsForAnalysis
+      soilAnalysis: this.tipo === 0,
+      plots: [this.selectedPlot]
     };
-
-    this.dataAnalyseFacade.load(dadosAnalise as DadosAnalise);
-
-    this.dataAnalyseFacade.dataAnalyse$.pipe(
-      filter(dataAnalyse => !!dataAnalyse?.plots),
-      take(1),
-      switchMap(dataAnalyse => {
-        if (!dataAnalyse) return EMPTY;
-        const cultureType = dataAnalyse.plots[0]?.cultureType;
-        if (!cultureType) return EMPTY;
-        this.dataAnalyseFacade.getNutrientTable(cultureType);
-        return this.dataAnalyseFacade.nutrientTable$.pipe(
-          filter(table => !!table),
-          take(1),
-          map(table => ({ dataAnalyse, table }))
-        );
-      }),
-      switchMap(({ dataAnalyse, table }) => {
-        this.table = table;
-        this.resultsData = { ...dataAnalyse, plots: dataAnalyse.plots };
-
-        const fertilizersPayload: RecommendFertilizers = {
-          soilRecomendation: !this.tipo,
-          plots: dataAnalyse.plots
-        };
-
-        this.dataAnalyseFacade.recommendFertilizers(fertilizersPayload);
-        return this.dataAnalyseFacade.fertilizers$.pipe(
-            filter(fertilizers => !!fertilizers),
-            take(1)
-        );
-      })
-    ).subscribe(fertilizers => {
-      if (fertilizers) {
-        this.fertilizerRecommendations = fertilizers;
+    this.dataAnalyseFacade.load(dadosAnalise);
+  }
+  
+  selectPlot(plot: Plots | undefined) {
+    if(plot){
+      this.selectedPlot = JSON.parse(JSON.stringify(plot));
+      this.fertilizerRecommendations = undefined;
+      this.activeTab = 'analise';
+      if (plot.cultureType) {
+        this.dataAnalyseFacade.getNutrientTable(plot.cultureType);
+        this.dataAnalyseFacade.nutrientTable$.pipe(filter(table => !!table), take(1))
+          .subscribe(table => {
+            this.table = table;
+            if (this.selectedPlot) {
+              this.editableNutrientData = this.mapDataForCharts(this.selectedPlot);
+            }
+          });
       }
+    } else {
+      this.selectedPlot = undefined;
+    }
+  }
+
+  setActiveTab(tab: 'analise' | 'recomendacao') {
+    this.activeTab = tab;
+  }
+
+  onSave() {
+    
+    this.confirmationService.confirm({
+        message: 'Tem certeza que deseja salvar as alterações?',
+        header: 'Confirmação de Salvamento',
+        icon: 'pi pi-info-circle',
+        acceptLabel: 'Sim',
+        rejectLabel: 'Não',
+        accept: () => {
+            if (this.analise && this.analise.dadosAnalise && this.selectedPlot) {
+                const plotIndex = this.allPlots.findIndex(p => p.plotName === this.selectedPlot?.plotName);
+                if (plotIndex !== -1) {
+                    const updatedPlots = [...this.allPlots];
+                    updatedPlots[plotIndex] = this.selectedPlot;
+                    const updatedAnalise = { 
+                      ...this.analise, 
+                      dadosAnalise: { ...this.analise.dadosAnalise, plots: updatedPlots }
+                    };
+                    this.dataAnalyseFacade.updateAnalyse(updatedAnalise);
+                }
+            }
+        },
     });
   }
 
-  onSave(){
-    if (this.analise && this.analise.dadosAnalise) {
-        this.analise.dadosAnalise.plots = this.plotsForAnalysis();
-        this.dataAnalyseFacade.updateAnalyse(this.analise);
-    }
+  onDeletePlot() {
+    this.confirmationService.confirm({
+        message: `Tem certeza que deseja excluir o talhão "${this.selectedPlot?.plotName}"? Esta ação não pode ser desfeita.`,
+        header: 'Confirmação de Exclusão',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Excluir',
+        rejectLabel: 'Cancelar',
+        acceptButtonStyleClass: 'p-button-danger',
+        accept: () => {
+            if (this.analise && this.analise.dadosAnalise && this.selectedPlot) {
+                const updatedPlots = this.allPlots.filter(p => p.plotName !== this.selectedPlot?.plotName);
+                const updatedAnalise = {
+                  ...this.analise,
+                  dadosAnalise: { ...this.analise.dadosAnalise, plots: updatedPlots }
+                };
+                this.dataAnalyseFacade.updateAnalyse(updatedAnalise);
+            }
+        },
+    });
   }
 
-  onRowUpdate(updatedRow: Row) {
-    const index = this.data.findIndex(row => row['id'] === updatedRow['id']);
-    if (index !== -1) {
-      this.data[index] = updatedRow;
+  mapDataForCharts(plot: Plots): NutrientAnalysis[] {
+    if (!this.table) return [];
+    let nutrientDefs;
+    if (this.tipo === 0 && this.table.soilNutrientRow) {
+        nutrientDefs = this.table.soilNutrientRow.nutrientColumns;
+    } else if (this.tipo === 1 && this.table.leafNutrientRows?.length) {
+        nutrientDefs = this.table.leafNutrientRows[0].nutrientColumns;
     }
+    return nutrientDefs ? this.transformNutrients(plot.nutrients || [], nutrientDefs) : [];
+  }
+
+  private transformNutrients(measuredValues: Nutrients[], rangeDefs: any[]): NutrientAnalysis[] {
+    const chartData: NutrientAnalysis[] = [];
+    const activeNutrientMap = this.tipo ? LEAF_NUTRIENT_MAP : SOIL_NUTRIENT_MAP;
+    for (const [key, info] of Object.entries(activeNutrientMap)) {
+      if (info.name.includes('/')) continue;
+      const measured = measuredValues.find(m => m.header == key);
+      const rangeDef = rangeDefs.find(r => r.header === info.symbol || r.header === info.name);
+      if (measured && measured.value != null && rangeDef) {
+        const min = parseFloat(rangeDef.min.toFixed(2));
+        const max = parseFloat(rangeDef.max.toFixed(2));
+        const inverted = !!rangeDef.inverted;
+        const clear = (str: string) => str.replace(/\s+[A-Za-z%µ/²³]+$/, "");
+        const scaleMax = max > 0 ? parseFloat((max * 1.3).toFixed(2)) : parseFloat((min * 1.3).toFixed(2)) || 1;
+        const value = measured.analysis ? parseFloat(measured.analysis) : measured.value;
+        let dataPoint: NutrientAnalysis = {
+            name: clear(info.displayName), value: value, unit: info.unit, inverted: inverted,
+            veryLowMin: 0, scaleMax: scaleMax,
+        };
+        if (rangeDef.med1 && rangeDef.med2) {
+            const med1 = parseFloat(rangeDef.med1.toFixed(2));
+            const med2 = parseFloat(rangeDef.med2.toFixed(2));
+            dataPoint = { ...dataPoint, isSimpleRange: false, ranges: {
+                veryLow:  { min: 0, max: min },
+                low:      { min: min, max: med1 },
+                medium:   { min: med1, max: med2 },
+                good:     { min: med2, max: max },
+                veryGood: { min: max, max: scaleMax },
+            }};
+        } else {
+            const midpoint = parseFloat(((min + max) / 2).toFixed(2));
+            dataPoint = { ...dataPoint, isSimpleRange: true, ranges: {
+                low:      { min: 0, max: min },
+                medium:   { min: min, max: midpoint },
+                adequate: { min: midpoint, max: max },
+                high:     { min: max, max: scaleMax },
+            }};
+        }
+        chartData.push(dataPoint);
+      }
+    }
+    return chartData;
+  }
+
+  trackByName(index: number, item: NutrientAnalysis): string {
+    return item.name;
   }
 }
+

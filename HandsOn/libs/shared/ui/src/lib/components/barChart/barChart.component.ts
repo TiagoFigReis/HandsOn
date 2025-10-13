@@ -1,105 +1,53 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
-
-interface BaseNutrientAnalysis {
-  name: string;
-  value: number;
-  unit: string;
-  inverted?: boolean;
-  veryLowMin: number;
-  veryHighMax: number;
-  scaleMax: number;
-}
-interface SimpleNutrientAnalysis extends BaseNutrientAnalysis {
-  isSimpleRange: true;
-  ranges: {
-    low: { min: number; max: number };
-    medium: { min: number; max: number };
-    adequate: { min: number; max: number };
-    high: { min: number; max: number };
-  };
-}
-interface ComplexNutrientAnalysis extends BaseNutrientAnalysis {
-  isSimpleRange: false;
-  ranges: {
-    veryLow: { min: number; max: number };
-    low: { min: number; max: number };
-    medium: { min: number; max: number };
-    good: { min: number; max: number };
-    veryGood: { min: number; max: number };
-  };
-}
-export type NutrientAnalysis = SimpleNutrientAnalysis | ComplexNutrientAnalysis;
 
 type SimpleClassification = 'low' | 'medium' | 'adequate' | 'high';
 type ComplexClassification = 'very-low' | 'low' | 'medium' | 'good' | 'very-good';
 type NutrientClassification = SimpleClassification | ComplexClassification;
+export type NutrientAnalysis = any;
 
 @Component({
   selector: 'lib-bar-chart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './barChart.component.html',
-  styleUrl: './barChart.component.css',
 })
 export class BarChartComponent {
-  @Input() analysisData: NutrientAnalysis[] = [];
-  public activeFilter = 'all';
+  @Input({ required: true }) analysisData!: NutrientAnalysis;
+  @Output() valueChanged = new EventEmitter<NutrientAnalysis>();
 
-  private simpleColors: Record<SimpleClassification, string> = { 'low': '#e74c3c', 'medium': '#3498db', 'adequate': '#2ecc71', 'high': '#f39c12' };
-  private complexColors: Record<ComplexClassification, string> = { 'very-low': '#a93226', 'low': '#e74c3c', 'medium': '#3498db', 'good': '#2ecc71', 'very-good': '#27ae60' };
-  private invertedColors: Record<ComplexClassification, string> = { 'very-low': '#27ae60', 'low': '#2ecc71', 'medium': '#3498db', 'good': '#f39c12', 'very-good': '#d35400' };
-  
   constructor(private sanitizer: DomSanitizer) {}
 
-  get filteredData(): NutrientAnalysis[] {
-    if (this.activeFilter === 'all') {
-      return this.analysisData;
-    }
-    return this.analysisData.filter(item => {
-      const displayLevel = this.getDisplayLevel(item);
-
-      switch (this.activeFilter) {
-        case 'Adequado':
-          return displayLevel === 'Adequado' || displayLevel === 'Bom';
-        
-        case 'Aceitável':
-          return displayLevel === 'Aceitável' || displayLevel === 'Médio';
-
-        default:
-          return displayLevel === this.activeFilter;
-      }
-    });
+  onValueChange(newValue: number): void {
+    const updatedAnalysis = { ...this.analysisData, value: newValue };
+    this.valueChanged.emit(updatedAnalysis);
   }
 
-  setFilter(filter: string): void {
-    this.activeFilter = this.activeFilter === filter ? 'all' : filter;
-  }
-
-  public getNutrientLevel(item: NutrientAnalysis): NutrientClassification {
-    const { value } = item;
-    if (item.isSimpleRange) {
-      if (value <= item.ranges.low.max) return 'low';
-      if (value <= item.ranges.medium.max) return 'medium';
-      if (value <= item.ranges.adequate.max) return 'adequate';
+  public getNutrientLevel(): NutrientClassification {
+    const { value } = this.analysisData;
+    if (this.analysisData.isSimpleRange) {
+      if (value <= this.analysisData.ranges.low.max) return 'low';
+      if (value <= this.analysisData.ranges.medium.max) return 'medium';
+      if (value <= this.analysisData.ranges.adequate.max) return 'adequate';
       return 'high';
     } else {
-      if (value <= item.ranges.veryLow.max) return 'very-low';
-      if (value <= item.ranges.low.max) return 'low';
-      if (value <= item.ranges.medium.max) return 'medium';
-      if (value <= item.ranges.good.max) return 'good';
+      if (value <= this.analysisData.ranges.veryLow.max) return 'very-low';
+      if (value <= this.analysisData.ranges.low.max) return 'low';
+      if (value <= this.analysisData.ranges.medium.max) return 'medium';
+      if (value <= this.analysisData.ranges.good.max) return 'good';
       return 'very-good';
     }
   }
 
-  public getDisplayLevel(item: NutrientAnalysis): string {
-    const level = this.getNutrientLevel(item);
-    if (item.isSimpleRange) {
+  public getDisplayLevel(): string {
+    const level = this.getNutrientLevel();
+    if (this.analysisData.isSimpleRange) {
       const labels: Record<SimpleClassification, string> = { 'low': 'Baixo', 'medium': 'Aceitável', 'adequate': 'Adequado', 'high': 'Alto' };
       return labels[level as SimpleClassification];
     } else {
-      if (item.inverted) {
+      if (this.analysisData.inverted) {
         const labels: Record<ComplexClassification, string> = { 'very-low': 'Muito Bom', 'low': 'Bom', 'medium': 'Médio', 'good': 'Alto', 'very-good': 'Muito Alto' };
         return labels[level as ComplexClassification];
       }
@@ -107,53 +55,54 @@ export class BarChartComponent {
       return labels[level as ComplexClassification];
     }
   }
-
-  public getCurrentColors(item: NutrientAnalysis): Record<string, string> {
-    if (item.isSimpleRange) { return this.simpleColors; }
-    return item.inverted ? this.invertedColors : this.complexColors;
+  
+  public getNutrientLevelClass(): any {
+    const level = this.getDisplayLevel();
+    return {
+      'bg-red-500': level === 'Muito Baixo' || level === 'Baixo' || (this.analysisData.inverted && (level === 'Alto' || level === 'Muito Alto')),
+      'bg-yellow-500': level === 'Alto' || level === 'Muito Alto' || (this.analysisData.inverted && (level === 'Médio')),
+      'bg-blue-500': level === 'Médio' || level === 'Aceitável',
+      'bg-green-500': level === 'Bom' || level === 'Muito Bom' || level === 'Adequado',
+    };
   }
   
-  public getValuePercentage(value: number, item: NutrientAnalysis): number {
-    const { veryLowMin, veryHighMax } = item;
-    if (veryHighMax === veryLowMin) return 0;
-    const totalRange = veryHighMax - veryLowMin;
-    const valueRelativeToMin = value - veryLowMin;
-    const percentage = (valueRelativeToMin / totalRange) * 100;
+  public getValuePercentage(value: number): number {
+    const { veryLowMin, scaleMax } = this.analysisData;
+    if (scaleMax === veryLowMin) return 0;
+    const percentage = ((value - veryLowMin) / (scaleMax - veryLowMin)) * 100;
     return Math.max(0, Math.min(100, percentage));
   }
 
-  getRangeGradient(item: NutrientAnalysis): SafeStyle {
-    const getPercent = (value: number) => this.getValuePercentage(value, item);
-    const colors = this.getCurrentColors(item);
-    let gradient: string;
+  getRangeGradient(): SafeStyle {
+    let colors = {
+        'very-low': '#a93226', 'low': '#e74c3c', 'medium': '#3498db',
+        'good': '#2ecc71', 'very-good': '#27ae60', 'adequate': '#2ecc71', 'high': '#f39c12'
+    };
 
-    if (item.isSimpleRange) {
-      const p1 = getPercent(item.ranges.low.min);
-      const p2 = getPercent(item.ranges.low.max);
-      const p3 = getPercent(item.ranges.medium.max);
-      const p4 = getPercent(item.ranges.adequate.max);
-      const p5 = getPercent(item.ranges.high.max);
-      gradient = `linear-gradient(to right, 
-        ${colors['low']} ${p1}% ${p2}%, 
-        ${colors['medium']} ${p2}% ${p3}%,
-        ${colors['adequate']} ${p3}% ${p4}%, 
-        ${colors['high']} ${p4}% ${p5}%
-      )`;
-    } else {
-      const p1 = getPercent(item.ranges.veryLow.max);
-      const p2 = getPercent(item.ranges.low.max);
-      const p3 = getPercent(item.ranges.medium.max);
-      const p4 = getPercent(item.ranges.good.max);
-      const p5 = getPercent(item.ranges.veryGood.max);
-      gradient = `linear-gradient(to right, 
-        ${colors['very-low']} ${p1}%, 
-        ${colors['low']} ${p1}% ${p2}%, 
-        ${colors['medium']} ${p2}% ${p3}%, 
-        ${colors['good']} ${p3}% ${p4}%, 
-        ${colors['very-good']} ${p4}% ${p5}%
-      )`;
+    if (this.analysisData.inverted) {
+        colors = {
+            'very-low': '#27ae60', 'low': '#2ecc71', 'medium': '#3498db',
+            'good': '#e74c3c', 'very-good': '#a93226', 'adequate': '#2ecc71', 'high': '#f39c12'
+        };
     }
-    
-    return this.sanitizer.bypassSecurityTrustStyle(gradient);
+
+    let stops = '';
+    if (this.analysisData.isSimpleRange) {
+        stops = `
+            ${colors['low']} 0%, ${colors['low']} ${this.getValuePercentage(this.analysisData.ranges.low.max)}%,
+            ${colors['medium']} ${this.getValuePercentage(this.analysisData.ranges.low.max)}%, ${colors['medium']} ${this.getValuePercentage(this.analysisData.ranges.medium.max)}%,
+            ${colors['adequate']} ${this.getValuePercentage(this.analysisData.ranges.medium.max)}%, ${colors['adequate']} ${this.getValuePercentage(this.analysisData.ranges.adequate.max)}%,
+            ${colors['high']} ${this.getValuePercentage(this.analysisData.ranges.adequate.max)}%, ${colors['high']} 100%
+        `;
+    } else {
+        stops = `
+            ${colors['very-low']} 0%, ${colors['very-low']} ${this.getValuePercentage(this.analysisData.ranges.veryLow.max)}%,
+            ${colors['low']} ${this.getValuePercentage(this.analysisData.ranges.veryLow.max)}%, ${colors['low']} ${this.getValuePercentage(this.analysisData.ranges.low.max)}%,
+            ${colors['medium']} ${this.getValuePercentage(this.analysisData.ranges.low.max)}%, ${colors['medium']} ${this.getValuePercentage(this.analysisData.ranges.medium.max)}%,
+            ${colors['good']} ${this.getValuePercentage(this.analysisData.ranges.medium.max)}%, ${colors['good']} ${this.getValuePercentage(this.analysisData.ranges.good.max)}%,
+            ${colors['very-good']} ${this.getValuePercentage(this.analysisData.ranges.good.max)}%, ${colors['very-good']} 100%
+        `;
+    }
+    return this.sanitizer.bypassSecurityTrustStyle(`linear-gradient(to right, ${stops})`);
   }
 }

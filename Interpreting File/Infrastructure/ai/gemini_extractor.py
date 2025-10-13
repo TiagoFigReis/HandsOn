@@ -95,6 +95,7 @@ class GeminiExtractor(IAiExtractor):
             - Normalize Ca, Mg, K, H+Al para cmolc/dm³. Se estiver em mmolc/dm³, divida por 10. Se o K estiver em mg/dm³ converta para cmolc/dm³ dividindo por 391.
             - Se não houver distinção entre pH H2O e pH CaCl2, assuma como pH CaCl2.
             - O pH H2O é valor do pH CaCl2 + 0.6.
+            - O enxofre em alguns casos pode estar representado como SO4.
             - Retorne os valores de ponto flutuante sempre com 2 casas decimais.
         4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor `null`. Não invente dados.
         5.  **Extrator**: Tente identificar o método extrator usado, especialmente para Fósforo e micronutrientes.
