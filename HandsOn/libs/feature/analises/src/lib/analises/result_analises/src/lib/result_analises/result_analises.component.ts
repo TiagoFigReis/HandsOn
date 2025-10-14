@@ -143,7 +143,6 @@ export class ResultAnalisesComponent implements OnInit {
   }
 
   onSave() {
-    
     this.confirmationService.confirm({
         message: 'Tem certeza que deseja salvar as alterações?',
         header: 'Confirmação de Salvamento',

@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Google.Cloud.AIPlatform.V1" Version="3.48.0" />
+    <PackageReference Include="Grpc.Core.Api" Version="2.71.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.2" />
@@ -20,7 +22,10 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
+    <PackageReference Include="Python.Runtime" Version="2.7.9" />
+    <PackageReference Include="pythonnet" Version="3.0.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,27 +10,27 @@ using Infrastructure.Persistence.Context;
 using Core.Repositories;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Utils;
+using Infrastructure.Utils.InterpretingFile;
 
 namespace Infrastructure
 {
     public static class InfrastructureModule
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+     
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services
-                .AddPersistence()
-                .AddRepositories()
-                .AddIdentity();
+                .AddPersistence(configuration) 
+                .AddRepositories(configuration) 
+                .AddIdentity(configuration); 
 
             return services;
         }
 
-        private static IServiceCollection AddPersistence(this IServiceCollection services)
+        private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<UsersDbContext>((serviceProvider, options) =>
+            services.AddDbContext<UsersDbContext>(options =>
             {
-                var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-
                 var dbHost = Environment.GetEnvironmentVariable("DATABASE_SERVER");
                 var dbPort = Environment.GetEnvironmentVariable("DATABASE_PORT");
                 var dbName = Environment.GetEnvironmentVariable("DATABASE_NAME");
@@ -50,18 +50,25 @@ namespace Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddRepositories(this IServiceCollection services)
+        private static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<GeminiSettings>(configuration.GetSection(GeminiSettings.SectionName));
+
+            services.AddHttpClient();
+
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IAnaliseRepository, AnaliseRepository>();
             services.AddScoped<INutrientTablesRepository, NutrientTablesRepository>();
+            services.AddScoped<IAiExtractor, GeminiExtractor>();
+            services.AddSingleton<IPdfProcessor, PdfProcessor>();
+            services.AddScoped<PdfInterpretationService>();
             services.AddScoped<ICulturesRepository, CulturesRepository>();
             services.AddScoped<IFertilizerTablesRepository, FertilizerTablesRepository>();
 
             return services;
         }
 
-        private static IServiceCollection AddIdentity(this IServiceCollection services)
+        private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<DataProtectionTokenProviderOptions>(options =>
                 options.TokenLifespan = TimeSpan.FromMinutes(15));
@@ -86,7 +93,6 @@ namespace Infrastructure
                 auth.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                var configuration = services.BuildServiceProvider().GetService<IConfiguration>()!;
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY") ?? configuration["Jwt:Key"]!));
                 var issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? configuration["Jwt:Issuer"];
                 var audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? configuration["Jwt:Audience"];
@@ -107,8 +113,6 @@ namespace Infrastructure
             })
             .AddGoogle(options =>
             {
-                var configuration = services.BuildServiceProvider().GetService<IConfiguration>()!;
-
                 options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? configuration!.GetSection("Google:ClientId").Value!;
                 options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? configuration.GetSection("Google:ClientSecret").Value!;
             });

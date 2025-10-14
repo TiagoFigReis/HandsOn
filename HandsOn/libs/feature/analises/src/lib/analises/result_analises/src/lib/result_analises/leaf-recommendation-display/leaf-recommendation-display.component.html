@@ -1,13 +1,13 @@
 <div *ngIf="leafRecommendation" class="space-y-6">
 
-  <details *ngIf="leafRecommendation.corrections && leafRecommendation.corrections.length > 0" class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden" open>
+  <details *ngIf="leafRecommendation.corrections && leafRecommendation.corrections.length > 0" class="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden" open>
     <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-700/50">
       <span class="text-teal-400 font-bold text-lg">1.</span>
       <h2 class="font-bold text-lg text-white">Correções Necessárias</h2>
     </summary>
     <div class="p-6 border-t border-slate-700 space-y-4">
       <div *ngFor="let correction of leafRecommendation.corrections" 
-           class="p-4 bg-slate-700/80 rounded-lg border border-slate-600 shadow-md">
+           class="p-4 bg-slate-800/80 rounded-lg border border-slate-600 shadow-md">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-3">
           <h3 class="text-xl font-bold text-white mb-2 sm:mb-0">{{ getLeafNutrientDisplayName(correction.nutrientName) }}</h3>
           <p-tag [value]="correction.diagnosisLevel" [severity]="getDiagnosisSeverity(correction.diagnosisLevel)" styleClass="font-semibold"></p-tag>
@@ -15,7 +15,7 @@
         <p class="text-slate-300 mb-4">{{ correction.recommendedActionTitle }}</p>
         <ul class="space-y-2">
           <li *ngFor="let product of correction.productOptions"
-              class="p-3 bg-slate-800 rounded-md flex flex-col sm:flex-row justify-between sm:items-center border-l-4 border-amber-500">
+              class="p-3 bg-slate-900 rounded-md flex flex-col sm:flex-row justify-between sm:items-center border-l-4 border-amber-500">
             <span class="text-slate-200 font-medium mb-1 sm:mb-0">{{ product.name }}</span>
             <span class="font-semibold text-amber-300">{{ product.recommendationText }}</span>
           </li>
@@ -24,7 +24,7 @@
     </div>
   </details>
 
-  <details *ngIf="leafRecommendation.maintenance" class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden" open>
+  <details *ngIf="leafRecommendation.maintenance" class="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden" open>
     <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-700/50">
       <span class="text-teal-400 font-bold text-lg">2.</span>
       <h2 class="font-bold text-lg text-white">{{ leafRecommendation.maintenance.title }}</h2>
@@ -33,7 +33,7 @@
       <p class="text-slate-300 mb-3">
         Os seguintes nutrientes estão em níveis adequados na sua lavoura:
       </p>
-      <div class="p-3 mb-4 bg-slate-700/80 rounded-md border-l-4 border-green-500">
+      <div class="p-3 mb-4 bg-slate-800/80 rounded-md border-l-4 border-green-500">
         <span class="font-bold text-lg text-green-300">
           {{ leafRecommendation.maintenance.adequateNutrients.map(getLeafNutrientDisplayName).join(', ') }}
         </span>

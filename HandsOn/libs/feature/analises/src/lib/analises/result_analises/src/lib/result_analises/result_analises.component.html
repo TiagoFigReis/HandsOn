@@ -1,9 +1,9 @@
 <p-toast></p-toast>
 <p-confirmDialog header="Confirmação" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
-<div class="flex flex-col md:flex-row min-h-screen rounded-xl font-sans bg-slate-900 text-slate-100" *ngIf="!loading && analise; else loadingOrError">
+<div class="flex flex-col md:flex-row min-h-screen rounded-xl font-sans secondary-background text-slate-100" *ngIf="!loading && analise; else loadingOrError">
 
-  <aside class="w-full md:w-72 flex-shrink-0 rounded-xl bg-slate-900 border-b md:border-b-0 md:border-r border-slate-700 p-4 md:p-6 flex flex-col">
+  <aside class="w-full md:w-72 flex-shrink-0 rounded-xl secondary-background border-b md:border-b-0 md:border-r border-slate-700 p-4 md:p-6 flex flex-col">
     <div class="flex items-center gap-3 text-xl font-semibold mb-6">
       {{ tipo ? 'Análise de Foliar' : 'Análise de Solo' }}
     </div>
@@ -27,7 +27,7 @@
       <p class="text-slate-400 mt-1 text-sm md:text-base">Análise de {{ analise.dataAnalise | date:'dd/MM/yyyy' }} • Cultura: {{ selectedPlot.cultureType }}</p>
     </header>
 
-    <div class="flex border-b border-slate-700">
+    <div class="flex border-b border-slate-800">
       <button (click)="setActiveTab('analise')" class="py-3 px-4 md:px-6 font-semibold transition-colors duration-200 text-sm md:text-base"
         [ngClass]="activeTab === 'analise' ? 'text-teal-400 border-b-2 border-teal-400' : 'text-slate-400 hover:text-slate-100 border-b-2 border-transparent'">
         Análise e Edição
@@ -40,7 +40,7 @@
     </div>
 
     <div *ngIf="activeTab === 'analise'" class="mt-8">
-      <div class="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700 mb-8">
+      <div class="bg-slate-900 rounded-xl p-4 md:p-6 border border-slate-700 mb-8">
         <h2 class="text-xl font-semibold text-white mb-4">Informações do Talhão</h2>
         <div class="flex items-start gap-3 bg-amber-900/50 border border-amber-700/80 text-amber-200 text-sm rounded-lg p-3 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
@@ -51,28 +51,28 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label for="cultureType" class="block text-sm font-medium text-slate-400 mb-1">Cultura</label>
-            <input type="text" id="cultureType" [(ngModel)]="selectedPlot.cultureType" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+            <input type="text" id="cultureType" [(ngModel)]="selectedPlot.cultureType" class="w-full bg-slate-800 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
           </div>
           <div>
             <label for="expectedProductivity" class="block text-sm font-medium text-slate-400 mb-1">Prod. Esperada (sc/ha)</label>
-            <input type="number" id="expectedProductivity" [(ngModel)]="selectedPlot.expectedProductivity" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+            <input type="number" id="expectedProductivity" [(ngModel)]="selectedPlot.expectedProductivity" class="w-full bg-slate-800 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
           </div>
           <div>
             <label for="prnt" class="block text-sm font-medium text-slate-400 mb-1">PRNT do Calcário (%)</label>
-            <input type="number" id="prnt" [(ngModel)]="selectedPlot.prnt" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+            <input type="number" id="prnt" [(ngModel)]="selectedPlot.prnt" class="w-full bg-slate-800 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
           </div>
           <div>
             <label for="width" class="block text-sm font-medium text-slate-400 mb-1">Espaç. Ruas (m)</label>
-            <input type="number" id="width" [(ngModel)]="selectedPlot.width" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+            <input type="number" id="width" [(ngModel)]="selectedPlot.width" class="w-full bg-slate-800 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
           </div>
           <div>
             <label for="height" class="block text-sm font-medium text-slate-400 mb-1">Espaç. Plantas (m)</label>
-            <input type="number" id="height" [(ngModel)]="selectedPlot.height" class="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+            <input type="number" id="height" [(ngModel)]="selectedPlot.height" class="w-full bg-slate-800 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
           </div>
         </div>
       </div>
       
-      <div class="bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700">
+      <div class="bg-slate-900 rounded-xl p-4 md:p-6 border border-slate-700">
         <h2 class="text-xl font-semibold text-white mb-2">Análise de Nutrientes</h2>
          <div class="flex items-start gap-3 bg-amber-900/50 border border-amber-700/80 text-amber-200 text-sm rounded-lg p-3 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
@@ -89,7 +89,7 @@
       </div>
 
       <div class="flex flex-col sm:flex-row justify-end gap-4 mt-8">
-        <button (click)="onDeletePlot()" class="w-full sm:w-auto px-6 py-3 font-semibold text-slate-100 bg-red-600 hover:bg-red-500 rounded-lg transition-colors">
+        <button (click)="onDeletePlot()" class="w-full sm:w-auto px-6 py-3 font-semibold text-slate-900 bg-red-600 hover:bg-red-500 rounded-lg transition-colors">
           Excluir Talhão
         </button>
         <button (click)="onSave()" class="w-full sm:w-auto px-6 py-3 font-semibold text-slate-900 bg-green-600 hover:bg-green-500 rounded-lg transition-colors">

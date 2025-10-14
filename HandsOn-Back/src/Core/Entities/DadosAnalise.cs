@@ -21,7 +21,6 @@ namespace Core.Entities
         [JsonPropertyName("identificacao_talhao")]
         public string? IdentificacaoTalhao { get; set; }
 
-
         [JsonPropertyName("fosforo_p")]
         public decimal? FosforoP { get; set; }
 
