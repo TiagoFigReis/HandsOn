@@ -9,19 +9,21 @@ namespace Application.InputModels.FertilizerTableInputModels
         [Range(0, float.MaxValue, ErrorMessage = "Expected bases saturation cannot be negative.")]
         public float ExpectedBasesSaturation { get; set; }
 
-        public UpdateLeafFertilizerRowInputModel LeafFertilizerRows { get; set; } = new();
+        public UpdateLeafFertilizerRowInputModel LeafFertilizerRow { get; set; } = new();
         public ICollection<UpdateSoilFertilizerRowInputModel> SoilFertilizerRows { get; set; } = [];
 
         public FertilizerTable ToEntity()
         {
             var tableData = new FertilizerTableData
             {
-                LeafFertilizerRow = LeafFertilizerRows.ToEntity(),
+                LeafFertilizerRow = LeafFertilizerRow.ToEntity(),
                 SoilFertilizerRows = SoilFertilizerRows.Select(c => c.ToEntity()).ToList()
             };
 
-            var fertilizerTable = new FertilizerTable();
-            fertilizerTable.ExpectedBasesSaturation = ExpectedBasesSaturation;
+            var fertilizerTable = new FertilizerTable
+            {
+                ExpectedBasesSaturation = ExpectedBasesSaturation
+            };
 
             fertilizerTable.SetTableData(tableData);
 
@@ -73,6 +75,7 @@ namespace Application.InputModels.FertilizerTableInputModels
         {
             return new LeafFertilizerColumnData
             {
+                Header = Header,
                 Products = Products.Select(p => p.ToEntity()).ToList()
             };
         }

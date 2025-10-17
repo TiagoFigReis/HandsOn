@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Modules
 builder.Services
-    .AddInfrastructure()
+    .AddInfrastructure(builder.Configuration)
     .AddApplication();
 
 // Add services to the container.
@@ -78,6 +78,8 @@ builder.Services.AddSwaggerGen(options =>
 
     options.IncludeXmlComments(xmlPath);
 });
+
+Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", @"C:\Users\tiago\AppData\Local\Programs\Python\Python312\python312.dll");
 
 var app = builder.Build();
 

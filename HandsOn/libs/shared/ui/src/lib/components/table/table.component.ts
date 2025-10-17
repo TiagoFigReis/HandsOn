@@ -20,19 +20,20 @@ import {
 } from './lib/action-button/action-button.component';
 import { DadosAnalise, Nutrients, Plots } from '@farm/core'
 import { SelectChangeEvent, SelectModule } from 'primeng/select';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'lib-table',
   imports: [
     CommonModule,
     FormsModule,
+    SelectModule,
     ReactiveFormsModule,
     TableModule,
     Skeleton,
     ButtonComponent,
     InputComponent,
     ActionButtonComponent,
-    SelectModule
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
@@ -52,12 +53,19 @@ export class TableComponent implements AfterViewInit, OnInit {
   @Input() currencyCode: 'BRL' | 'USD' | 'EUR' = 'BRL';
   @Input() showMoreButton = false;
   @Input() editable = false;
+  @Input() ShowSaveButton = false
+
+  @Input() registerButton: true | false = false;
+  @Input() registerLink = "";
+  @Input() registerTooltip = "";
+
 
   @Output() optionSelected : EventEmitter<selectedOption> = new EventEmitter()
   @Output() rowUpdate: EventEmitter<Row> = new EventEmitter<Row>();
   @Output() rowSelect: EventEmitter<Row> = new EventEmitter();
   @Output() rowUnselect: EventEmitter<Row> = new EventEmitter();
   @Output() refresh: EventEmitter<void> = new EventEmitter();
+  @Output() save: EventEmitter<void> = new EventEmitter();
 
   @ViewChild(Table) table: Table | undefined;
 
@@ -68,6 +76,8 @@ export class TableComponent implements AfterViewInit, OnInit {
 
   columnsWidths: ColumnWidths = {};
   totalColumnsWidth = 0;
+
+  constructor(private router: Router){}
 
   ngOnInit() {
     this.searchControl.valueChanges
@@ -107,7 +117,7 @@ export class TableComponent implements AfterViewInit, OnInit {
     this.rowUnselect.emit(event);
   }
 
-  onCellUpdate(updatedRow: Row) {
+   onCellUpdate(updatedRow: Row) {
     this.rowUpdate.emit(updatedRow);
   }
 
@@ -191,8 +201,16 @@ export class TableComponent implements AfterViewInit, OnInit {
     });
   }
 
+  onSave(){
+    this.save.emit();
+  }
+
   onRefresh() {
     this.refresh.emit();
+  }
+
+  onRegister() {
+    this.router.navigate([this.registerLink])
   }
 
   calculateColumnsWidths() {
@@ -251,7 +269,7 @@ export class TableComponent implements AfterViewInit, OnInit {
 export { Action };
 
 export interface Row {
-  [key: string]: string | number | boolean | Date | Action[] | Blob | DadosAnalise | Plots | Nutrients[] | undefined | number[][] | any ;
+  [key: string]: string | number | boolean | Date | Action[] | Blob | DadosAnalise | Plots | Nutrients[] | undefined | number[][] | any;
 }
 
 export interface Column {
@@ -265,8 +283,8 @@ export interface Column {
     | 'number'
     | 'boolean'
     | 'action'
-    | 'file'
-    | 'select';
+    | 'select'
+    | 'file';
   sortable?: boolean;
   filterable?: boolean;
   visible?: boolean;

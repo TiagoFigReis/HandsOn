@@ -24,6 +24,7 @@ export * from './lib/services/dataAnalysis/dataAnalysis.service';
 export * from './lib/services/nutrient-table/nutrient-table.service';
 export * from './lib/services/culture/culture.service';
 export * from './lib/services/fertilizer-table/fertilizer-table.service';
+export * from './lib/services/theme/theme.service'
 
 // facades
 export * from './lib/facades/auth.facade';
@@ -53,6 +54,7 @@ export { BYPASS_INTERCEPTORS } from './lib/interceptors/authentication/authentic
 export * from './lib/utils/form-validators';
 export * from './lib/utils/min-max-validator';
 export * from './lib/utils/min-med-max-validator';
+export * from './lib/utils/descending-values-validator';
 
 // enums
 export * from './lib/enums/user-roles.enum';

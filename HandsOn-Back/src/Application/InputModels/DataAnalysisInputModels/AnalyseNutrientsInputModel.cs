@@ -26,6 +26,18 @@ namespace Application.InputModels.DataAnalysisInputModels
         [MinLength(1, ErrorMessage = "Plot name cannot be empty.")]
         public string? PlotName { get; set; }
 
+        [Required(ErrorMessage = "ExpectedProductivity is required.")]
+        public int ExpectedProductivity { get; set; }
+
+        [Required(ErrorMessage = "Width is required.")]
+        public float Width { get; set; }
+
+        [Required(ErrorMessage = "Height is required.")]
+        public float Height { get; set; }
+
+        [Required(ErrorMessage = "PRNT is required.")]
+        public float PRNT { get; set; }
+
         public ICollection<AnalyseSingleNutrientInputModel> Nutrients { get; set; } = new List<AnalyseSingleNutrientInputModel>();
     }
 

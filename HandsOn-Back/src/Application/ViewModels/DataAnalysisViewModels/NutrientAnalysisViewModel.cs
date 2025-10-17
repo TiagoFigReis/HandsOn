@@ -12,6 +12,14 @@ namespace Application.ViewModels.DataAnalysisViewModels
         public string CultureType { get; set; } = string.Empty;
         public string PlotName { get; set; } = string.Empty;
 
+        public int ExpectedProductivity { get; set; } 
+
+        public float Width { get; set; } 
+
+        public float Height { get; set; } 
+
+        public float PRNT { get; set; } 
+
         public ICollection<SingleNutrientAnalysisViewModel> Nutrients { get; set; } = new List<SingleNutrientAnalysisViewModel>();
     }
 

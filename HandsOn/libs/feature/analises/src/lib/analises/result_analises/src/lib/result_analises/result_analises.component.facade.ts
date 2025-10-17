@@ -1,37 +1,28 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, Culture, NutrientTableFacade, NutrientTable } from '@farm/core';
-import { Column, Row, SelectTable } from '@farm/ui';
-import { LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
+import { DataAnalyseFacade, DadosAnalise, AnaliseFacade, Plots, RecommendFertilizers, CultureFacade, NutrientTableFacade, NutrientTable, Analise, LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ResultAnaliseComponentFacade {
+  private plotsSubject = new BehaviorSubject<Plots[] | undefined>(undefined);
   private dataAnalyseSubject = new BehaviorSubject<DadosAnalise | null>(null);
   private fertilizersSubject = new BehaviorSubject<RecommendFertilizers | null>(null);
-  private analiseSubject = new BehaviorSubject<Row[] | undefined>(undefined);
-  private columnsSubject = new BehaviorSubject<Column[] | undefined>(undefined);
+  private infosAnaliseSubject = new BehaviorSubject<Analise | undefined>(undefined);
   private nutrientTableSubject = new BehaviorSubject<NutrientTable | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private tipoSubject = new BehaviorSubject<number>(0);
 
   id: string | undefined;
+  plots$: Observable<Plots[] | undefined> = this.plotsSubject.asObservable();
   nutrientTable$: Observable<NutrientTable | null> = this.nutrientTableSubject.asObservable();
-  analise$: Observable<Row[] | undefined> = this.analiseSubject.asObservable();
-  columns$: Observable<Column[] | undefined> = this.columnsSubject.asObservable();
+  infosAnalise$: Observable<Analise | undefined> = this.infosAnaliseSubject.asObservable();
   dataAnalyse$: Observable<DadosAnalise | null> = this.dataAnalyseSubject.asObservable();
   fertilizers$: Observable<RecommendFertilizers | null> = this.fertilizersSubject.asObservable();
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
   tipo$: Observable<number> = this.tipoSubject.asObservable();
-
-  cultures: Culture[] | undefined = undefined;
-  standardProductivity = '30';
-  standardWidth = '3.5';
-  standardHeight = '0.6';
-
-  selectOptions: SelectTable | undefined;
 
   constructor(
     private analiseFacade: AnaliseFacade,
@@ -43,31 +34,20 @@ export class ResultAnaliseComponentFacade {
   load(data: DadosAnalise) {
     this.dataAnalyseSubject.next(null);
     this.loadingSubject.next(true);
-
     this.dataAnalyseFacade.AnalyseNutrients(data).pipe(
       tap((dataAnalyse) => {
         this.dataAnalyseSubject.next(dataAnalyse);
-        this.loadingSubject.next(false);
+        this.recommendFertilizers({
+          soilRecomendation: data.soilAnalysis,
+          plots: dataAnalyse.plots
+        });
       }),
     ).subscribe();
-  }
-
-  getCultures(): Observable<Culture[]> {
-    return this.cultureFacade.getAllCultures().pipe(
-      tap(cultures => {
-        this.selectOptions = {
-          label: "Selecione uma cultura",
-          options: cultures,
-          optionLabel: "name"
-        };
-      })
-    );
   }
 
   getNutrientTable(culture: string) {
     this.nutrientTableSubject.next(null);
     this.loadingSubject.next(true);
-
     this.cultureFacade.getCultureByName(culture).subscribe((c) => {
       if (c && c.id) {
         this.nutrientTableFacade.getNutrientTableByCultureType(c.id).pipe(
@@ -76,6 +56,8 @@ export class ResultAnaliseComponentFacade {
             this.loadingSubject.next(false);
           }),
         ).subscribe();
+      } else {
+        this.loadingSubject.next(false);
       }
     });
   }
@@ -83,7 +65,6 @@ export class ResultAnaliseComponentFacade {
   recommendFertilizers(data: RecommendFertilizers) {
     this.fertilizersSubject.next(null);
     this.loadingSubject.next(true);
-
     this.dataAnalyseFacade.RecommendFertilizers(data).pipe(
       tap((fertilizers) => {
         this.fertilizersSubject.next(fertilizers);
@@ -94,12 +75,12 @@ export class ResultAnaliseComponentFacade {
 
   loadAnalyse(id: string | undefined) {
     if (!id) {
-      this.id = id;
+      this.id = undefined;
       return;
     }
     this.id = id;
-    this.analiseSubject.next(undefined);
-    this.columnsSubject.next(undefined);
+    this.plotsSubject.next(undefined);
+    this.infosAnaliseSubject.next(undefined);
     this.loadingSubject.next(true);
     this.tipoSubject.next(0);
 
@@ -107,12 +88,11 @@ export class ResultAnaliseComponentFacade {
       tap(
         (analise) => {
           if (analise && analise.dadosAnalise && analise.dadosAnalise.plots) {
-            if (analise.tipo == "Foliar") {
+            if (analise.tipo === "Foliar") {
               this.tipoSubject.next(1);
             }
-            const { rows, columns } = this.transformDataForTable(analise.dadosAnalise.plots, true);
-            this.analiseSubject.next(rows);
-            this.columnsSubject.next(columns);
+            this.infosAnaliseSubject.next(analise);
+            this.plotsSubject.next(analise.dadosAnalise.plots);
           }
           this.loadingSubject.next(false);
         },
@@ -123,73 +103,24 @@ export class ResultAnaliseComponentFacade {
     ).subscribe();
   }
 
-  transformDataForTable(plots: Plots[], editable: boolean): { rows: Row[], columns: Column[] } {
-    const headerMap = this.getHeaderMap();
-
-    const staticColumns: Column[] = [
-      { field: 'plotName', header: 'Talhão', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
-      { field: 'cultureType', header: 'Cultura', type: 'select', sortable: true, filterable: true, visible: true, showToUser: true, editable: false },
-      { field: 'expectedProductivity', header: 'Produtividade Esperada (sc/ha)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
-      { field: 'width', header: 'Espaçamento entre ruas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable },
-      { field: 'height', header: 'Espaçamento entre plantas (metros)', type: 'text', sortable: true, filterable: true, visible: true, showToUser: true, editable: editable }
-    ];
-
-    const nutrientHeaders = new Set<string>();
-
-    plots.forEach(plot => {
-      plot.nutrients?.forEach(nutrient => {
-        if (nutrient.header != null && nutrient.header != undefined) {
-          nutrientHeaders.add(String(nutrient.header));
+  updateAnalyse(analise: Analise){
+    this.loadingSubject.next(true);
+    this.analiseFacade.update(analise).subscribe({
+      next: () => {
+        if (analise.dadosAnalise && analise.dadosAnalise.plots !== undefined) {
+            this.plotsSubject.next(analise.dadosAnalise.plots);
+            this.infosAnaliseSubject.next(analise);
         }
-      });
+        this.loadingSubject.next(false);
+      },
+      error: (err) => {
+        console.error('Falha ao atualizar a análise', err);
+        this.loadingSubject.next(false);
+      }
     });
-
-    const DynamicColumns: Column[] = Array.from(nutrientHeaders)
-      .sort((a, b) => Number(a) - Number(b))
-      .map(headerKey => {
-        const displayHeader = headerMap[headerKey] || headerKey;
-        return {
-          field: displayHeader,
-          header: displayHeader,
-          type: 'text',
-          sortable: true,
-          filterable: true,
-          visible: true,
-          showToUser: true,
-          editable: editable
-        };
-      });
-
-    const rows = plots.map(plot => {
-      const cultureTypeOptions = {
-        ...this.selectOptions,
-        rowIdentifier: plot.plotName
-      };
-
-      const row: Row = {
-        plotName: plot.plotName,
-        cultureType: cultureTypeOptions,
-        expectedProductivity: this.standardProductivity,
-        width: this.standardWidth,
-        height: this.standardHeight
-      };
-
-      plot.nutrients?.forEach(nutrient => {
-        if (nutrient.header != null && nutrient.header != undefined) {
-          const headerKey = String(nutrient.header);
-          const displayHeader = headerMap[headerKey] || headerKey;
-          const displayValue = `${nutrient.analysis ?? nutrient.value ?? '0'}`;
-          row[displayHeader] = displayValue;
-        }
-      });
-
-      return row;
-    });
-
-    return { rows, columns: [...staticColumns, ...DynamicColumns] };
   }
 
-  getHeaderMap(): { [key: string]: string } {
+  public getHeaderMap(): { [key: string]: string } {
     const activeNutrientMap = this.tipoSubject.getValue() ? LEAF_NUTRIENT_MAP : SOIL_NUTRIENT_MAP;
     return Object.entries(activeNutrientMap).reduce((acc, [key, info]) => {
       acc[key] = info.displayName;
@@ -197,3 +128,4 @@ export class ResultAnaliseComponentFacade {
     }, {} as { [key: string]: string });
   }
 }
+

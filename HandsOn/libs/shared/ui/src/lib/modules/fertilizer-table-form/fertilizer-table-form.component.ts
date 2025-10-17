@@ -1,54 +1,34 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  FormBuilder,
-  FormArray,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { Culture, CultureFacade, FertilizerTable, NutrientHeaders, User } from '@farm/core';
 import { ButtonComponent } from '../../components/button/button.component';
-import {
-  FertilizerTable,
-  CultureFacade,
-  Culture,
-  User,
-  NutrientHeaders,
-  SoilFertilizerRow,
-  SoilFertilizerColumn,
-  LeafFertilizerRow,
-  LeafFertilizerProduct
-} from '@farm/core';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SelectComponent, SelectOption } from '../../components/select/select.component';
-import { InputNutrientTableComponent } from '../../components/input-nutrient-table/input-nutrient-table.component';
-import { CheckboxComponent } from '../../components/checkbox/checkbox.component';
-import { InputComponent } from '../../components/input/input.component';
+import { InputNumberComponent } from '../../components/input-number/input-number.component';
+import { TabItem, TabsComponent } from '../../components/tabs/tabs.component';
+import { FertilizerTableLeafFormComponent } from './lib/leaf-section/fertilizer-table-leaf-form.component';
+import { FertilizerTableSoilFormComponent } from './lib/soil-section/fertilizer-table-soil-form.component';
+import { FieldsetComponent } from '../../components/fieldset/fieldset.component';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'lib-fertilizer-table-form',
   imports: [
     CommonModule,
+    ButtonComponent,
     FormsModule,
     ReactiveFormsModule,
-    ButtonComponent,
     SelectComponent,
-    InputComponent,
-    CheckboxComponent,
-    InputNutrientTableComponent
+    InputNumberComponent,
+    TabsComponent,
+    FieldsetComponent,
+    FertilizerTableLeafFormComponent,
+    FertilizerTableSoilFormComponent
   ],
   templateUrl: './fertilizer-table-form.component.html',
   styleUrl: './fertilizer-table-form.component.css',
 })
-export class FertilizerTableFormComponent implements OnInit, OnChanges {
+export class FertilizerTableFormComponent {
   @Input() fertilizerTable: FertilizerTable | undefined;
   @Input() user: User | undefined;
   @Input() loading = false;
@@ -57,71 +37,40 @@ export class FertilizerTableFormComponent implements OnInit, OnChanges {
 
   @Output() fertilizerTableSubmit = new EventEmitter<FertilizerTable>();
 
+  @ViewChild('leafSection', { static: true }) leafSection!: TemplateRef<any>;
+  @ViewChild('soilSection', { static: true }) soilSection!: TemplateRef<any>;
+  @ViewChild(FertilizerTableLeafFormComponent) leafComponent!: FertilizerTableLeafFormComponent;
+  @ViewChild(FertilizerTableSoilFormComponent) soilComponent!: FertilizerTableSoilFormComponent;
+
   fertilizerTableForm: FormGroup;
 
-  activeTable = 'leaf';
   cultureOptions: SelectOption[] = [];
+  tabs: TabItem[] = [];
+  isSmallScreen = false;
 
-  soilRowsProductivities = [
-    "2",
-    "2-4",
-    "4-6",
-    "6-8",
-    "8-10",
-    "10-12",
-    "12-14",
-    "14-16",
-    "16-18",
-    "18-20"
-  ];
-  numberOfColumns = 9;
+  leafText: string = `Esta tabela ajuda a identificar deficiências de nutrientes nas folhas de uma plantação e recomenda os produtos ideais para corrigi-las. 
+    Cada nutriente listado possui uma seleção de fertilizantes indicados para aplicação quando que os níveis estiverem abaixo do ideal. <br>
+    Os valores já vêm pré-definidos por nossos especialistas, mas podem ser personalizados de acordo com as necessidades específicas de uma cultura.`;
+  soilText: string = `Esta tabela serve como um guia para a adubação do solo com base nos teores de Nitrogênio (N), Fósforo (P), Potássio (K) e Boro (B). 
+    Cada célula indica a quantidade de fertilizante a ser aplicada conforme a necessidade detectada em cada nutriente. <br>
+    Todas as dosagens já são preenchidas com valores de referência estabelecidos pela nossa equipe de agrônomos, mas podem ser ajustadas para uma recomendação mais personalizada.`;
 
-  leafHeaders = [
-    {
-      label: 'Zn',
-      products: []
-    },
-    {
-      label: 'Cu',
-      products: []
-    },
-    {
-      label: 'Mn',
-      products: []
-    },
-    {
-      label: 'Fe',
-      products: []
-    },
-    {
-      label: 'S',
-      products: []
-    }
-  ];
-  soilHeaders = [
-    "N",
-    "P",
-    "K",
-    "B"
-  ];
+  currentText: string = this.leafText;
 
   constructor(
     private formBuilder: FormBuilder,
-    private cultureFacade: CultureFacade
+    private cultureFacade: CultureFacade,
+    private breakpointObserver: BreakpointObserver
   ) {
     this.fertilizerTableForm = this.formBuilder.group({
       cultureType: this.formBuilder.control('', {
         validators: [],
         updateOn: 'blur'
       }),
-      expectedBasesSat: this.formBuilder.control('', {
-        validators: [Validators.required],
+      expectedBasesSat: this.formBuilder.control(null, {
+        validators: [Validators.required, Validators.min(0), Validators.max(10000)],
         updateOn: 'blur'
-      }),
-      leafRow: this.formBuilder.group({
-        leafColumns: this.formBuilder.array([])
-      }),
-      soilRows: this.formBuilder.array([])
+      })
     });
   }
 
@@ -137,13 +86,20 @@ export class FertilizerTableFormComponent implements OnInit, OnChanges {
 
     if (this.fertilizerTable) this.updateFertilizerTableData();
 
-    this.createLeafSection();
-    this.createSoilSection();
-
     if (this.selectCulture) this.cultureType.setValidators([Validators.required]);
+
+    this.tabs = [
+      { header: "Seção Folha", template: this.leafSection },
+      { header: "Seção Solo", template: this.soilSection }
+    ];
+
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .subscribe(result => {
+        this.isSmallScreen = result.matches;
+      });
   }
 
-  ngOnChanges(): void {
+  ngOnChanges() {
     if (this.fertilizerTable) this.updateFertilizerTableData();
 
     if (this.loading) this.fertilizerTableForm.disable();
@@ -155,41 +111,6 @@ export class FertilizerTableFormComponent implements OnInit, OnChanges {
   }
   get expectedBasesSat(): FormControl {
     return this.fertilizerTableForm.get('expectedBasesSat') as FormControl;
-  } 
-
-  get leafRow(): FormGroup {
-    return this.fertilizerTableForm.get('leafRow') as FormGroup;
-  }
-  getLeafColumns(): FormArray {
-    return this.leafRow.get('leafColumns') as FormArray;
-  }
-  getLeafColumn(index: number): FormGroup {
-    return this.getLeafColumns().at(index) as FormGroup;
-  }
-  getProducts(columnIndex: number): FormArray {
-    return this.getLeafColumn(columnIndex).get('products') as FormArray;
-  }
-  getProduct(columnIndex: number, productIndex: number): FormGroup {
-    return this.getProducts(columnIndex).at(productIndex) as FormGroup;
-  }
-  getName(columnIndex: number, productIndex: number): FormControl {
-    return this.getProduct(columnIndex, productIndex).get('name') as FormControl;
-  }
-  getMin(columnIndex: number, productIndex: number): FormControl {
-    return this.getProduct(columnIndex, productIndex).get('min') as FormControl;
-  }
-  getMax(columnIndex: number, productIndex: number): FormControl {
-    return this.getProduct(columnIndex, productIndex).get('max') as FormControl;
-  }
-  getSolid(columnIndex: number, productIndex: number): FormControl {
-    return this.getProduct(columnIndex, productIndex).get('solid') as FormControl;
-  }
-
-  get soilRows(): FormArray {
-    return this.fertilizerTableForm.get('soilRows') as FormArray;
-  }
-  getValue(rowIndex: number, group: string, colIndex: number): FormControl {
-    return this.soilRows.at(rowIndex).get(group)?.get(`value${colIndex}`) as FormControl;
   }
 
   updateFertilizerTableData(): void {
@@ -197,83 +118,8 @@ export class FertilizerTableFormComponent implements OnInit, OnChanges {
 
     this.fertilizerTableForm.patchValue({
       cultureType: { value: this.fertilizerTable.cultureId },
-      expectedBasesSat: { value: this.fertilizerTable.expectedBasesSaturation }
+      expectedBasesSat: this.fertilizerTable.expectedBasesSaturation
     });
-  }
-
-  setLeafSection(): void {
-    this.activeTable = 'leaf';
-  }
-  setSoilSection(): void {
-    this.activeTable = 'soil';
-  }
-
-  createLeafSection(): void {
-    for (let i = 0; i < this.leafHeaders.length; i++)
-      this.getLeafColumns().push(this.createLeafColumn());
-  }
-  createLeafColumn(): FormGroup {
-    return this.formBuilder.group({
-      products: this.formBuilder.array([])
-    });
-  }
-  createLeafProduct(): FormGroup {
-    return this.formBuilder.group({
-      name: this.formBuilder.control('', {
-        validators: [Validators.required],
-        updateOn: 'blur'
-      }),
-      min: this.formBuilder.control('', {
-        validators: [Validators.required, Validators.min(0)],
-        updateOn: 'blur'
-      }),
-      max: this.formBuilder.control('', {
-        validators: [Validators.required, Validators.min(0)],
-        updateOn: 'blur'
-      }),
-      solid: this.formBuilder.control(false, {
-        validators: [Validators.required],
-        updateOn: 'blur'
-      }),
-    });
-  }
-  addProduct(header: any, columnIndex: number) {
-    header.products.push({ name: '', min: '', max: '' });
-
-    this.getProducts(columnIndex).push(this.createLeafProduct());
-  }
-  removeProduct(header: any, columnIndex: number, productIndex: number) {
-    header.products.splice(productIndex, 1);
-
-    this.getProducts(columnIndex).removeAt(productIndex);
-  }
-
-  createSoilSection(): void {
-    for (let i = 0; i < this.soilRowsProductivities.length; i++)
-      this.soilRows.push(this.createSoilRow(i == 0));
-  }
-  createSoilRow(hasB: boolean): FormGroup {
-    const groupConfig: any = {
-      n: this.createSoilColumn(2),
-      p: this.createSoilColumn(3),
-      k: this.createSoilColumn(4)
-    };
-
-    if (hasB)
-      groupConfig.b = this.createSoilColumn(4);
-
-    return this.formBuilder.group(groupConfig);
-  }
-  createSoilColumn(numberOfValues: number): FormGroup {
-    const group: { [key: string]: FormControl } = {};
-
-    for (let i = 1; i <= numberOfValues; i++)
-      group[`value${i}`] = this.formBuilder.control('', {
-        validators: [Validators.required, Validators.min(0)],
-        updateOn: 'blur'
-      });
-
-    return this.formBuilder.group(group);
   }
 
   onSubmit() {
@@ -281,92 +127,32 @@ export class FertilizerTableFormComponent implements OnInit, OnChanges {
       return this.fertilizerTableForm.markAllAsTouched();
 
     const formValue = this.fertilizerTableForm.value;
-
-    //Montar dados da folha
     const headerValues = Object.values(NutrientHeaders) as string[];
 
-    const leafRow: LeafFertilizerRow = {
-      leafFertilizerColumns: formValue.leafRow.leafColumns.map((leafColumn: any, colIndex: number) => {
-        const products: LeafFertilizerProduct[] = leafColumn.products.map((product: any) => {
-          return {
-            name: product.name,
-            solid: product.solid,
-            minConcentration: product.min,
-            maxConcentration: product.max
-          };
-        });
+    //criar a aprte da folha
+    const leafRow = this.leafComponent.onSubmit(formValue, headerValues);
 
-        return {
-          header: headerValues.indexOf(this.leafHeaders[colIndex].label),
-          products: products
-        };
-      })
-    };
-
-    //Montar dados do solo
-    const soilRows: SoilFertilizerRow[] = formValue.soilRows.map((soilRow: any, rowIndex: number) => {
-      const soilFertilizerColumns: SoilFertilizerColumn[] = [];
-
-      const productivityString = this.soilRowsProductivities[rowIndex];
-      const parts = productivityString.split('-');
-      const expectedProductivity = parts.length > 1 ? Number(parts[1].trim()) : Number(parts[0].trim())
-
-      soilFertilizerColumns.push({
-        header: headerValues.indexOf(NutrientHeaders.N),
-        numberOfValues: 2,
-        value1: soilRow.n.value1,
-        value2: soilRow.n.value2,
-        value3: 0,
-        value4: 0
-      });
-      soilFertilizerColumns.push({
-        header: headerValues.indexOf(NutrientHeaders.P),
-        numberOfValues: 3,
-        value1: soilRow.p.value1,
-        value2: soilRow.p.value2,
-        value3: soilRow.p.value3,
-        value4: 0
-      });
-      soilFertilizerColumns.push({
-        header: headerValues.indexOf(NutrientHeaders.K),
-        numberOfValues: 4,
-        value1: soilRow.k.value1,
-        value2: soilRow.k.value2,
-        value3: soilRow.k.value3,
-        value4: soilRow.k.value4
-      });
-
-      if (rowIndex == 0) {
-        soilFertilizerColumns.push({
-          header: headerValues.indexOf(NutrientHeaders.B),
-          numberOfValues: 4,
-          value1: soilRow.b.value1,
-          value2: soilRow.b.value2,
-          value3: soilRow.b.value3,
-          value4: soilRow.b.value4
-        });
-      }
-
-      return {
-        expectedProductivity: expectedProductivity,
-        soilFertilizerColumns: soilFertilizerColumns
-      };
-    });
+    //criar a aprte do solo
+    const soilRows = this.soilComponent.onSubmit(formValue, headerValues);
 
     const fertilizerTable: FertilizerTable = {
       id: this.fertilizerTable?.id,
       cultureId: formValue.cultureType.value,
       standard: this.user?.role == 'Admin' ? true : false,
       expectedBasesSaturation: formValue.expectedBasesSat,
-      leafFertilizerRow: leafRow,
-      soilFertilizerRows: soilRows
-    };
+
+      soilFertilizerRows: soilRows,
+      leafFertilizerRow: leafRow
+    }
 
     this.fertilizerTableSubmit.emit(fertilizerTable);
   }
-}
 
-export interface fertilizerTableForm {
-  cultureType: string,
-  standard: boolean
+  onTabChange(index: string | number) {
+    if (index === 0)
+      this.currentText = this.leafText;
+
+    else if (index === 1)
+      this.currentText = this.soilText;
+  }
 }

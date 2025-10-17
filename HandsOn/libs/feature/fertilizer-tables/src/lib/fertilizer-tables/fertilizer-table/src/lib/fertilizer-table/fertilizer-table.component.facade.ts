@@ -68,7 +68,6 @@ export class FertilizerTableComponentFacade {
         let message = '';
         let action = () => { }
 
-
         //Caso seja edição
         if (this.id) {
             if (this.userRole == 'Admin') {
@@ -78,7 +77,8 @@ export class FertilizerTableComponentFacade {
 
             else {
                 if (this.originalTable?.standard) {
-                    message = `Deseja criar uma tabela personalizada?`;
+                    message = `Deseja criar uma tabela personalizada? Ela será utilizada no lugar da tabela criada pelos nossos profissionais, podendo 
+                        prejudicar outras funcionalidades da aplicação caso preenchida incorretamente.`;
                     action = () => this.addFertilizerTable(fertilizerTable);
                 }
 
@@ -109,7 +109,7 @@ export class FertilizerTableComponentFacade {
 
     private updateFertilizerTable(fertilizerTable: FertilizerTable) {
         this.fertilizerTableFacade.updateFertilizerTable(fertilizerTable).subscribe(() => {
-
+            this.router.navigate(['/app/fertilizerTables']);
         });
     }
 }

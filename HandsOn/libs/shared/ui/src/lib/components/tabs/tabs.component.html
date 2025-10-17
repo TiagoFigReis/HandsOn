@@ -1,0 +1,13 @@
+<p-tabs [(value)]="activeIndex" [scrollable]="scrollable" (valueChange)="onTabChange($event)">
+    <p-tablist>
+        <p-tab *ngFor="let tab of tabs; let i = index" [value]="i">
+            {{ tab.header }}
+        </p-tab>
+    </p-tablist>
+
+    <p-tabpanels class="dark:bg-transparent">
+        <p-tabpanel *ngFor="let tab of tabs; let i = index" [value]="i">
+            <ng-container *ngTemplateOutlet="tab.template"></ng-container>
+        </p-tabpanel>
+    </p-tabpanels>
+</p-tabs>

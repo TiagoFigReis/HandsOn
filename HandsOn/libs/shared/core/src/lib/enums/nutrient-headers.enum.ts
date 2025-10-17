@@ -1,21 +1,37 @@
 export enum NutrientHeaders {
- 
-  N = 'N', P = 'P', K = 'K', Ca = 'Ca', Mg = 'Mg', S = 'S',
-  Zn = 'Zn', B = 'B', Cu = 'Cu', Mn = 'Mn', Fe = 'Fe',
+  N = 'N',
+  P = 'P',
+  K = 'K',
+  Ca = 'Ca',
+  Mg = 'Mg',
+  S = 'S',
+  Zn = 'Zn',
+  B = 'B',
+  Cu = 'Cu',
+  Mn = 'Mn',
+  Fe = 'Fe',
+  Mb = 'Mb',
+  NP = 'N/P',
+  NK = 'N/K',
+  NS = 'N/S',
+  NB = 'N/B',
+  NCu = 'N/Cu',
+  PMg = 'P/Mg',
+  PZn = 'P/Zn',
+  KCa = 'K/Ca',
+  KMg = 'K/Mg',
+  KMn = 'K/Mn',
+  CaMg = 'Ca/Mg',
+  CaMn = 'Ca/Mn',
+  FeMn = 'Fe/Mn',
 
-  
-  phH2O = "pH H2O",
-  AlSaturation = 'Al',
-  PotentialAcidity = 'H+Al',
-  OrganicMatter = 'M.O',
-  SumBases = 'SB',
-  CTCpH7 = 'T',
-  BasesSaturation = 'V', 
-  
-
-  NP = 'N/P', NK = 'N/K', NS = 'N/S', NB = 'N/B', NCu = 'N/Cu', PMg = 'P/Mg',
-  PZn = 'P/Zn', KCa = 'K/Ca', KMg = 'K/Mg', KMn = 'K/Mn', CaMg = 'Ca/Mg',
-  CaMn = 'Ca/Mn', FeMn = 'Fe/Mn',
+  phH2O = "pH em Água",
+  AlSaturation = 'Saturação por Al',
+  PotentialAcidity = 'Acidez Potencial',
+  OrganicMatter = 'Matéria Orgânica',
+  SumBases = 'Soma de Bases',
+  CTCpH7 = 'CTC',
+  BasesSaturation = 'Sat. por Bases'
 }
 
 
@@ -63,13 +79,43 @@ export const SOIL_NUTRIENT_MAP: Readonly<Record<SoilNutrient, NutrientInfo>> = {
   [SoilNutrient.Cu]: { name: 'Cobre', symbol: NutrientHeaders.Cu, unit: 'ppm', displayName: createDisplayName('Cobre', NutrientHeaders.Cu, 'ppm') },
   [SoilNutrient.Mn]: { name: 'Manganês', symbol: NutrientHeaders.Mn, unit: 'ppm', displayName: createDisplayName('Manganês', NutrientHeaders.Mn, 'ppm') },
   [SoilNutrient.Fe]: { name: 'Ferro', symbol: NutrientHeaders.Fe, unit: 'ppm', displayName: createDisplayName('Ferro', NutrientHeaders.Fe, 'ppm') },
-  [SoilNutrient.PH_H2O]: { name: 'pH H2O', symbol: NutrientHeaders.phH2O, unit: '', displayName: createDisplayName('pH H2O', NutrientHeaders.phH2O, '') },
-  [SoilNutrient.Al]: { name: 'Saturação por Al', symbol: NutrientHeaders.AlSaturation, unit: 'cmolc/dm³', displayName: createDisplayName('Saturação por Al', NutrientHeaders.AlSaturation, 'cmolc/dm³') },
-  [SoilNutrient.H_Al]: { name: 'Acidez Potencial', symbol: NutrientHeaders.PotentialAcidity, unit: 'cmolc/dm³', displayName: createDisplayName('Acidez Potencial', NutrientHeaders.PotentialAcidity, 'cmolc/dm³') },
-  [SoilNutrient.MO]: { name: 'Matéria Orgânica', symbol: NutrientHeaders.OrganicMatter, unit: '%', displayName: createDisplayName('Matéria Orgânica', NutrientHeaders.OrganicMatter, '%') },
-  [SoilNutrient.SB]: { name: 'Soma de bases', symbol: NutrientHeaders.SumBases, unit: 'cmolc/dm³', displayName: createDisplayName('Soma de bases', NutrientHeaders.SumBases, 'cmolc/dm³') },
-  [SoilNutrient.T]: { name: 'CTC pH 7.0', symbol: NutrientHeaders.CTCpH7, unit: 'cmolc/dm³', displayName: createDisplayName('CTC pH 7.0', NutrientHeaders.CTCpH7, 'cmolc/dm³') },
-  [SoilNutrient.V]: { name: 'Saturação por Bases', symbol: NutrientHeaders.BasesSaturation, unit: '%', displayName: createDisplayName('Saturação por Bases', NutrientHeaders.BasesSaturation, '%') },
+  [SoilNutrient.PH_H2O]: { name: 'pH H2O', symbol: NutrientHeaders.phH2O, unit: '', displayName: createDisplayName(NutrientHeaders.phH2O,'pH H2O', '') },
+  [SoilNutrient.Al]: { 
+  name: 'Saturação por Al', 
+  symbol: 'Al', 
+  unit: 'cmolc/dm³', 
+  displayName: createDisplayName(NutrientHeaders.AlSaturation, 'Al', 'cmolc/dm³') 
+},
+[SoilNutrient.H_Al]: { 
+  name: 'Acidez Potencial', 
+  symbol: 'H+Al', 
+  unit: 'cmolc/dm³', 
+  displayName: createDisplayName(NutrientHeaders.PotentialAcidity, 'H+Al', 'cmolc/dm³') 
+},
+[SoilNutrient.MO]: { 
+  name: 'Matéria Orgânica', 
+  symbol: 'M.O.', 
+  unit: '%', 
+  displayName: createDisplayName(NutrientHeaders.OrganicMatter, 'M.O.', '%') 
+},
+[SoilNutrient.SB]: { 
+  name: 'Soma de bases', 
+  symbol: 'S.B', 
+  unit: 'cmolc/dm³', 
+  displayName: createDisplayName(NutrientHeaders.SumBases, 'S.B', 'cmolc/dm³') 
+},
+[SoilNutrient.T]: { 
+  name: 'CTC pH 7.0', 
+  symbol: 'T', 
+  unit: 'cmolc/dm³', 
+  displayName: createDisplayName(NutrientHeaders.CTCpH7, 'T', 'cmolc/dm³') 
+},
+[SoilNutrient.V]: { 
+  name: 'Saturação por Bases', 
+  symbol: 'V', 
+  unit: '%', 
+  displayName: createDisplayName(NutrientHeaders.BasesSaturation, 'V', '%') 
+},
 };
 
 

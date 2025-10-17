@@ -32,7 +32,8 @@ namespace Core.Enums
         OrganicMatter,
         SumBases,
         CTCpH7,
-        BasesSaturation
+        BasesSaturation,
+        Mb,
     }
 
     public static class NutrientHeaderExtension
@@ -73,6 +74,7 @@ namespace Core.Enums
                 NutrientHeader.Cu => "Cu",
                 NutrientHeader.Mn => "Mn",
                 NutrientHeader.Fe => "Fe",
+                NutrientHeader.Mb => "Mb",
                 NutrientHeader.NP => "NP",
                 NutrientHeader.NK => "NK",
                 NutrientHeader.NS => "NS",
@@ -112,6 +114,7 @@ namespace Core.Enums
                 "Cu" => NutrientHeader.Cu,
                 "Mn" => NutrientHeader.Mn,
                 "Fe" => NutrientHeader.Fe,
+                "Mb" => NutrientHeader.Mb,
                 "NP" => NutrientHeader.NP,
                 "NK" => NutrientHeader.NK,
                 "NS" => NutrientHeader.NS,
@@ -149,6 +152,7 @@ namespace Core.Enums
                 NutrientHeader.Cu,
                 NutrientHeader.Mn,
                 NutrientHeader.Fe,
+                NutrientHeader.Mb,
                 NutrientHeader.NP,
                 NutrientHeader.NK,
                 NutrientHeader.NS,

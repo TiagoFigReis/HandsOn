@@ -1,0 +1,58 @@
+<ng-container *ngIf="floatLabel; else noFloatLabel">
+  <p-floatlabel [variant]="floatLabelType">
+    <ng-container *ngIf="icon; else noIcon">
+      <p-iconfield>
+        <ng-container *ngTemplateOutlet="inputContent"></ng-container>
+      </p-iconfield>
+    </ng-container>
+  </p-floatlabel>
+</ng-container>
+
+<ng-template #noFloatLabel>
+  <ng-container *ngTemplateOutlet="inputContent"></ng-container>
+</ng-template>
+
+<ng-template #noIcon>
+  <ng-container *ngTemplateOutlet="inputContent"></ng-container>
+</ng-template>
+
+<ng-template #inputContent>
+  <div class="w-full flex flex-col gap-2">
+    <label
+      [for]="id"
+      [ngClass]="{
+        error: error || hasError
+      }"
+      *ngIf="label && label.length > 0"
+    >
+      {{ label }}
+    </label>
+    <p-inputNumber
+      [id]="id"
+      [name]="name"
+      [formControl]="control"
+      [placeholder]="!floatLabel ? placeholder : ''"
+      [required]="required"
+      [readonly]="readonly || loading"
+      [autocomplete]="autocomplete"
+      [min]="min"
+      [max]="max"
+      [minFractionDigits]="minFractionDigits"
+      [maxFractionDigits]="maxFractionDigits"
+      mode="decimal"
+      [prefix]="prefix"
+      [suffix]="suffix"
+      size="small"
+      [variant]="variant"
+      [showButtons]="showButtons"
+      [inputStyle]="{ width: '100%' }"
+      [inputStyleClass]="hasError ? 'error error-border' : ''"
+      class="w-full"
+    />
+    <small class="small-text" *ngIf="showErrorMessage && (error || hint || hasError) && icon.length === 0" [ngClass]="{
+            error: error || control.invalid
+          }">
+      {{ error || hint || errorMessage }}
+    </small>
+  </div>
+</ng-template>

@@ -1,72 +1,24 @@
-<div class="bg-gray-800 text-white p-4 md:p-6 rounded-lg font-sans max-w-4xl mx-auto">
+<div *ngIf="analysisData" class="flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-b primary-border last:border-b-0">
+  <div class="w-full sm:w-52 sm:flex-shrink-0">
+    <span class="font-medium subtitle block">{{ analysisData.name }}</span>
+    <span class="text-xs font-semibold px-2 py-0.5 rounded-full mt-1 inline-block text-black dark:text-white" 
+          [ngClass]="getNutrientLevelClass()">
+      {{ getDisplayLevel()}}
+    </span>
+  </div>
   
-  <div class="space-y-8">
-
-    <div class="flex justify-center flex-wrap gap-x-4 gap-y-2 md:gap-x-6 mt-10 text-xs md:text-sm text-gray-300">
-        <div class="flex items-center gap-2">
-        <span class="w-4 h-4 rounded" style="background-color: #e74c3c;"></span> Baixo
-        </div>
-        <div class="flex items-center gap-2">
-        <span class="w-4 h-4 rounded" style="background-color: #3498db;"></span> Médio ou Aceitável
-        </div>
-        <div class="flex items-center gap-2">
-        <span class="w-4 h-4 rounded" style="background-color: #2ecc71;"></span> Adequado
-        </div>
-        <div class="flex items-center gap-2">
-        <span class="w-4 h-4 rounded" style="background-color: #f39c12;"></span> Alto
-        
-        </div>
-    </div>
-    
-    <div *ngFor="let item of analysisData" 
-         class="flex flex-col md:grid md:grid-cols-[150px_1fr_120px] md:items-center md:gap-4">
-
-      <div class="flex justify-between items-baseline mb-2 md:mb-0 md:contents">
-        
-        <div class="text-base md:text-lg font-medium text-gray-200">
-          {{ item.name }}
-        </div>
-
-        <div class="text-base md:text-lg font-bold text-right text-gray-200 md:col-start-3">
-          {{ item.value }} 
-          <span class="font-normal text-gray-400">{{ item.unit }}</span>
-        </div>
-      </div>
-
-      <div class="w-full md:col-start-2 md:row-start-1">
-        <div class="relative h-6 flex items-center">
-          <div 
-            class="w-full h-4 rounded-full"
-            [style.background]="getRangeGradient(item)">
-          </div>
-          
-          <div 
-            class="absolute w-1 h-6 bg-white bg-opacity-80 rounded-full shadow-lg transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.value, item.scaleMax)">
-          </div>
-        </div>
-
-        <div class="relative h-4 mt-1 text-xs text-gray-400">
-          <span 
-            *ngIf="item.ranges.low.max > 0"
-            class="absolute transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.ranges.low.max, item.scaleMax)">
-            {{ item.ranges.low.max }}
-          </span>
-          <span 
-            class="absolute transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.ranges.medium.max, item.scaleMax)">
-            {{ item.ranges.medium.max }}
-          </span>
-          <span 
-            class="absolute transform -translate-x-1/2"
-            [style.left.%]="getValuePercentage(item.ranges.adequate.max, item.scaleMax)">
-            {{ item.ranges.adequate.max }}
-          </span>
-        </div>
-      </div>
-
+  <div class="w-full sm:flex-grow relative h-2">
+    <div class="w-full h-full rounded-full" [style.background]="getRangeGradient()"></div>
+    <div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-slate-200 border-[3px] border-gray-700 dark:border-slate-800 rounded-full shadow-lg"
+         [style.left.%]="getValuePercentage(analysisData.value)">
     </div>
   </div>
-
+  
+  <div class="w-full sm:w-auto flex items-center gap-2">
+    <input type="number" 
+           [ngModel]="analysisData.value"
+           (ngModelChange)="onValueChange($event)"
+           class="w-full sm:w-24 text-right bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md py-2 px-3 text focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+    <span class="description text-sm w-16 text-left">{{ analysisData.unit }}</span>
+  </div>
 </div>

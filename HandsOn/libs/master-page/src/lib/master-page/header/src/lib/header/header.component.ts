@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { MenuItem } from 'primeng/api';
 import { RouterModule } from '@angular/router';
 import { AvatarComponent, ButtonComponent, MenuComponent } from '@farm/ui';
-import { User, AuthFacade, UserFacade, UserRoles } from '@farm/core';
+import { User, AuthFacade, UserFacade, UserRoles, ThemeService } from '@farm/core';
 import { MenubarModule } from 'primeng/menubar';
+import { map, Observable } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 @Component({
   selector: 'lib-header',
@@ -15,6 +18,8 @@ import { MenubarModule } from 'primeng/menubar';
     MenuComponent,
     MenubarModule,
     ButtonComponent,
+    FormsModule,
+    ToggleSwitchModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
@@ -23,6 +28,9 @@ export class HeaderComponent implements OnInit {
   @Input() menuItems: MenuItem[] = [];
   @Input() menuVisible = false;
   @Output() menuVisibleChange = new EventEmitter<boolean>();
+
+  isDarkMode$: Observable<boolean>;
+  isDarkMode = false
 
   user: User | null = null;
   avatarItems: MenuItem[] = [
@@ -46,7 +54,15 @@ export class HeaderComponent implements OnInit {
     },
   ];
 
-  constructor(private authFacade: AuthFacade, private userFacade: UserFacade) {}
+  constructor(private authFacade: AuthFacade, private userFacade: UserFacade, private themeService: ThemeService) {
+    this.isDarkMode$ = this.themeService.theme$.pipe(map(theme => theme === 'dark'))
+
+    this.isDarkMode$.subscribe(dark => 
+      this.isDarkMode = dark
+    );
+
+    this.themeService.initializeTheme();
+  }
 
   get userRole(): string {
     if (!this.user) return '';
@@ -67,5 +83,9 @@ export class HeaderComponent implements OnInit {
 
   logout(): void {
     this.authFacade.logout();
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }

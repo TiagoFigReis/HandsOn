@@ -2,12 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FertilizerTable, User } from '@farm/core';
-import { CardTableComponent, FertilizerTableFormComponent } from '@farm/ui';
+import { CardComponent, FertilizerTableFormComponent } from '@farm/ui';
 import { FertilizerTableComponentFacade } from './fertilizer-table.component.facade';
 
 @Component({
   selector: 'lib-fertilizer-table',
-  imports: [CommonModule, CardTableComponent, FertilizerTableFormComponent, RouterModule],
+  imports: [CommonModule, CardComponent, FertilizerTableFormComponent, RouterModule],
   templateUrl: './fertilizer-table.component.html',
   styleUrl: './fertilizer-table.component.css',
 })
@@ -19,7 +19,7 @@ export class FertilizerTableComponent implements OnInit, OnDestroy {
   selectCulture = false;
 
   title = 'Criar Tabela de Fertilizantes';
-  description = 'Preencha os campos abaixo para criar uma nova tabela';
+  description = 'Preencha os campos abaixo para criar a tabela';
   submitLabel = 'Cadastrar';
 
   constructor(

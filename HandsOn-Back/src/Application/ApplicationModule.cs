@@ -5,6 +5,7 @@ using Application.Services.NutrientTables;
 using Application.Services.DataAnalysis;
 using Application.Services.Cultures;
 using Application.Services.FertilizerTables;
+using Application.Services.Users;
 
 namespace Application
 {

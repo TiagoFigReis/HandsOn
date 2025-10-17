@@ -14,11 +14,12 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { translations } from './translations';
 import { Environment, interceptorsProviders } from '@farm/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import Aura from '@primeng/themes/aura';
 import { TooltipModule } from 'primeng/tooltip';
 import { APP_CONFIG } from '@farm/core';
 
 import { provideEnvironmentNgxMask } from 'ngx-mask';
+
+import { preset } from './styles';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,9 +36,13 @@ export const appConfig: ApplicationConfig = {
     },
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: preset,
         options: {
-          darkModeSelector: '.farm-dark',
+          darkModeSelector: '.dark',
+          cssLayer: {
+            name: 'primeng',
+            order: 'tailwind-base, primeng, tailwind-utilities',
+          },
         },
       },
       translation: translations.pt,

@@ -1,6 +1,5 @@
 import { NutrientHeaders } from "../enums/nutrient-headers.enum";
 import { Culture } from "./culture.model";
-import { User } from "./user.model";
 
 export interface NutrientTable {
   id?: string;
@@ -15,9 +14,6 @@ export interface NutrientTable {
 
   culture?: Culture;
   cultureId: string;
-
-  user?: User;
-  userId: string;
 }
 
 export interface NutrientRow {
