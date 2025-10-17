@@ -8,15 +8,24 @@
     </div>
 
     <div class="flex items-center gap-6">
+      <div class="flex gap-2">
+        <p>{{isDarkMode ? 'Escuro' : 'Claro'}}</p>
+        <p-toggleswitch 
+            [ngModel]="isDarkMode" 
+            (onChange)="toggleTheme()" 
+        />
+      </div>
+
       <lib-button
-        [variant]="'text'"
-        [label]="'Criar conta'"
-        [link]="true"
-        [routerLink]="'/sign-up'"
+          [variant]="'text'"
+          [label]="'Criar conta'"
+          [link]="true"
+          [routerLink]="'/sign-up'"
       ></lib-button>
       <lib-button [label]="'Entrar'" [routerLink]="'/sign-in'"></lib-button>
     </div>
   </header>
+
   <main
     class="flex-1 flex items-center justify-center relative bg-[url(/images/farm.jpg)] bg-cover bg-center"
   >

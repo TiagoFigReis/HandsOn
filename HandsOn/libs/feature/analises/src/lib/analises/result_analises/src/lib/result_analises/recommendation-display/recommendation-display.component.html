@@ -1,69 +1,69 @@
 <div *ngIf="recommendation" class="space-y-6">
 
-  <details class="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden" open>
-    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-700/50">
-      <span class="text-teal-400 font-bold text-lg">1.</span>
-      <h2 class="font-bold text-lg text-white">Diagnóstico de Necessidades</h2>
+  <details class="tertiary-background border primary-border rounded-xl overflow-hidden" open>
+    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700/50">
+      <span class="primary font-bold text-lg">1.</span>
+      <h2 class="font-bold text-lg subtitle">Diagnóstico de Necessidades</h2>
     </summary>
-    <div class="p-6 border-t border-slate-700">
-      <p class="mb-4 text-slate-300">{{ recommendation.diagnosis.description }}</p>
+    <div class="p-6 border-t primary-border">
+      <p class="mb-4 text">{{ recommendation.diagnosis.description }}</p>
       <ul class="space-y-2">
-        <li *ngFor="let item of recommendation.diagnosis.needs" class="flex justify-between items-center p-3 bg-slate-700/50 rounded-md">
-          <span class="text-slate-200">{{ item.name }}</span>
-          <span class="font-semibold text-white">{{ item.value }}</span>
+        <li *ngFor="let item of recommendation.diagnosis.needs" class="flex justify-between items-center p-3 bg-gray-100 dark:bg-slate-700/50 rounded-md">
+          <span class="text">{{ item.name }}</span>
+          <span class="font-semibold text-gray-800 dark:text-white">{{ item.value }}</span>
         </li>
       </ul>
     </div>
   </details>
 
-  <details class="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden" open>
-    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-700/50">
-      <span class="text-teal-400 font-bold text-lg">2.</span>
-      <h2 class="font-bold text-lg text-white">Plano de Correção e Fertilização</h2>
+  <details class="tertiary-background border primary-border rounded-xl overflow-hidden" open>
+    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700/50">
+      <span class="primary font-bold text-lg">2.</span>
+      <h2 class="font-bold text-lg subtitle">Plano de Correção e Fertilização</h2>
     </summary>
-    <div class="p-6 border-t border-slate-700 space-y-4">
+    <div class="p-6 border-t primary-border space-y-4">
       <div *ngFor="let step of recommendation.plan.steps">
-        <h4 class="font-semibold text-md mb-2 text-teal-300">{{ step.title }}</h4>
-        <ul class="list-disc list-inside text-slate-300 space-y-1 pl-2">
+        <h4 class="font-semibold text-md mb-2 primary">{{ step.title }}</h4>
+        <ul class="list-disc list-inside text space-y-1 pl-2">
           <li *ngFor="let detail of step.details">{{ detail }}</li>
         </ul>
       </div>
     </div>
   </details>
 
-  <details class="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden" open>
-    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-700/50">
-      <span class="text-teal-400 font-bold text-lg">3.</span>
-      <h2 class="font-bold text-lg text-white">Balanço Final de Nutrientes</h2>
+  <details class="tertiary-background border primary-border rounded-xl overflow-hidden" open>
+    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700/50">
+      <span class="primary font-bold text-lg">3.</span>
+      <h2 class="font-bold text-lg subtitle">Balanço Final de Nutrientes</h2>
     </summary>
-    <div class="p-6 border-t border-slate-700 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div *ngFor="let item of recommendation.balance" class="p-4 bg-slate-700/50 rounded-lg">
+    <div class="p-6 border-t primary-border grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let item of recommendation.balance" class="p-4 bg-gray-100 dark:bg-slate-700/50 rounded-lg">
         <div class="flex justify-between items-center mb-3">
-          <h4 class="font-bold text-md text-white">{{ item.name }}</h4>
+          <h4 class="font-bold text-md subtitle">{{ item.name }}</h4>
           <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
                 [ngClass]="{
-                  'bg-green-500/20 text-green-300': item.result === 'Atendido',
-                  'bg-red-500/20 text-red-300': item.result === 'Déficit',
-                  'bg-yellow-500/20 text-yellow-300': item.result === 'Atenção'
+                  'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300': item.result === 'Atendido',
+                  'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300': item.result === 'Déficit',
+                  'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300': item.result === 'Atenção'
                 }">
             {{ item.result }}
           </span>
         </div>
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
-            <span class="text-slate-400">Aplicado:</span>
-            <span class="font-mono text-slate-200">{{ item.applied }}</span>
+            <span class="description">Aplicado:</span>
+            <span class="font-mono text">{{ item.applied }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-slate-400">Necessidade:</span>
-            <span class="font-mono text-slate-200">{{ item.needed }}</span>
+            <span class="description">Necessidade:</span>
+            <span class="font-mono text">{{ item.needed }}</span>
           </div>
-          <div class="flex justify-between border-t border-slate-600 pt-2 mt-2">
-            <span class="text-slate-400 font-semibold">Balanço:</span>
+          <div class="flex justify-between border-t secondary-border pt-2 mt-2">
+            <span class="description font-semibold">Balanço:</span>
             <span class="font-mono font-semibold"
                   [ngClass]="{
-                    'text-green-400': item.balance.startsWith('+'),
-                    'text-red-400': item.balance.startsWith('-')
+                    'text-green-600 dark:text-green-400': item.balance.startsWith('+'),
+                    'text-red-600 dark:text-red-400': item.balance.startsWith('-')
                   }">{{ item.balance }}</span>
           </div>
         </div>
@@ -71,17 +71,17 @@
     </div>
   </details>
 
-  <details class="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden" open>
-    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-700/50">
-      <span class="text-teal-400 font-bold text-lg">4.</span>
-      <h2 class="font-bold text-lg text-white">Sugestão de Parcelamento</h2>
+  <details class="tertiary-background border primary-border rounded-xl overflow-hidden" open>
+    <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700/50">
+      <span class="primary font-bold text-lg">4.</span>
+      <h2 class="font-bold text-lg subtitle">Sugestão de Parcelamento</h2>
     </summary>
-    <div class="p-6 border-t border-slate-700">
-      <p class="text-slate-400 mb-4">{{ recommendation.installments?.description }}</p>
+    <div class="p-6 border-t primary-border">
+      <p class="description mb-4">{{ recommendation.installments?.description }}</p>
       <div class="space-y-3">
-        <div *ngFor="let item of recommendation.installments?.details" class="flex justify-between items-center p-4 bg-slate-700/50 rounded-lg">
-          <span class="text-white font-medium">{{ item.fertilizerName }}</span>
-          <span class="font-bold text-lg text-teal-300">{{ item.dosePerInstallment }}</span>
+        <div *ngFor="let item of recommendation.installments?.details" class="flex justify-between items-center p-4 bg-gray-100 dark:bg-slate-700/50 rounded-lg">
+          <span class="font-medium text-gray-800 dark:text-white">{{ item.fertilizerName }}</span>
+          <span class="font-bold text-lg primary">{{ item.dosePerInstallment }}</span>
         </div>
       </div>
     </div>

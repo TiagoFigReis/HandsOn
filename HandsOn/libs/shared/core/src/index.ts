@@ -24,6 +24,7 @@ export * from './lib/services/dataAnalysis/dataAnalysis.service';
 export * from './lib/services/nutrient-table/nutrient-table.service';
 export * from './lib/services/culture/culture.service';
 export * from './lib/services/fertilizer-table/fertilizer-table.service';
+export * from './lib/services/theme/theme.service'
 
 // facades
 export * from './lib/facades/auth.facade';

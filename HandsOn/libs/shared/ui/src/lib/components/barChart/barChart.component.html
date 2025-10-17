@@ -1,15 +1,15 @@
-<div *ngIf="analysisData" class="flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-b border-slate-700 last:border-b-0">
+<div *ngIf="analysisData" class="flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-b primary-border last:border-b-0">
   <div class="w-full sm:w-52 sm:flex-shrink-0">
-    <span class="font-medium text-white block">{{ analysisData.name }}</span>
-    <span class="text-xs font-semibold px-2 py-0.5 rounded-full mt-1 inline-block text-slate-900" 
+    <span class="font-medium subtitle block">{{ analysisData.name }}</span>
+    <span class="text-xs font-semibold px-2 py-0.5 rounded-full mt-1 inline-block text-black dark:text-white" 
           [ngClass]="getNutrientLevelClass()">
-      {{ getDisplayLevel() }}
+      {{ getDisplayLevel()}}
     </span>
   </div>
   
   <div class="w-full sm:flex-grow relative h-2">
     <div class="w-full h-full rounded-full" [style.background]="getRangeGradient()"></div>
-    <div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white border-[3px] border-slate-800 rounded-full shadow-lg"
+    <div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-slate-200 border-[3px] border-gray-700 dark:border-slate-800 rounded-full shadow-lg"
          [style.left.%]="getValuePercentage(analysisData.value)">
     </div>
   </div>
@@ -18,7 +18,7 @@
     <input type="number" 
            [ngModel]="analysisData.value"
            (ngModelChange)="onValueChange($event)"
-           class="w-full sm:w-24 text-right bg-slate-900 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
-    <span class="text-slate-400 text-sm w-16 text-left">{{ analysisData.unit }}</span>
+           class="w-full sm:w-24 text-right bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md py-2 px-3 text focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+    <span class="description text-sm w-16 text-left">{{ analysisData.unit }}</span>
   </div>
 </div>
