@@ -1,23 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableComponent, Column, Row } from '@farm/ui';
-import { AnalisesListComponentFacade } from './analises-list.component.facade';
+import { RouterLink } from '@angular/router';
+import { AnalisesListComponentFacade, AnalyseWithActions } from './analises-list.component.facade';
 
 @Component({
   selector: 'lib-analises-list',
-  imports: [CommonModule, TableComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './analises-list.component.html',
   styleUrl: './analises-list.component.css',
 })
 export class AnalisesListComponent implements OnInit{
-  data: Row[] = [];
-  columns: Column[];
+  data: AnalyseWithActions[] = [];
   loading = false;
-  showMoreButton = true;
 
-  constructor(private facade: AnalisesListComponentFacade) {
-    this.columns = columns;
-  }
+  constructor(
+    private facade: AnalisesListComponentFacade
+  ) {}
 
   ngOnInit(): void {
     this.facade.loading$.subscribe((loading) => {
@@ -34,81 +32,13 @@ export class AnalisesListComponent implements OnInit{
   refresh() {
     this.facade.load();
   }
+
+  async downloadFile(blob: Blob, filename: string) {
+    const blobUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(blobUrl);
+  }
 }
-
-const columns: Column[] = [
-  {
-    field: 'tipo',
-    header: 'Tipo',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'lab',
-    header: 'Laboratório',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'dataAnalise',
-    header: 'Data da Análise',
-    type: 'date',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  
-  {
-    field: 'proprietario',
-    header: 'Proprietario',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'propriedade',
-    header: 'Propriedade',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-
-  },
-  {
-    field: 'createdAt',
-    header: 'Criado em',
-    type: 'datetime',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'updatedAt',
-    header: 'Atualizado em',
-    type: 'datetime',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'blob',
-    header: 'Análise',
-    type: 'file',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-]

@@ -47,14 +47,6 @@
 </p-menubar>
 
   <div class="flex items-center gap-6 ml-auto">
-    <div class="flex gap-2">
-      <p>{{isDarkMode ? 'Escuro' : 'Claro'}}</p>
-      <p-toggleswitch 
-          [ngModel]="isDarkMode" 
-          (onChange)="toggleTheme()" 
-      />
-    </div>
-    
     <div class="flex items-center justify-center gap-4">
       <div class="flex flex-col items-end">
         <p class="text whitespace-nowrap">

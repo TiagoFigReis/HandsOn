@@ -9,8 +9,8 @@ import { filter, take } from 'rxjs/operators';
 import { BarChartComponent } from '@farm/ui';
 import { RecommendationDisplayComponent } from './recommendation-display/recommendation-display.component';
 import { LeafRecommendationDisplayComponent } from './leaf-recommendation-display/leaf-recommendation-display.component';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import { ConfirmationService } from '@farm/core';
+import { NotificationService } from '@farm/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 export type NutrientAnalysis = any;
@@ -26,10 +26,8 @@ export type NutrientAnalysis = any;
     BarChartComponent,
     RecommendationDisplayComponent,
     LeafRecommendationDisplayComponent,
-    ToastModule,
     ConfirmDialogModule,
   ],
-  providers: [ConfirmationService, MessageService],
   templateUrl: './result_analises.component.html',
 })
 export class ResultAnalisesComponent implements OnInit {
@@ -48,6 +46,7 @@ export class ResultAnalisesComponent implements OnInit {
     private route: ActivatedRoute,
     public dataAnalyseFacade: ResultAnaliseComponentFacade,
     private confirmationService: ConfirmationService,
+    private notificationService : NotificationService
   ) {}
 
   ngOnInit() {
@@ -146,9 +145,6 @@ export class ResultAnalisesComponent implements OnInit {
     this.confirmationService.confirm({
         message: 'Tem certeza que deseja salvar as alterações?',
         header: 'Confirmação de Salvamento',
-        icon: 'pi pi-info-circle',
-        acceptLabel: 'Sim',
-        rejectLabel: 'Não',
         accept: () => {
             if (this.analise && this.analise.dadosAnalise && this.selectedPlot) {
                 const plotIndex = this.allPlots.findIndex(p => p.plotName === this.selectedPlot?.plotName);
@@ -167,13 +163,17 @@ export class ResultAnalisesComponent implements OnInit {
   }
 
   onDeletePlot() {
+    console.log(this.allPlots.length)
+    if(this.allPlots.length == 1) {
+      this.notificationService.error(
+              'Erro!',
+              'Não é possível excluir todos os talhões de uma análise!',
+            );
+      return;
+    }
     this.confirmationService.confirm({
         message: `Tem certeza que deseja excluir o talhão "${this.selectedPlot?.plotName}"? Esta ação não pode ser desfeita.`,
         header: 'Confirmação de Exclusão',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Excluir',
-        rejectLabel: 'Cancelar',
-        acceptButtonStyleClass: 'p-button-danger',
         accept: () => {
             if (this.analise && this.analise.dadosAnalise && this.selectedPlot) {
                 const updatedPlots = this.allPlots.filter(p => p.plotName !== this.selectedPlot?.plotName);

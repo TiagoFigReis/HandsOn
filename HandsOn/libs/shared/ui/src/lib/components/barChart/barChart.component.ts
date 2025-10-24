@@ -58,12 +58,15 @@ export class BarChartComponent {
   
   public getNutrientLevelClass(): any {
     const level = this.getDisplayLevel();
-    return {
-      'bg-red-500': level === 'Muito Baixo' || level === 'Baixo' || (this.analysisData.inverted && (level === 'Alto' || level === 'Muito Alto')),
-      'bg-yellow-500': level === 'Alto' || level === 'Muito Alto' || (this.analysisData.inverted && (level === 'Médio')),
+    const color = {
+      'bg-red-600': level === 'Muito Baixo' || (this.analysisData.inverted && level === 'Muito Alto'),
+      'bg-red-500': level === 'Baixo' || (this.analysisData.inverted && level === 'Alto' ),
+      'bg-yellow-500': level === 'Alto' && !this.analysisData.inverted,
       'bg-blue-500': level === 'Médio' || level === 'Aceitável',
-      'bg-green-500': level === 'Bom' || level === 'Muito Bom' || level === 'Adequado',
+      'bg-green-500': level === 'Bom'|| level === 'Adequado',
+      'bg-green-600' : level === 'Muito Bom'
     };
+    return color;
   }
   
   public getValuePercentage(value: number): number {

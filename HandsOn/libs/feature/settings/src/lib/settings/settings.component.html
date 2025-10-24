@@ -10,12 +10,28 @@
     <aside class="w-full h-full lg:max-w-80 lg:min-w-52">
       <lib-menu
         [items]="menuItems"
-        class="w-full border-none bg-red-400"
+        class="w-full border-none"
       ></lib-menu>
     </aside>
 
     <div class="w-full">
-      <router-outlet class="hidden"></router-outlet>
+      <div class="mb-6 p-4 border rounded-lg primary-border secondary-background">
+        <h2 class="text-lg font-semibold mb-3">Aparência</h2>
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col">
+            <span class="text">Tema</span>
+            <span class="description">
+              {{ (isDarkMode$ | async) ? 'Escuro' : 'Claro' }}
+            </span>
+          </div>
+          <p-inputSwitch
+            [ngModel]="isDarkMode$ | async"
+            (onChange)="toggleTheme()"
+          ></p-inputSwitch>
+        </div>
+      </div>
+
+      <router-outlet></router-outlet>
     </div>
   </div>
 </div>

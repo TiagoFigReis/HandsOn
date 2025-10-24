@@ -5,19 +5,21 @@ import {
   AnaliseFacade,
   ConfirmationService,
 } from '@farm/core';
-import { Row, Action } from '@farm/ui';
+import { Action } from '@farm/ui';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+
+export type AnalyseWithActions = Analise & { actions: Action[] };
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnalisesListComponentFacade {
-  private analisesSubject = new BehaviorSubject<Row[]>([]);
+  private analisesSubject = new BehaviorSubject<AnalyseWithActions[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
-  analises$: Observable<Row[]> = this.analisesSubject.asObservable();
+  analises$: Observable<AnalyseWithActions[]> = this.analisesSubject.asObservable();
 
   constructor(
     private analiseFacade: AnaliseFacade,
@@ -29,23 +31,23 @@ export class AnalisesListComponentFacade {
     this.loadingSubject.next(true);
 
     try {
-      const analises = await firstValueFrom(this.analiseFacade.getAll());
-      const rows: Row[] = [];
+      const analyses = await firstValueFrom(this.analiseFacade.getAll());
+      const analysesWithActions: AnalyseWithActions[] = [];
 
-      for (const analise of analises) {
+      for (const analise of analyses) {
         try {
           const blob = await this.getFile(analise.id);
 
           if(blob) analise.blob = blob
 
-          rows.push(this.mapAnaliseToRow(analise));
+          analysesWithActions.push(this.mapAnaliseComAcoes(analise));
         } catch (err) {
           console.error('Erro ao obter arquivo da análise:', err);
           continue;
         }
       }
 
-      this.analisesSubject.next(rows);
+      this.analisesSubject.next(analysesWithActions);
     } catch (err) {
       console.error('Erro ao carregar análises:', err);
     } finally {
@@ -68,7 +70,7 @@ export class AnalisesListComponentFacade {
     }
   }
 
-  private mapAnaliseToRow(analise: Analise): Row {
+  private mapAnaliseComAcoes(analise: Analise): AnalyseWithActions {
     return {
       ...analise,
       actions: [
@@ -79,27 +81,27 @@ export class AnalisesListComponentFacade {
           routerLink: `/app/analises/${analise.id}`,
         },
         {
-              tooltip: 'Excluir',
-              icon: 'pi pi-fw pi-trash',
-              iconClass: 'error',
-              command: (event, data) => {
-                this.confirmationService.confirm({
-                  header: 'Excluir Análise',
-                  message: `Deseja excluir a análise ?`,
-                  accept: () => {
-                    this.analiseFacade.delete(data.id).subscribe(() => {
-                      this.load();
-                    });
-                  },
+          tooltip: 'Excluir',
+          icon: 'pi pi-fw pi-trash',
+          iconClass: 'error',
+          command: (event, data) => {
+            this.confirmationService.confirm({
+              header: 'Excluir Análise',
+              message: `Deseja excluir a análise ?`,
+              accept: () => {
+                this.analiseFacade.delete(data.id).subscribe(() => {
+                  this.load();
                 });
               },
+            });
           },
-          {
-            tooltip: 'Requisitar Análise',
-            icon: 'pi pi-fw pi-file',
-            iconClass: 'success',
-            routerLink: `/app/analises/results/${analise.id}`
-          }
+        },
+        {
+          tooltip: 'Requisitar Análise',
+          icon: 'pi pi-fw pi-file',
+          iconClass: 'success',
+          routerLink: `/app/analises/results/${analise.id}`
+        }
       ] as Action[],
     };
   }

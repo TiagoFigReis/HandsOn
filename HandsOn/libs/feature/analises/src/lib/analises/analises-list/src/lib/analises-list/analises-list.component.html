@@ -1,13 +1,100 @@
-<div *ngIf="data.length === 0" class="min-w-full text-center">Não há análises cadastradas</div>
+<div *ngIf="loading" class="flex justify-center items-center p-8">
+  <i class="pi pi-spin pi-spinner text-3xl text-blue-500"></i>
+</div>
 
-<div class="flex flex-col gap-10">
-    <div *ngIf="data.length > 0">
-        <lib-table
-        [data]="data"
-        [columns]="columns"
-        [loading]="loading"
-        [showMoreButton]="showMoreButton"
-        (refresh)="refresh()"
-        />
+<div *ngIf="!loading && data.length === 0" class="min-w-full text-center p-8 text-gray-600 dark:text-gray-400">
+  Não há análises cadastradas
+</div>
+
+<div *ngIf="!loading && data.length > 0">
+
+  <div class="px-2 space-y-4">
+    
+    <div class="flex justify-between items-center mb-4 px-2 pt-2">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Suas Análises</h2>
+      <button (click)="refresh()" title="Atualizar Lista" class="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <i class="pi pi-refresh text-lg"></i>
+      </button>
     </div>
+
+    <div *ngFor="let analise of data" class="bg-white secondary-background shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      
+      <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
+        
+        <div class="col-span-2">
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Tipo</span>
+          <p class="text-lg font-medium text-gray-900 dark:text-white">{{ analise.tipo || 'N/A' }}</p>
+        </div>
+
+        <div>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Laboratório</span>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.lab || 'N/A' }}</p>
+        </div>
+        
+        <div>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Data da Análise</span>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.dataAnalise | date:'dd/MM/yyyy' }}</p>
+        </div>
+        
+        <div>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Proprietário</span>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.proprietario || 'N/A' }}</p>
+        </div>
+
+        <div>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Propriedade</span>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.propriedade || 'N/A' }}</p>
+        </div>
+
+        <div class="col-span-2">
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Arquivo da Análise</span>
+          <div *ngIf="analise.blob; else noFile">
+            <button type="button" 
+                    (click)="downloadFile(analise.blob, analise.lab + ' - ' + analise.tipo)"
+                    class="inline-flex items-center mt-1 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors">
+              <i class="pi pi-download mr-2"></i>
+              Baixar Arquivo
+            </button>
+          </div>
+          <ng-template #noFile>
+            <p class="text-sm text-gray-500 dark:text-gray-400 italic mt-1">Nenhum arquivo anexado.</p>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-end space-x-1">
+        
+        <ng-container *ngFor="let action of analise.actions">
+                    
+            <a *ngIf="action.routerLink"
+                [routerLink]="action.routerLink"
+                [title]="action.tooltip"
+                class="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors sm:px-3 sm:py-1.5 sm:rounded-md">
+                
+                <i [class]="action.icon + ' text-lg ' + action.iconClass"></i>
+                
+                <span class="inline ml-2 text-sm font-medium" [class]="action.iconClass">
+                {{action.tooltip}}
+                </span>
+            </a>
+
+            <button *ngIf="action.command"
+                    type="button"
+                    [title]="action.tooltip"
+                    (click)="action.command($event, analise)"
+                    class="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors sm:px-3 sm:py-1.5 sm:rounded-md">
+                
+                <i [class]="action.icon + ' text-lg ' + action.iconClass"></i>
+                
+                <span class="inline ml-2 text-sm font-medium" [class]="action.iconClass">
+                {{action.tooltip}}
+                </span>
+            </button>
+
+        </ng-container>
+
+      </div>
+    </div>
+  </div>
+
 </div>

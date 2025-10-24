@@ -3,14 +3,26 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuComponent } from '@farm/ui';
 import { MenuItem } from 'primeng/api';
+import { ThemeService } from '@farm/core';
+import { Observable, map } from 'rxjs';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'lib-settings',
-  imports: [CommonModule, RouterModule, MenuComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MenuComponent,
+    InputSwitchModule,
+    FormsModule,
+  ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
 })
 export class SettingsComponent {
+  isDarkMode$: Observable<boolean>;
+
   menuItems: MenuItem[] = [
     {
       label: 'Conta',
@@ -25,4 +37,14 @@ export class SettingsComponent {
       styleClass: 'description',
     },
   ];
+
+  constructor(private themeService: ThemeService) {
+    this.isDarkMode$ = this.themeService.theme$.pipe(
+      map((theme) => theme === 'dark')
+    );
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
 }
