@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID, Renderer2, RendererFactory2 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export type Theme = 'light' | 'dark';
@@ -16,9 +16,16 @@ export class ThemeService {
 
   constructor(
     private rendererFactory: RendererFactory2,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(PLATFORM_ID) private platformId: object // 1. Injetar o PLATFORM_ID
   ) {
     this.renderer = this.rendererFactory.createRenderer(null, null);
+
+    // 2. Chamar a inicialização DENTRO do construtor
+    // A verificação 'isPlatformBrowser' garante que 'localStorage' e 'window' existam
+    if (isPlatformBrowser(this.platformId)) {
+      this.initializeTheme();
+    }
   }
 
   initializeTheme() {
@@ -45,4 +52,3 @@ export class ThemeService {
     }
   }
 }
-

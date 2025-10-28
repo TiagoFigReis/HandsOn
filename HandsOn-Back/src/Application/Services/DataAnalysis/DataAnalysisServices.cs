@@ -699,7 +699,7 @@ namespace Application.Services.DataAnalysis
                             string dose = nutrient.Analysis == "Baixo"
                                 ? product.MaxConcentration.ToString()
                                 : product.MinConcentration.ToString();
-                            string unit = product.Solid ? "kg" : "l";
+                            string unit = product.Solid ? "Kg" : "L";
                             correction.ProductOptions.Add(new ProductOptionViewModel
                             {
                                 Name = product.Name,

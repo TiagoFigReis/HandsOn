@@ -40,7 +40,9 @@ export class ResultAnalisesComponent implements OnInit {
   editableNutrientData: NutrientAnalysis[] = [];
   fertilizerRecommendations: RecommendFertilizers | undefined;
   table: NutrientTable | undefined;
-  tipo = 0; 
+  tipo = 0;
+  editingPlotName: string | null = null;
+  tempPlotName = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -86,6 +88,42 @@ export class ResultAnalisesComponent implements OnInit {
     });
   }
 
+  startEditingPlotName(plotName: string | undefined, event: Event) {
+    event.stopPropagation();
+    if (!plotName) return;
+    this.editingPlotName = plotName;
+    this.tempPlotName = plotName;
+  }
+
+  savePlotName(plot: Plots, event: Event) {
+    event.stopPropagation();
+    if (this.tempPlotName.trim() && this.tempPlotName !== plot.plotName) {
+      const oldName = plot.plotName;
+      plot.plotName = this.tempPlotName.trim();
+      
+      if (this.selectedPlot && this.selectedPlot.plotName === oldName) {
+        this.selectedPlot.plotName = this.tempPlotName.trim();
+        this.fertilizerRecommendations = undefined;
+        this.activeTab = 'analise';
+      }
+
+      if (this.analise && this.analise.dadosAnalise) {
+        const updatedAnalise = {
+          ...this.analise,
+          dadosAnalise: { ...this.analise.dadosAnalise, plots: [...this.allPlots] }
+        };
+        this.dataAnalyseFacade.updateAnalyse(updatedAnalise);
+      }
+    }
+    this.editingPlotName = null;
+  }
+
+  cancelEditPlotName(event: Event) {
+    event.stopPropagation();
+    this.editingPlotName = null;
+    this.tempPlotName = '';
+  }
+
   onNutrientValueChange(updatedNutrient: NutrientAnalysis) {
     const index = this.editableNutrientData.findIndex(n => n.name === updatedNutrient.name);
     if (index !== -1) {
@@ -116,7 +154,7 @@ export class ResultAnalisesComponent implements OnInit {
     };
     this.dataAnalyseFacade.load(dadosAnalise);
   }
-  
+ 
   selectPlot(plot: Plots | undefined) {
     if(plot){
       this.selectedPlot = JSON.parse(JSON.stringify(plot));
@@ -151,8 +189,8 @@ export class ResultAnalisesComponent implements OnInit {
                 if (plotIndex !== -1) {
                     const updatedPlots = [...this.allPlots];
                     updatedPlots[plotIndex] = this.selectedPlot;
-                    const updatedAnalise = { 
-                      ...this.analise, 
+                    const updatedAnalise = {
+                      ...this.analise,
                       dadosAnalise: { ...this.analise.dadosAnalise, plots: updatedPlots }
                     };
                     this.dataAnalyseFacade.updateAnalyse(updatedAnalise);
@@ -245,4 +283,3 @@ export class ResultAnalisesComponent implements OnInit {
     return item.name;
   }
 }
-

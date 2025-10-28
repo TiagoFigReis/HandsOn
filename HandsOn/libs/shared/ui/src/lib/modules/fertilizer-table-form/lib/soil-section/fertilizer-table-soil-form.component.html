@@ -1,134 +1,268 @@
 <ng-container [formGroup]="parentForm">
-  <div formArrayName="soilRows" class="overflow-x-auto min-h-[650px]">
+  <div formArrayName="soilRows" class="space-y-6 pb-4">
 
-    <!--Main Section-->
-    <table class="min-w-max border-collapse text-center mx-auto">
-      <thead>
-        <tr>
-          <th rowspan="3" class="border-b border-zinc-200 dark:border-zinc-700">Produtividade <br> (litros/planta)</th>
-          <th colspan="2">Nitrogênio</th>
-          <th colspan="3">Fósforo</th>
-          <th colspan="4">Potássio</th>
-        </tr>
-        <tr>
-          <th colspan="2">Matéria Orgânica (dag/kg)</th>
-          <th colspan="3">P (mg/dm³)</th>
-          <th colspan="4">K (% em relação a CTC)</th>
-        </tr>
+    <fieldset class="space-y-4 border border-zinc-300 dark:border-zinc-600 rounded-lg p-4">
+      <legend class="flex items-center gap-2 justify-between p-2">
+        <h3 class="text-lg font-semibold text-primary">
+          Tabela de Adubação por Produtividade
+        </h3>
+        <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
+          Valores em g/nutriente/cova
+        </span>
+      </legend>
 
-        <tr>
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&lt; 3</th>
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&gt; 3</th>
+      <div *ngFor="let productivity of soilRowsProductivities; let i = index" 
+           [formGroupName]="i"
+           class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
+        
+        <div class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Produtividade:</span>
+            <span class="text-lg font-semibold">
+              <span *ngIf="i === 0">&lt;</span>{{ productivity }} litros/planta
+            </span>
+          </div>
+        </div>
 
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&lt; 10</th>
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">11 - 20</th>
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&gt; 20</th>
+        <div class="p-4 space-y-4">
+          <div formGroupName="n" class="rounded-lg p-3 space-y-3 border border-1 bg-zinc-100 dark:bg-zinc-900 dark:border-zinc-600">
+            <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+  
+              <span class="text-base font-bold text-zinc-900 dark:text-zinc-100">N (Nitrogênio)</span>
+              
+              <div class="flex items-baseline gap-2">
+                <span class="text-xs text-zinc-600 dark:text-zinc-400">baseado em</span>
+                <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Matéria Orgânica (dag/kg)</span>
+              </div>
+              
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  Matéria Orgânica &lt; 3 dag/kg
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="getValue(i, 'n', 2).value" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'n-' + i + '-1'" 
+                  [control]="getValue(i, 'n', 1)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  Matéria Orgânica &gt; 3 dag/kg
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="0" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'n-' + i + '-2'" 
+                  [control]="getValue(i, 'n', 2)">
+                </lib-input-number>
+              </div>
+            </div>
+          </div>
 
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&lt; 3</th>
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">3 - 5</th>
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">5 - 7</th>
-          <th class="w-32 border-b border-zinc-200 dark:border-zinc-700">&gt; 7</th>
-        </tr>
-      </thead>
+          <div formGroupName="p" class="rounded-lg p-3 space-y-3 border border-1 bg-zinc-100 dark:bg-zinc-900 dark:border-zinc-600">
+            <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+              <span class="text-base font-bold text-zinc-900 dark:text-zinc-100">P (Fósforo)</span>
+              
+              <div class="flex items-baseline gap-2">
+                <span class="text-xs text-zinc-600 dark:text-zinc-400">baseado em</span>
+                <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">P (mg/dm³)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  P &lt; 10 mg/dm³
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="getValue(i, 'p', 2).value" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'p-' + i + '-1'" 
+                  [control]="getValue(i, 'p', 1)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  P 11-20 mg/dm³
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="getValue(i, 'p', 3).value" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'p-' + i + '-2'" 
+                  [control]="getValue(i, 'p', 2)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  P &gt; 20 mg/dm³
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="0" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'p-' + i + '-3'" 
+                  [control]="getValue(i, 'p', 3)">
+                </lib-input-number>
+              </div>
+            </div>
+          </div>
 
-      <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-        <tr 
-          *ngFor="let productivity of soilRowsProductivities; let i = index"
-          [formGroupName]="i" 
-          class="hover:bg-zinc-100 dark:hover:bg-zinc-800"
-        >
-          <td class="border-zinc-200 dark:border-zinc-700">
-            <span *ngIf="i === 0">&lt;</span>
-            {{ productivity }}
-          </td>
+          <div formGroupName="k" class="rounded-lg p-3 space-y-3 border border-1 bg-zinc-100 dark:bg-zinc-900 dark:border-zinc-600">
+            <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+              <span class="text-base font-bold text-zinc-900 dark:text-zinc-100">K (Potássio)</span>
+              
+              <div class="flex items-baseline gap-2">
+                <span class="text-xs text-zinc-600 dark:text-zinc-400">baseado em</span>
+                <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">K (% em relação à CTC)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  K &lt; 3%
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="getValue(i, 'k', 2).value" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'k-' + i + '-1'" 
+                  [control]="getValue(i, 'k', 1)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  K 3-5%
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="getValue(i, 'k', 3).value" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'k-' + i + '-2'" 
+                  [control]="getValue(i, 'k', 2)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  K 5-7%
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="getValue(i, 'k', 4).value" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'k-' + i + '-3'" 
+                  [control]="getValue(i, 'k', 3)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  K &gt; 7%
+                </div>
+                <lib-input-number 
+                  [required]="true" 
+                  [min]="0" 
+                  [max]="10000" 
+                  [placeholder]="'g/cova'"
+                  [id]="'k-' + i + '-4'" 
+                  [control]="getValue(i, 'k', 4)">
+                </lib-input-number>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <td 
-            class="py-1 px-1"  
-            [ngClass]="{'border-zinc-200 dark:border-zinc-700' : last}"
-            formGroupName="n" 
-            *ngFor="let col of [1,2]; let last = last"
-          >
-            <lib-input-number 
-              [required]="true" 
-              [min]="col === 2 ? 0 : getValue(i, 'n', col + 1).value" 
-              [max]="10000" 
-              [placeholder]="'Qtd. Fert.'"
-              [id]="'n-' + i + '-' + col" 
-              [control]="getValue(i, 'n', col)"
-            ></lib-input-number>
-          </td>
+      </div>
+    </fieldset>
 
-          <td 
-            class="py-1 px-1" 
-            [ngClass]="{'border-zinc-200 dark:border-zinc-700' : last}"
-            formGroupName="p" 
-            *ngFor="let col of [1,2,3]; let last = last"
-          >
-            <lib-input-number 
-              [required]="true" 
-              [min]="col === 3 ? 0 : getValue(i, 'p', col + 1).value" 
-              [max]="10000" 
-              [placeholder]="'Qtd. Fert.'"
-              [id]="'p-' + i + '-' + col" 
-              [control]="getValue(i, 'p', col)"
-            ></lib-input-number>
-          </td>
+    <fieldset class="space-y-4 border border-zinc-300 dark:border-zinc-600 rounded-lg p-4">
+      <legend class="flex items-center gap-2 justify-between p-2">
+        <h3 class="text-lg font-semibold text-primary">Boro</h3>
+        <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
+          Valores em kg/ha
+        </span>
+      </legend>
 
-          <td 
-            class="py-1 px-1"
-            [ngClass]="{'border-zinc-200 dark:border-zinc-700' : last}"
-            formGroupName="k" 
-            *ngFor="let col of [1,2,3,4]; let last = last"
-          >
-            <lib-input-number 
-              [required]="true" 
-              [min]="col === 4 ? 0 : getValue(i, 'k', col + 1).value" 
-              [max]="10000" 
-              [placeholder]="'Qtd. Fert.'"
-              [id]="'k-' + i + '-' + col" 
-              [control]="getValue(i, 'k', col)"
-            ></lib-input-number>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <div [formGroupName]="0" class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
+        
+          <div formGroupName="b" class="rounded-lg p-3 space-y-3 bg-zinc-100 dark:bg-zinc-900 ">
+            <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+              <span class="text-base font-bold text-zinc-900 dark:text-zinc-100">B (Boro)</span>
+              
+              <div class="flex items-baseline gap-2">
+                <span class="text-xs text-zinc-600 dark:text-zinc-400">baseado em</span>
+                <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">B (mg/dm³)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  Baixo
+                </div>
+                <lib-input-number 
+                  [placeholder]="'g/cova'" 
+                  [required]="true" 
+                  [min]="getValue(0, 'b', 2).value" 
+                  [max]="10000"
+                  [id]="'b-0-1'" 
+                  [control]="getValue(0, 'b', 1)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  Médio
+                </div>
+                <lib-input-number 
+                  [placeholder]="'g/cova'" 
+                  [required]="true" 
+                  [min]="getValue(0, 'b', 3).value" 
+                  [max]="10000"
+                  [id]="'b-0-2'" 
+                  [control]="getValue(0, 'b', 2)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  Adequado
+                </div>
+                <lib-input-number 
+                  [placeholder]="'g/cova'" 
+                  [required]="true" 
+                  [min]="getValue(0, 'b', 4).value" 
+                  [max]="10000"
+                  [id]="'b-0-3'" 
+                  [control]="getValue(0, 'b', 3)">
+                </lib-input-number>
+              </div>
+              <div class="space-y-1">
+                <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded">
+                  Alto
+                </div>
+                <lib-input-number 
+                  [placeholder]="'g/cova'" 
+                  [required]="true" 
+                  [min]="0" 
+                  [max]="10000"
+                  [id]="'b-0-4'" 
+                  [control]="getValue(0, 'b', 4)">
+                </lib-input-number>
+              </div>
+            </div>
+          </div>
+      </div>
+    </fieldset>
 
-    <!--B Sub-Section-->
-    <table class="min-w-max border-collapse text-center mx-auto">
-      <thead>
-        <tr>
-          <th colspan="4">Boro</th>
-        </tr>
-        <tr>
-          <th colspan="4">B (mg/dm³)</th>
-        </tr>
-        <tr>
-          <th class="w-32">Baixo</th>
-          <th class="w-32">Médio</th>
-          <th class="w-32">Adequado</th>
-          <th class="w-32">Alto</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr [formGroupName]="0">
-          <td 
-            class="p-0.5" 
-            formGroupName="b" 
-            *ngFor="let col of [1,2,3,4]"
-          >
-            <lib-input-number 
-              [placeholder]="'Qtd. Fert.'" 
-              [required]="true" 
-              [min]="col === 4 ? 0 : getValue(0, 'b', col + 1).value" 
-              [max]="10000"
-              [id]="'b-' + 0 + '-' + col" 
-              [control]="getValue(0, 'b', col)">
-            </lib-input-number>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    
   </div> 
 </ng-container>

@@ -124,7 +124,7 @@ namespace Infrastructure.Utils.InterpretingFile
                 - O pH H2O é valor do pH CaCl2 + 0.6.
                 - O enxofre em alguns casos pode estar representado como SO4.
                 - Retorne os valores de ponto flutuante sempre com 2 casas decimais.
-            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor `null`. Não invente dados.
+            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor 0.0. Não invente dados.
             ### ESQUEMA JSON DE SAÍDA OBRIGATÓRIO:
             {
                 ""amostras_solo"": [
@@ -166,7 +166,7 @@ namespace Infrastructure.Utils.InterpretingFile
             3.  **Conversão de Unidades Obrigatória**:
                 - **Macronutrientes (N, P, K, Ca, Mg, S)**: Normalize todos os valores para grama por quilo (g/kg). Se a unidade original for porcentagem (%), multiplique o valor por 10. Se já estiver em g/kg, mantenha o valor.
                 - **Micronutrientes (B, Cu, Fe, Mn, Zn)**: Normalize todos os valores para ppm. Se a unidade for mg/kg, mantenha o valor numérico, pois mg/kg é equivalente a ppm.
-            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor `null`. Não invente dados.
+            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor 0.0. Não invente dados.
             ### ESQUEMA JSON DE SAÍDA OBRIGATÓRIO:
             {
                 ""amostras_foliar"": [

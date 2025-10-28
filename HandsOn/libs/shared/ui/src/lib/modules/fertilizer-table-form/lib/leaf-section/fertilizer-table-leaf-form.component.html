@@ -1,189 +1,133 @@
 <ng-container [formGroup]="parentForm">
-  <div formGroupName="leafRow" class="overflow-x-auto min-h-[650px] flex flex-row pb-2">
-    <!-- Macronutrients subsection -->
-    <table class="min-w-max border-collapse text-center mx-auto">
-      <thead>
-        <tr>
-          <th colspan="5">Macronutrientes</th>
-        </tr>
-        <tr>
-          <th rowspan="2" colspan="2" class="border-b border-zinc-200 dark:border-zinc-700">Deficiência</th>
-          <th colspan="4">Produtos</th>
-        </tr>
-        <tr>
-          <th class="w-64 border-b border-zinc-200 dark:border-zinc-700">Nome</th>
-          <th colspan="2" class="border-b border-zinc-200 dark:border-zinc-700 px-2">Concentração (Kg/400 litros de
-            água)</th>
-        </tr>
-      </thead>
+  <div formGroupName="leafRow" class="space-y-6 pb-4">
+    <div formArrayName="leafColumns">
 
-      <tbody formArrayName="leafColumns" *ngFor="let header of macroHeaders; let columnIndex = index"
-        class="divide-y divide-zinc-200 dark:divide-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-        <!-- Row for when there are no products -->
-        <tr *ngIf="header.products.length === 0" class="border-b border-zinc-200 dark:border-zinc-700">
-          <td class="border-b border-zinc-200 dark:border-zinc-700">
-            <div class="w-16">
-              {{ header.label }}
-            </div>
-          </td>
-
-          <td class="border-b border-zinc-200 dark:border-zinc-700">
-            <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="false" [severity]="'success'"
-              [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
-              class="mr-2"></lib-button>
-          </td>
-
-          <td colspan="4">Nenhum produto adicionado</td>
-        </tr>
-
-        <!-- Products' Sub-Section -->
-        <tr *ngFor="let product of header.products; let productIndex = index" [formGroupName]="columnIndex">
-          <ng-container *ngIf="productIndex === 0">
-
-            <td [attr.rowspan]="header.products.length" class="border-b border-zinc-200 dark:border-zinc-700">
-              <div class="w-16">
-                {{ header.label }}
-              </div>
-            </td>
-
-            <td [attr.rowspan]="header.products.length" class="border-b border-zinc-200 dark:border-zinc-700">
-              <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="true" [severity]="'success'"
-                [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
-                class="mr-2"></lib-button>
-            </td>
-
-          </ng-container>
-
-          <!-- Name Input -->
-          <td formArrayName="products" class="px-2 py-1.5 border-b border-zinc-200 dark:border-zinc-700">
-            <div [formGroupName]="productIndex">
-              <lib-input [placeholder]="'Nome'" [required]="true" [variant]="'filled'" [showErrorMessage]="false"
-                [minlength]="3" [maxlength]="50" [id]="'name-' + columnIndex + '-' + productIndex"
-                [control]="getName(columnIndex, productIndex)"></lib-input>
-            </div>
-          </td>
-
-          <!-- Concentration Thresholds + Solid Button -->
-          <td formArrayName="products" class="px-2 border-b border-zinc-200 dark:border-zinc-700">
-            <div [formGroupName]="productIndex" class="flex flex-row gap-1">
-              <lib-input-number [placeholder]="'Min.'" [required]="true" class="w-16" [min]="0" [max]="1000"
-                [id]="'min-' + columnIndex + '-' + productIndex"
-                [control]="getMin(columnIndex, productIndex)"></lib-input-number>
-
-              <lib-input-number [placeholder]="'Máx.'" [required]="true" class="w-16"
-                [min]="getMin(columnIndex, productIndex).value + 1" [max]="1000"
-                [id]="'max-' + columnIndex + '-' + productIndex"
-                [control]="getMax(columnIndex, productIndex)"></lib-input-number>
-
-              <lib-checkbox [label]="'É sólido'" class="mx-auto my-auto"
-                [id]="'solid-' + columnIndex + '-' + productIndex"
-                [control]="getSolid(columnIndex, productIndex)"></lib-checkbox>
-            </div>
-          </td>
-
-          <!-- Remove Button -->
-          <td class="border-b border-zinc-200 dark:border-zinc-700">
-            <lib-button [type]="'button'" [fluid]="true" [icon]="'pi pi-times'" [severity]="'danger'"
-              [loading]="loading" [tooltip]="'Remover produto'"
-              (click)="removeProduct(header, columnIndex, productIndex)">
-            </lib-button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <lib-divider [layout]="'vertical'" class=""></lib-divider>
-
-    <!-- Micronutrients subsection -->
-    <table class="min-w-max border-collapse text-center mx-auto">
-      <thead>
-        <tr>
-          <th colspan="5">Macronutrientes</th>
-        </tr>
-        <tr>
-          <th rowspan="2" colspan="2" class="border-b border-zinc-200 dark:border-zinc-700">Deficiência</th>
-          <th colspan="4">Produtos</th>
-        </tr>
-        <tr>
-          <th class="w-64 border-b border-zinc-200 dark:border-zinc-700">Nome</th>
-          <th colspan="2" class="border-b border-zinc-200 dark:border-zinc-700 px-2">Concentração (Kg/400 litros de
-            água)</th>
-        </tr>
-      </thead>
-
-      <tbody formArrayName="leafColumns" *ngFor="let header of microHeaders; let microIndex = index"
-        class="divide-y divide-zinc-200 dark:divide-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-        <ng-container *ngIf="calculateMicroColIndex(microIndex) as columnIndex">
-          <!-- Row for when there are no produts -->
-          <tr *ngIf="header.products.length === 0" class="border-b border-zinc-200 dark:border-zinc-700">
-            <td class="border-b border-zinc-200 dark:border-zinc-700">
-              <div class="w-16">
-                {{ header.label }}
-              </div>
-            </td>
-
-            <td class="border-b border-zinc-200 dark:border-zinc-700">
-              <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="false" [severity]="'success'"
-                [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
-                class="mr-2"></lib-button>
-            </td>
-
-            <td colspan="4">Nenhum produto adicionado</td>
-          </tr>
-
-          <!-- Products' Sub-Section -->
-          <tr *ngFor="let product of header.products; let productIndex = index" [formGroupName]="columnIndex">
-            <ng-container *ngIf="productIndex === 0">
-              <td [attr.rowspan]="header.products.length" class="border-b border-zinc-200 dark:border-zinc-700">
-                <div class="w-16">
-                  {{ header.label }}
+      <ng-container *ngFor="let group of headerGroups; let isLastGroup = last">
+        <fieldset class="space-y-4 border border-zinc-300 dark:border-zinc-600 rounded-lg p-4">
+          <legend class="text-lg font-semibold p-2 text-primary ">
+            {{ group.title }} </legend>
+          
+          <div class="space-y-4 pb-4">
+            <div *ngFor="let item of group.headers" 
+                 class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
+              
+              <div class="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
+  
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Deficiência:</span>
+                  <span class="text-lg font-semibold">{{ item.header.label }}</span>
                 </div>
-              </td>
-
-              <td [attr.rowspan]="header.products.length" class="border-b border-zinc-200 dark:border-zinc-700">
-                <lib-button [icon]="'pi pi-plus'" [type]="'button'" [fluid]="true" [severity]="'success'"
-                  [loading]="loading" [tooltip]="'Adicionar produto'" (click)="addProduct(header, columnIndex)"
-                  class="mr-2"></lib-button>
-              </td>
-            </ng-container>
-
-            <!-- Name Input -->
-            <td formArrayName="products" class="px-2 py-1.5 border-b border-zinc-200 dark:border-zinc-700">
-              <div [formGroupName]="productIndex">
-                <lib-input [placeholder]="'Nome'" [required]="true" [variant]="'filled'" [showErrorMessage]="false"
-                  [minlength]="3" [maxlength]="50" [id]="'name-' + columnIndex + '-' + productIndex"
-                  [control]="getName(columnIndex, productIndex)"></lib-input>
+                
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Adicionar produto</span>
+                  <lib-button 
+                    [icon]="'pi pi-plus'" 
+                    [type]="'button'" 
+                    [fluid]="false" 
+                    [severity]="'success'"
+                    [loading]="loading" 
+                    [tooltip]="'Adicionar produto'" 
+                    (click)="addProduct(item.header, item.columnIndex)">
+                  </lib-button>
+                </div>
               </div>
-            </td>
 
-            <!-- Concentration Thresholds + Solid Button -->
-            <td formArrayName="products" class="px-2 border-b border-zinc-200 dark:border-zinc-700">
-              <div [formGroupName]="productIndex" class="flex flex-row gap-1">
-                <lib-input-number [placeholder]="'Min.'" [required]="true" class="w-16" [min]="0" [max]="1000"
-                  [id]="'min-' + columnIndex + '-' + productIndex"
-                  [control]="getMin(columnIndex, productIndex)"></lib-input-number>
-
-                <lib-input-number [placeholder]="'Máx.'" [required]="true" class="w-16"
-                  [min]="getMin(columnIndex, productIndex).value" [max]="1000"
-                  [id]="'max-' + columnIndex + '-' + productIndex"
-                  [control]="getMax(columnIndex, productIndex)"></lib-input-number>
-
-                <lib-checkbox [label]="'É sólido'" class="mx-auto my-auto"
-                  [id]="'solid-' + columnIndex + '-' + productIndex"
-                  [control]="getSolid(columnIndex, productIndex)"></lib-checkbox>
+              <div *ngIf="getProducts(item.columnIndex).controls.length === 0" class="text-center py-6 text-zinc-500 dark:text-zinc-400">
+                Nenhum produto adicionado
               </div>
-            </td>
 
-            <!-- Remove Button -->
-            <td class="border-b border-zinc-200 dark:border-zinc-700">
-              <lib-button [type]="'button'" [fluid]="true" [icon]="'pi pi-times'" [severity]="'danger'"
-                [loading]="loading" [tooltip]="'Remover produto'"
-                (click)="removeProduct(header, columnIndex, productIndex)"></lib-button>
-            </td>
-          </tr>
-        </ng-container>
-      </tbody>
-    </table>
+              <div [formGroupName]="item.columnIndex">
+                <div formArrayName="products" class="space-y-3">
+                  
+                  <div *ngFor="let productControl of getProducts(item.columnIndex).controls; let productIndex = index"
+                       [formGroupName]="productIndex"
+                       class="bg-zinc-100 dark:bg-zinc-900 rounded-lg p-3 space-y-3">
+                    
+                    <div class="space-y-1">
+                      <div class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        Nome do Produto
+                      </div>
+                      <lib-input 
+                        [placeholder]="'Nome do produto'" 
+                        [required]="true" 
+                        [variant]="'filled'" 
+                        [showErrorMessage]="false"
+                        [minlength]="3" 
+                        [maxlength]="50" 
+                        [id]="'name-' + item.columnIndex + '-' + productIndex"
+                        [control]="getName(item.columnIndex, productIndex)">
+                      </lib-input>
+                    </div>
 
+                    <div class="space-y-1">
+                      <div class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        Concentração (Kg/400L de água)
+                      </div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex items-start gap-2 flex-1 min-w-[200px]">
+                          
+                          <div class="flex-1 space-y-1">
+                            <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-700 px-2 py-1 rounded">
+                              Min
+                            </div>
+                            <lib-input-number 
+                              [placeholder]="'Min.'" 
+                              [required]="true" 
+                              class="w-full" 
+                              [min]="0" 
+                              [max]="1000"
+                              [id]="'min-' + item.columnIndex + '-' + productIndex"
+                              [control]="getMin(item.columnIndex, productIndex)">
+                            </lib-input-number>
+                          </div>
+
+                          <span class="text-zinc-500 dark:text-zinc-400 self-center">-</span>
+
+                          <div class="flex-1 space-y-1">
+                            <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-700  px-2 py-1 rounded">
+                              Max
+                            </div>
+                            <lib-input-number 
+                              [placeholder]="'Máx.'" 
+                              [required]="true" 
+                              class="w-full"
+                              [min]="getMin(item.columnIndex, productIndex).value" [max]="1000"
+                              [id]="'max-' + item.columnIndex + '-' + productIndex"
+                              [control]="getMax(item.columnIndex, productIndex)">
+                            </lib-input-number>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                          <lib-checkbox 
+                            [id]="'solid-' + item.columnIndex + '-' + productIndex"
+                            [control]="getSolid(item.columnIndex, productIndex)">
+                          </lib-checkbox>
+                          <span class="text-sm text-zinc-700 dark:text-zinc-300">É sólido</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-1 pt-2">
+                      <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Remover produto</span>
+                      <lib-button 
+                        [type]="'button'" 
+                        [fluid]="false" 
+                        [icon]="'pi pi-times'" 
+                        [severity]="'danger'"
+                        [loading]="loading" 
+                        [tooltip]="'Remover produto'"
+                        (click)="removeProduct(item.header, item.columnIndex, productIndex)">
+                      </lib-button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+      </ng-container>
+      </div> 
   </div>
 </ng-container>

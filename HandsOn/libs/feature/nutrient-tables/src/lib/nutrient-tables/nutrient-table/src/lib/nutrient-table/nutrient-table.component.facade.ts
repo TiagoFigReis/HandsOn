@@ -25,7 +25,7 @@ export class NutrientTableComponentFacade {
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
   originalTable: NutrientTable | undefined;
-  userRole: string = '';
+  userRole = '';
 
   constructor(
     private nutrientTableFacade: NutrientTableFacade,

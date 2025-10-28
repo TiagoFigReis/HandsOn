@@ -2,6 +2,12 @@
   <i class="pi pi-spin pi-spinner text-3xl text-blue-500"></i>
 </div>
 
+<a [routerLink]="['/app']" >
+        <p class="description flex items-center gap-1 link">
+            <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
+        </p>
+  </a>
+
 <div *ngIf="!loading && data.length === 0" class="min-w-full text-center p-8 text-gray-600 dark:text-gray-400">
   Não há análises cadastradas
 </div>

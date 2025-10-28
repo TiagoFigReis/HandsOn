@@ -1,20 +1,51 @@
-
 <div class="w-full min-h-screen flex flex-col md:flex-row rounded-xl font-sans secondary-background text" *ngIf="!loading && analise; else loadingOrError">
 
+  <a [routerLink]="['/app/analises']" class="m-2">
+        <p class="description flex items-center gap-1 link">
+            <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
+        </p>
+  </a>
+
   <aside class="w-full md:w-72 flex-shrink-0 rounded-xl secondary-background border-b md:border-b-0 md:border-r primary-border p-4 md:p-6 flex flex-col">
+   
     <div class="flex items-center gap-3 text-xl font-semibold mb-6">
       {{ tipo ? 'Análise de Foliar' : 'Análise de Solo' }}
     </div>
     <nav>
       <h3 class="px-4 text-xs font-bold uppercase description tracking-wider mb-3">Talhões Analisados</h3>
-      <div class="flex flex-row md:flex-col gap-1 overflow-x-auto pb-2">
-        <button *ngFor="let plot of allPlots" (click)="selectPlot(plot)" class="block w-full text-left py-2.5 px-4 rounded-lg font-medium cursor-pointer transition-colors duration-200"
-          [ngClass]="{
-            'bg-teal-500 dark:bg-teal-400 text-white dark:text-slate-900 shadow-md': plot.plotName === selectedPlot?.plotName,
-            'description hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-slate-100': plot.plotName !== selectedPlot?.plotName
-          }">
-          {{ plot.plotName }} ({{ plot.cultureType }})
-        </button>
+      <div class="flex flex-row md:flex-col gap-1 flex-wrap pb-2">
+        <div *ngFor="let plot of allPlots" class="w-full">
+          <button *ngIf="editingPlotName !== plot.plotName" (click)="selectPlot(plot)" class="group relative block w-full text-left py-2.5 px-4 rounded-lg font-medium cursor-pointer transition-colors duration-200"
+            [ngClass]="{
+              'bg-teal-500 dark:bg-teal-400 text-white dark:text-slate-900 shadow-md': plot.plotName === selectedPlot?.plotName,
+              'description hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-slate-100': plot.plotName !== selectedPlot?.plotName
+            }">
+            <span class="block pr-8">{{ plot.plotName }} ({{ plot.cultureType }})</span>
+            <button (click)="startEditingPlotName(plot.plotName, $event)" 
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-white/20 dark:hover:bg-black/20 transition-colors opacity-100"
+              title="Editar nome">
+              <i class="pi pi-pencil text-xs"></i>
+            </button>
+          </button>
+          
+          <div *ngIf="editingPlotName === plot.plotName" class="flex items-center gap-1 p-1 bg-gray-100 dark:bg-slate-800 rounded-lg border-2 border-teal-500">
+            <input type="text" [(ngModel)]="tempPlotName" 
+              class="flex-1 px-2 py-1.5 text-sm bg-white dark:bg-slate-700 border-0 rounded text focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              (keydown.enter)="savePlotName(plot, $event)"
+              (keydown.escape)="cancelEditPlotName($event)"
+            >
+            <button (click)="savePlotName(plot, $event)" 
+              class="p-1.5 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded transition-colors"
+              title="Salvar">
+              <i class="pi pi-check text-xs"></i>
+            </button>
+            <button (click)="cancelEditPlotName($event)" 
+              class="p-1.5 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+              title="Cancelar">
+              <i class="pi pi-times text-xs"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
   </aside>
@@ -49,7 +80,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label for="cultureType" class="block text-sm font-medium description mb-1">Cultura</label>
-            <input type="text" id="cultureType" [(ngModel)]="selectedPlot.cultureType" class="w-full bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md py-2 px-3 text focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+            <input type="text" id="cultureType" [(ngModel)]="selectedPlot.cultureType" disabled class="w-full bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md py-2 px-3 text focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
           </div>
           <div>
             <label for="expectedProductivity" class="block text-sm font-medium description mb-1">Prod. Esperada (sc/ha)</label>
@@ -69,7 +100,7 @@
           </div>
         </div>
       </div>
-      
+     
       <div class="tertiary-background rounded-xl p-4 md:p-6 primary-border border">
         <h2 class="text-xl font-semibold subtitle mb-2">Análise de Nutrientes</h2>
          <div class="flex items-start gap-3 bg-yellow-100 dark:bg-amber-900/50 border border-yellow-300 dark:border-amber-700/80 text-yellow-800 dark:text-amber-200 text-sm rounded-lg p-3 mb-6">
@@ -79,7 +110,7 @@
             <p>Verifique se os valores dos nutrientes correspondem exatamente aos do laudo original (PDF). Valores incorretos podem levar a recomendações imprecisas.</p>
         </div>
         <div *ngFor="let nutrient of editableNutrientData; trackBy: trackByName">
-          <lib-bar-chart 
+          <lib-bar-chart
             [analysisData]="nutrient"
             (valueChanged)="onNutrientValueChange($event)">
           </lib-bar-chart>
@@ -87,13 +118,16 @@
       </div>
 
       <div class="flex flex-col sm:flex-row justify-end gap-4 mt-8">
-        <button (click)="onDeletePlot()" class="w-full sm:w-auto px-6 py-3 font-semibold text-white bg-red-600 hover:bg-red-700  rounded-lg transition-colors">
+        <button (click)="onDeletePlot()" class="w-full sm:w-auto px-6 py-3 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 error rounded-lg transition-colors">
+          <i class="pi pi-trash"></i>
           Excluir Talhão
         </button>
-        <button (click)="onSave()" class="w-full sm:w-auto px-6 py-3 font-semibold text-white bg-green-600 hover:bg-green-700  rounded-lg transition-colors">
+        <button (click)="onSave()" class="w-full sm:w-auto px-6 py-3 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 success rounded-lg transition-colors">
+          <i class="pi pi-save"></i>
           Salvar Alterações
         </button>
-        <button (click)="solicitar_recomendacoes()" class="w-full sm:w-auto px-6 py-3 font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+        <button (click)="solicitar_recomendacoes()" class="w-full sm:w-auto px-6 py-3 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 primary rounded-lg transition-colors">
+          <i class="pi pi-fw pi-file"></i>
           Gerar Recomendação
         </button>
       </div>
@@ -121,7 +155,7 @@
 
 <ng-template #noPlotSelected>
     <div class="flex flex-col justify-center items-center h-full description p-4 text-center">
-        <svg class="w-16 h-16 mb-4 text-gray-400 dark:text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.226 2.226 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122" /></svg>
+        <svg class="w-16 h-16 mb-4 text-gray-400 dark:text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.226 2.226 0 00-.75-.128H5.25c-.263 0-.515.045.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122" /></svg>
         <h2 class="text-xl font-semibold subtitle">Nenhum talhão para exibir</h2>
         <p class="mt-1">Todos os talhões foram removidos da análise.</p>
     </div>

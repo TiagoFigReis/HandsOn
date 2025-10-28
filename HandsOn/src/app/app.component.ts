@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ThemeService } from '@farm/core';
 import { ConfirmDialogComponent, ToastComponent } from '@farm/ui';
 import { ButtonModule } from 'primeng/button';
 
@@ -11,6 +12,12 @@ import { ButtonModule } from 'primeng/button';
 })
 export class AppComponent {
   title = 'Gestão Agrícola';
+
+  constructor(
+    private themeService: ThemeService
+  ) {
+   
+  }
 }
 
 

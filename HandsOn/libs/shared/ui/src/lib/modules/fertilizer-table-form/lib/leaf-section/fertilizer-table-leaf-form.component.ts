@@ -1,12 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, ChangeDetectorRef, NgZone, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../../components/input/input.component';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component';
-import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValidator, SoilFertilizerRow } from '@farm/core';
-import { DividerComponent } from '../../../../components/divider/divider.component';
+import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValidator } from '@farm/core';
 
 @Component({
   selector: 'lib-fertilizer-table-leaf-form',
@@ -17,12 +16,11 @@ import { DividerComponent } from '../../../../components/divider/divider.compone
     InputNumberComponent,
     ButtonComponent,
     CheckboxComponent,
-    DividerComponent
   ],
   templateUrl: './fertilizer-table-leaf-form.component.html',
   styleUrl: './fertilizer-table-leaf-form.component.css',
 })
-export class FertilizerTableLeafFormComponent {
+export class FertilizerTableLeafFormComponent implements OnInit, OnChanges {
   @Input() loading = false;
   @Input() fertilizerTable?: FertilizerTable | null;;
 
@@ -30,50 +28,58 @@ export class FertilizerTableLeafFormComponent {
   leafRow: FormGroup
   macroHeaders = [
     {
-      label: 'N',
+      label: 'Nitrogênio (N)',
       products: []
     }, {
-      label: 'P',
+      label: 'Fósforo (P)',
       products: []
     }, {
-      label: 'K',
+      label: 'Potássio (K)',
       products: []
     }, {
-      label: 'Ca',
+      label: 'Cálcio (Ca)',
       products: []
     }, {
-      label: 'Mg',
+      label: 'Magnésio (Mg)',
       products: []
     }, {
-      label: 'S',
+      label: 'Enxofre (S)',
       products: []
     }
   ];
+
   microHeaders = [
     {
-      label: 'Zn',
+      label: 'Zinco (Zn)',
       products: []
     }, {
-      label: 'B',
+      label: 'Boro (B)',
       products: []
     }, {
-      label: 'Cu',
+      label: 'Cobre (Cu)',
       products: []
     }, {
-      label: 'Mn',
+      label: 'Manganês (Mn)',
       products: []
     }, {
-      label: 'Fe',
+      label: 'Ferro (Fe)',
       products: []
     }, {
-      label: 'Mb',
+      label: 'Molibdênio (Mo)',
       products: []
-    },
+    }
   ];
+
+  headerGroups: { 
+    title: string, 
+    headers: { header: any, columnIndex: number }[] 
+  }[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
-    private parentFormGroup: FormGroupDirective
+    private parentFormGroup: FormGroupDirective,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
   ) {
     this.leafRow = formBuilder.group({
       leafColumns: formBuilder.array([])
@@ -82,16 +88,33 @@ export class FertilizerTableLeafFormComponent {
 
   ngOnInit() {
     this.parentForm = this.parentFormGroup.control;
-
     this.parentForm.addControl('leafRow', this.leafRow);
-
     this.createLeafSection();
 
     if (this.fertilizerTable) this.updateFertilizerTableData();
+
+    this.buildHeaderGroups();
   }
 
   ngOnChanges() {
     if (this.fertilizerTable) this.updateFertilizerTableData();
+  }
+
+  buildHeaderGroups() {
+    const macroItems = this.macroHeaders.map((header, index) => ({
+      header: header,
+      columnIndex: index 
+    }));
+
+    const microItems = this.microHeaders.map((header, index) => ({
+      header: header,
+      columnIndex: index + this.macroHeaders.length 
+    }));
+
+    this.headerGroups = [
+      { title: 'Macronutrientes', headers: macroItems },
+      { title: 'Micronutrientes', headers: microItems }
+    ];
   }
 
   getLeafColumns(): FormArray {
@@ -151,19 +174,25 @@ export class FertilizerTableLeafFormComponent {
       }),
     }, { validators: minMaxValidator('min', 'max') });
   }
-  addProduct(header: any, columnIndex: number, data?: { name: string, min: number, max: number, solid: boolean }): FormGroup {
-    header.products.push({ name: '', min: '', max: '' });
 
+  private _addProduct(columnIndex: number, data?: { name: string, min: number, max: number, solid: boolean }): FormGroup {
     const productGroup = this.createLeafProduct(data);
-
     this.getProducts(columnIndex).push(productGroup);
-
     return productGroup;
   }
-  removeProduct(header: any, columnIndex: number, productIndex: number): void {
-    header.products.splice(productIndex, 1);
 
-    this.getProducts(columnIndex).removeAt(productIndex);
+  addProduct(header: any, columnIndex: number, data?: { name: string, min: number, max: number, solid: boolean }): void {
+    this.zone.run(() => {
+      this._addProduct(columnIndex, data);
+      this.cdr.detectChanges();
+    });
+  }
+
+  removeProduct(header: any, columnIndex: number, productIndex: number): void {
+    this.zone.run(() => {
+      this.getProducts(columnIndex).removeAt(productIndex);
+      this.cdr.detectChanges();
+    });
   }
 
   updateFertilizerTableData(): void {
@@ -177,10 +206,14 @@ export class FertilizerTableLeafFormComponent {
       else
         header = this.microHeaders[colIndex - this.macroHeaders.length];
 
-      column.products.forEach((product) => {
-        this.addProduct(header, colIndex, { name: product.name, min: product.minConcentration, max: product.maxConcentration, solid: product.solid });
-      });
+      if (header) {
+        column.products.forEach((product) => {
+          this._addProduct(colIndex, { name: product.name, min: product.minConcentration, max: product.maxConcentration, solid: product.solid });
+        });
+      }
     });
+    
+    this.cdr.detectChanges();
   }
 
   onSubmit(formValue: any, headerValues: any): LeafFertilizerRow {

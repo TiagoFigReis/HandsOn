@@ -8,13 +8,6 @@
     </div>
 
     <div class="flex items-center gap-6">
-      <div class="flex gap-2">
-        <p>{{isDarkMode ? 'Escuro' : 'Claro'}}</p>
-        <p-toggleswitch 
-            [ngModel]="isDarkMode" 
-            (onChange)="toggleTheme()" 
-        />
-      </div>
 
       <lib-button
           [variant]="'text'"

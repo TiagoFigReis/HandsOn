@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectorRef, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
@@ -10,7 +10,7 @@ import { descendingValuesValidator, FertilizerTable, NutrientHeaders, SoilFertil
   templateUrl: './fertilizer-table-soil-form.component.html',
   styleUrl: './fertilizer-table-soil-form.component.css',
 })
-export class FertilizerTableSoilFormComponent {
+export class FertilizerTableSoilFormComponent implements OnInit, OnChanges {
   @Input() loading = false;
   @Input() fertilizerTable?: FertilizerTable | null;
 
@@ -31,7 +31,8 @@ export class FertilizerTableSoilFormComponent {
 
   constructor(
     private formBuilder: FormBuilder,
-    private parentFormGroup: FormGroupDirective
+    private parentFormGroup: FormGroupDirective,
+    private cdr: ChangeDetectorRef
   ) {
     this.soilRows = formBuilder.array([])
   }
@@ -51,13 +52,21 @@ export class FertilizerTableSoilFormComponent {
   }
 
   getValue(rowIndex: number, group: string, colIndex: number): FormControl {
-    return this.soilRows.at(rowIndex).get(group)?.get(`value${colIndex}`) as FormControl;
+    const row = this.soilRows.at(rowIndex);
+    const groupControl = row.get(group);
+    
+    if (!groupControl) {
+      return new FormControl(null);
+    }
+    
+    return groupControl.get(`value${colIndex}`) as FormControl;
   }
 
   createSoilSection(): void {
     for (let i = 0; i < this.soilRowsProductivities.length; i++)
       this.soilRows.push(this.createSoilRow(i == 0));
   }
+  
   createSoilRow(hasB: boolean): FormGroup {
     const rowGroup: any = {
       n: this.createSoilColumn(2),
@@ -70,6 +79,7 @@ export class FertilizerTableSoilFormComponent {
 
     return this.formBuilder.group(rowGroup);
   }
+  
   createSoilColumn(numberOfValues: number, column?: SoilFertilizerColumn): FormGroup {
     const columnGroup: { [key: string]: FormControl } = {};
     const controlNames: string[] = [];
@@ -94,18 +104,21 @@ export class FertilizerTableSoilFormComponent {
   updateFertilizerTableData(): void {
     if (!this.fertilizerTable) return;
 
-    console.log(this.fertilizerTable);
-
     while (this.soilRows.length)
       this.soilRows.removeAt(0);
     
     const columnKeys = ['n', 'p', 'k', 'b'];
 
-    this.fertilizerTable.soilFertilizerRows.forEach((row) => {
+    this.fertilizerTable.soilFertilizerRows.forEach((row, rowIndex) => {
       const rowFormGroup = this.formBuilder.group({});
 
-      row.soilFertilizerColumns.forEach((column, index) => {
-        const key = columnKeys[index];
+      row.soilFertilizerColumns.forEach((column, colIndex) => {
+        const key = columnKeys[colIndex];
+        
+        if (key === 'b' && rowIndex !== 0) {
+          return;
+        }
+        
         rowFormGroup.addControl(
           key,
           this.createSoilColumn(column.numberOfValues, column)
@@ -114,6 +127,9 @@ export class FertilizerTableSoilFormComponent {
 
       this.soilRows.push(rowFormGroup);
     });
+
+    // Força detecção de mudanças
+    this.cdr.detectChanges();
   }
 
   onSubmit(formValue: any, headerValues: any): SoilFertilizerRow[] {
@@ -124,6 +140,7 @@ export class FertilizerTableSoilFormComponent {
       const parts = productivityString.split('-');
       const expectedProductivity = parts.length > 1 ? Number(parts[1].trim()) : Number(parts[0].trim())
 
+      // Nitrogênio
       soilFertilizerColumns.push({
         header: headerValues.indexOf(NutrientHeaders.N),
         numberOfValues: 2,
@@ -132,6 +149,8 @@ export class FertilizerTableSoilFormComponent {
         value3: 0,
         value4: 0
       });
+      
+      // Fósforo
       soilFertilizerColumns.push({
         header: headerValues.indexOf(NutrientHeaders.P),
         numberOfValues: 3,
@@ -140,6 +159,8 @@ export class FertilizerTableSoilFormComponent {
         value3: soilRow.p.value3,
         value4: 0
       });
+      
+      // Potássio
       soilFertilizerColumns.push({
         header: headerValues.indexOf(NutrientHeaders.K),
         numberOfValues: 4,
@@ -149,7 +170,8 @@ export class FertilizerTableSoilFormComponent {
         value4: soilRow.k.value4
       });
 
-      if (rowIndex == 0) {
+      // Boro
+      if (rowIndex === 0 && soilRow.b) {
         soilFertilizerColumns.push({
           header: headerValues.indexOf(NutrientHeaders.B),
           numberOfValues: 4,
@@ -165,8 +187,6 @@ export class FertilizerTableSoilFormComponent {
         soilFertilizerColumns: soilFertilizerColumns
       };
     });
-
-    console.log(soilRows);
 
     return soilRows;
   }

@@ -8,7 +8,6 @@ import {
     CultureFacade,
     Culture,
     UserFacade,
-    User
 } from '@farm/core';
 import { Row, Action } from '@farm/ui';
 import { Location } from '@angular/common';
@@ -22,7 +21,7 @@ export class FertilizerTablesListComponentFacade {
     private loadingSubject = new BehaviorSubject<boolean>(false);
     private allCultures: Culture[] = [];
 
-    userRole: string = '';
+    userRole = '';
 
     loading$: Observable<boolean> = this.loadingSubject.asObservable();
     fertilizerTables$: Observable<Row[]> = this.fertilizerTablesSubject.asObservable();
@@ -91,7 +90,7 @@ export class FertilizerTablesListComponentFacade {
     }
 
     private mapFertilizerTableToRow(fertilizerTable: FertilizerTable): Row {
-        const { culture, standard, soilFertilizerRows, leafFertilizerRow, ...data } = fertilizerTable;
+        const {standard, ...data } = fertilizerTable;
 
         const newData = {
             ...data,
@@ -117,7 +116,7 @@ export class FertilizerTablesListComponentFacade {
         if (this.userRole != UserRoles.Admin && standard) { ; }
         else {
             actions.push({
-                tooltip: 'Excluir',
+                tooltip: this.userRole === UserRoles.Admin ? 'Excluir Tabela' : 'Excluir Tabela Personalizada',
                 icon: 'pi pi-fw pi-trash',
                 iconClass: 'error',
                 command: (event, data) => {

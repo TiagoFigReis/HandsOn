@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Culture, CultureFacade, NutrientHeaders, NutrientTable, User } from '@farm/core';
+import { Culture, CultureFacade, minMaxValidator, minMedMaxValidator, NutrientColumn, NutrientHeaders, NutrientRow, NutrientTable, User } from '@farm/core';
 import { ButtonComponent } from '../../components/button/button.component';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SelectComponent, SelectOption } from '../../components/select/select.component';
 import { TabItem, TabsComponent } from '../../components/tabs/tabs.component';
 import { FieldsetComponent } from '../../components/fieldset/fieldset.component';
@@ -26,7 +26,7 @@ import { NutrientTableLeafFormComponent } from './lib/leaf-section/nutrient-tabl
   templateUrl: './nutrient-table-form.component.html',
   styleUrl: './nutrient-table-form.component.css',
 })
-export class NutrientTableFormComponent {
+export class NutrientTableFormComponent implements OnInit, OnChanges {
   @Input() nutrientTable: NutrientTable | undefined;
   @Input() user: User | undefined;
   @Input() loading = false;
@@ -37,13 +37,9 @@ export class NutrientTableFormComponent {
 
   @ViewChild('leafSection', { static: true }) leafSection!: TemplateRef<any>;
   @ViewChild('soilSection', { static: true }) soilSection!: TemplateRef<any>;
-  @ViewChild(NutrientTableSoilFormComponent) soilComponent!: NutrientTableSoilFormComponent;
-  @ViewChild(NutrientTableLeafFormComponent) leafComponent!: NutrientTableLeafFormComponent;
 
   nutrientTableForm: FormGroup;
-
   cultureOptions: SelectOption[] = [];
-
   selectDivision = true;
   divisionOptions: SelectOption[] = [
     { value: '0', label: 'Anual' },
@@ -54,11 +50,65 @@ export class NutrientTableFormComponent {
 
   tabs: TabItem[] = [];
   isSmallScreen = false;
+  periods: string[] = [];
+  
+  leafRowsCache = new Map<string, any[]>();
+  previousDivisionValue = '0';
 
-  leafText: string = `Esta tabela ajuda a identificar deficiências de nutrientes nas folhas de uma plantação e recomenda os produtos ideais para corrigi-las. 
+  leafHeaders = [
+  'Nitrogênio (N)', 'Fósforo (P)', 'Potássio (K)', 'Cálcio (Ca)', 'Magnésio (Mg)', 'Enxofre (S)',
+  'Zinco (Zn)', 'Boro (B)', 'Cobre (Cu)', 'Manganês (Mn)', 'Ferro (Fe)',
+  'Nitrogênio/Fósforo (N/P)', 'Nitrogênio/Potássio (N/K)', 'Nitrogênio/Enxofre (N/S)',
+  'Nitrogênio/Boro (N/B)', 'Nitrogênio/Cobre (N/Cu)',
+  'Fósforo/Magnésio (P/Mg)', 'Fósforo/Zinco (P/Zn)',
+  'Potássio/Cálcio (K/Ca)', 'Potássio/Magnésio (K/Mg)', 'Potássio/Manganês (K/Mn)',
+  'Cálcio/Magnésio (Ca/Mg)', 'Cálcio/Manganês (Ca/Mn)', 'Ferro/Manganês (Fe/Mn)'
+];
+
+soilHeaders = [
+  {
+    title: "Macronutrientes",
+    items: [
+      { label: 'Fósforo (P)', complex: false, id: 0, inverted: false },
+      { label: 'Potássio (K)', complex: false, id: 1, inverted: false },
+      { label: 'Cálcio (Ca)', complex: false, id: 2, inverted: false },
+      { label: 'Magnésio (Mg)', complex: false, id: 3, inverted: false },
+      { label: 'Enxofre (S)', complex: false, id: 4, inverted: false }
+    ]
+  },
+  {
+    title: 'Micronutrientes',
+    items: [
+      { label: 'Zinco (Zn)', complex: false, id: 5, inverted: false },
+      { label: 'Boro (B)', complex: false, id: 6, inverted: false },
+      { label: 'Cobre (Cu)', complex: false, id: 7, inverted: false },
+      { label: 'Manganês (Mn)', complex: false, id: 8, inverted: false },
+      { label: 'Ferro (Fe)', complex: false, id: 9, inverted: false }
+    ]
+  },
+  {
+    title: 'Fertilidade',
+    items: [
+      { label: 'Matéria Orgânica', complex: false, id: 10, inverted: false },
+      { label: 'Soma de Bases', complex: true, id: 11, inverted: false },
+      { label: 'CTC', complex: true, id: 12, inverted: false },
+      { label: 'Sat. por Bases', complex: true, id: 13, inverted: false }
+    ]
+  },
+  {
+    title: "Acidez",
+    items: [
+      { label: 'pH em Água', complex: false, id: 14, inverted: false },
+      { label: 'Saturação por Alumínio', complex: true, id: 15, inverted: true },
+      { label: 'Acidez Potencial', complex: true, id: 16, inverted: true }
+    ]
+  }
+];
+
+  leafText = `Esta tabela ajuda a identificar deficiências de nutrientes nas folhas de uma plantação e recomenda os produtos ideais para corrigi-las. 
     Cada nutriente listado possui uma seleção de fertilizantes indicados para aplicação quando que os níveis estiverem abaixo do ideal. <br>
     Os valores já vêm pré-definidos por nossos especialistas, mas podem ser personalizados de acordo com as necessidades específicas de uma cultura.`;
-  soilText: string = `Esta tabela serve como um guia para a adubação do solo com base nos teores de Nitrogênio (N), Fósforo (P), Potássio (K) e Boro (B). 
+  soilText = `Esta tabela serve como um guia para a adubação do solo com base nos teores de Nitrogênio (N), Fósforo (P), Potássio (K) e Boro (B). 
     Cada célula indica a quantidade de fertilizante a ser aplicada conforme a necessidade detectada em cada nutriente. <br>
     Todas as dosagens já são preenchidas com valores de referência estabelecidos pela nossa equipe de agrônomos, mas podem ser ajustadas para uma recomendação mais personalizada.`;
 
@@ -77,6 +127,10 @@ export class NutrientTableFormComponent {
       tableDivision: this.formBuilder.control('', {
         validators: [],
         updateOn: 'blur'
+      }),
+      leafRows: this.formBuilder.array([]),
+      soilRow: this.formBuilder.group({
+        soilColumns: this.formBuilder.array([])
       })
     });
   }
@@ -84,17 +138,19 @@ export class NutrientTableFormComponent {
   ngOnInit(): void {
     this.cultureFacade.getAllCulturesWithoutNutrientTable().subscribe({
       next: (cultures: Culture[]) => {
-        this.cultureOptions = cultures.map(c => ({
-          value: c.id?.toString()!,
-          label: c.name
-        }));
+        this.cultureOptions = cultures.reduce<SelectOption[]>((acc, c) => {
+          if (c.id != null) {
+            acc.push({
+              value: c.id.toString(), 
+              label: c.name
+            });
+          }
+          return acc;
+        }, []); 
       }
     });
 
-    if (this.nutrientTable) this.updateNutrientTableData();
-
     if (this.selectCulture) this.cultureType.setValidators([Validators.required]);
-    if (this.selectDivision) this.tableDivision.setValidators([Validators.required]);
 
     this.tabs = [
       { header: "Seção Folha", template: this.leafSection },
@@ -107,15 +163,34 @@ export class NutrientTableFormComponent {
       });
 
     this.tableDivision.valueChanges.subscribe((value) => {
-      this.leafComponent.setRowsBasedOnDivision(value.value);
+      if (value) {
+        const oldData = this.leafRows.getRawValue();
+        this.leafRowsCache.set(this.previousDivisionValue, oldData);
+        
+        this.setRowsBasedOnDivision(value.value);
+        
+        this.previousDivisionValue = value.value;
+      }
     });
+    
+    this.createSoilSection();
+    this.onTabChange(0);
+    
+    if (!this.nutrientTable) {
+      this.setRowsBasedOnDivision('0');
+      this.previousDivisionValue = '0';
+    }
   }
 
-  ngOnChanges() {
-    if (this.nutrientTable) this.updateNutrientTableData();
-
-    if (this.loading) this.nutrientTableForm.disable();
-    else this.nutrientTableForm.enable({ emitEvent: false });
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['nutrientTable'] && this.nutrientTable) {
+      this.updateNutrientTableData();
+    }
+    
+    if (changes['loading']) {
+      if (this.loading) this.nutrientTableForm.disable();
+      else this.nutrientTableForm.enable({ emitEvent: false });
+    }
   }
 
   get cultureType(): FormControl {
@@ -124,6 +199,103 @@ export class NutrientTableFormComponent {
   get tableDivision(): FormControl {
     return this.nutrientTableForm.get('tableDivision') as FormControl;
   }
+  get leafRows(): FormArray {
+    return this.nutrientTableForm.get('leafRows') as FormArray;
+  }
+  get soilRow(): FormGroup {
+    return this.nutrientTableForm.get('soilRow') as FormGroup;
+  }
+  get soilColumns(): FormArray {
+    return this.soilRow.get('soilColumns') as FormArray;
+  }
+  
+  createLeafRow(columnsData?: any[]): FormGroup {
+    const columnsArray = this.formBuilder.array(
+      Array.from({ length: this.leafHeaders.length }, (_, i) => {
+        const data = columnsData ? columnsData[i] : undefined;
+        return this.createLeafColumn(data);
+      })
+    );
+    return this.formBuilder.group({
+      leafColumns: columnsArray
+    });
+  }
+
+  createLeafColumn(data?: { min: number, max: number }): FormGroup {
+    return this.formBuilder.group({
+      min: this.formBuilder.control(data?.min ?? 1, {
+        validators: [Validators.required, Validators.min(0)],
+        updateOn: 'blur'
+      }),
+      max: this.formBuilder.control(data?.max ?? 2, {
+        validators: [Validators.required, Validators.min(0)],
+        updateOn: 'blur'
+      }),
+    }, { validators: minMaxValidator('min', 'max') });
+  }
+
+  createSoilSection(): void {
+    const allItems = this.soilHeaders.flatMap(header => header.items);
+    this.soilColumns.clear();
+    allItems.forEach(item => {
+      this.soilColumns.push(this.createSoilColumn(item.complex));
+    });
+  }
+  createSoilColumn(complex: boolean, data?: { min: number, med1: number, med2: number, max: number }): FormGroup {
+    return this.formBuilder.group({
+      min: this.formBuilder.control(data?.min ?? 1, {
+        validators: [Validators.required, Validators.min(0)],
+        updateOn: 'blur'
+      }),
+      med1: this.formBuilder.control(complex ? data?.med1 ?? 2 : 0, {
+        validators: [Validators.required, Validators.min(0)],
+        updateOn: 'blur'
+      }),
+      med2: this.formBuilder.control(complex ? data?.med2 ?? 3 : 0, {
+        validators: [Validators.required, Validators.min(0)],
+        updateOn: 'blur'
+      }),
+      max: this.formBuilder.control(data?.max ?? 4, {
+        validators: [Validators.required, Validators.min(0)],
+        updateOn: 'blur'
+      }),
+    }, { validators: minMedMaxValidator(complex) });
+  }
+
+  setRowsBasedOnDivision(value: string): void {
+    let numberOfRows = 1;
+
+    switch (value) {
+      case '1': numberOfRows = 2; break;
+      case '2': numberOfRows = 4; break;
+      case '3': numberOfRows = 6; break;
+      default: numberOfRows = 1;
+    }
+    
+    this.setPeriods(value);
+    this.leafRows.clear();
+
+    if (this.leafRowsCache.has(value)) {
+      const cachedData = this.leafRowsCache.get(value);
+      cachedData?.forEach((rowData: any) => {
+        this.leafRows.push(this.createLeafRow(rowData.leafColumns));
+      });
+    } else {
+      for (let i = 0; i < numberOfRows; i++) {
+        this.leafRows.push(this.createLeafRow());
+      }
+    }
+  }
+
+  setPeriods(value: string): void {
+    switch (value) {
+      case '0': this.periods = ["Anual"]; break;
+      case '1': this.periods = ["Jan-Jun", "Jul-Dez"]; break;
+      case '2': this.periods = ["Jan-Mar", "Abr-Jun", "Jul-Set", "Out-Dez"]; break;
+      case '3': this.periods = ["Jan/Fev", "Mar/Abr", "Mai/Jun", "Jul/Ago", "Set/Out", "Nov/Dez"]; break;
+      default: this.periods = ["Anual"];
+    }
+  }
 
   updateNutrientTableData(): void {
     if (!this.nutrientTable) return;
@@ -131,29 +303,62 @@ export class NutrientTableFormComponent {
     const selectedDivision = this.divisionOptions.find(
       opt => opt.label === this.nutrientTable?.division
     );
+    const divisionValue = selectedDivision ? selectedDivision.value : '0';
+    this.previousDivisionValue = divisionValue;
 
     this.nutrientTableForm.patchValue({
-      tableDivision: { value: selectedDivision!.value, label: selectedDivision!.label },
+      tableDivision: { value: divisionValue, label: selectedDivision?.label },
       cultureType: { value: this.nutrientTable.cultureId }
     }, { emitEvent: false });
 
-    this.leafComponent.setPeriods(this.tableDivision.value.value);
+    this.leafRows.clear();
+    this.nutrientTable.leafNutrientRows.forEach((row) => {
+      const columnsData = row.nutrientColumns.map(col => ({ min: col.min, max: col.max }));
+      this.leafRows.push(this.createLeafRow(columnsData));
+    });
+
+    this.leafRowsCache.set(divisionValue, this.leafRows.getRawValue());
+    this.setPeriods(divisionValue);
+
+    this.soilColumns.clear();
+    this.nutrientTable.soilNutrientRow.nutrientColumns.forEach((column) => {
+      const complex = column.med1 !== 0 && column.med2 !== 0;
+      this.soilColumns.push(this.createSoilColumn(complex, column));
+    });
   }
 
   onSubmit() {
     if (this.nutrientTableForm.invalid)
       return this.nutrientTableForm.markAllAsTouched();
 
-    const formValue = this.nutrientTableForm.value;
+    const formValue = this.nutrientTableForm.getRawValue();
     const headerValues = Object.values(NutrientHeaders) as string[];
+    const allSoilItems = this.soilHeaders.flatMap(header => header.items);
 
-    //criar a aprte da folha
-    const leafRows = this.leafComponent.onSubmit(formValue);
+    const leafRows: NutrientRow[] = formValue.leafRows.map((leafRow: any) => {
+      const nutrientColumns: NutrientColumn[] = leafRow.leafColumns.map((leafColumn: any, colIndex: number) => ({
+        header: colIndex,
+        min: leafColumn.min,
+        max: leafColumn.max
+      }));
+      return { nutrientColumns };
+    });
 
-    //criar a aprte do solo
-    const soilRow = this.soilComponent.onSubmit(formValue, headerValues);
-
-    console.log(formValue.tableDivision.value);
+    const soilRow: NutrientRow = {
+      nutrientColumns: formValue.soilRow.soilColumns.map((soilColumn: any, colIndex: number) => {
+        const item = allSoilItems[colIndex];
+        const cleanHeader = item.label.split("<br>")[0].trim();
+        const header = headerValues.indexOf(cleanHeader);
+        return {
+          header: header,
+          inverted: item.inverted,
+          min: soilColumn.min,
+          med1: soilColumn.med1,
+          med2: soilColumn.med2,
+          max: soilColumn.max
+        };
+      })
+    };
 
     const nutrientTable: NutrientTable = {
       id: this.nutrientTable?.id,
@@ -164,8 +369,6 @@ export class NutrientTableFormComponent {
       soilNutrientRow: soilRow
     }
 
-    console.log(nutrientTable);
-
     this.nutrientTableSubmit.emit(nutrientTable);
   }
 
@@ -173,11 +376,12 @@ export class NutrientTableFormComponent {
     if (index === 0) {
       this.currentText = this.leafText;
       this.selectDivision = true;
-    }
-
-    else if (index === 1) {
+      this.tableDivision.setValidators([Validators.required]);
+    } else if (index === 1) {
       this.currentText = this.soilText;
       this.selectDivision = false;
+      this.tableDivision.clearValidators();
     }
+    this.tableDivision.updateValueAndValidity();
   }
 }

@@ -44,7 +44,7 @@
                 [ngClass]="{
                   'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300': item.result === 'Atendido',
                   'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300': item.result === 'Déficit',
-                  'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300': item.result === 'Atenção'
+                  'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-400': item.result === 'Excesso'
                 }">
             {{ item.result }}
           </span>
@@ -62,7 +62,7 @@
             <span class="description font-semibold">Balanço:</span>
             <span class="font-mono font-semibold"
                   [ngClass]="{
-                    'text-green-600 dark:text-green-400': item.balance.startsWith('+'),
+                    'text-yellow-700 dark:text-yellow-400': item.balance.startsWith('+'),
                     'text-red-600 dark:text-red-400': item.balance.startsWith('-')
                   }">{{ item.balance }}</span>
           </div>

@@ -1,24 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Column, TableComponent, Row } from '@farm/ui';
+import { RouterModule } from '@angular/router';
+import { Row } from '@farm/ui';
 import { FertilizerTablesListComponentFacade } from './fertilizer-tables-list.component.facade';
 
 @Component({
   selector: 'lib-fertilizer-tables-list',
-  imports: [CommonModule, TableComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './fertilizer-tables-list.component.html',
   styleUrl: './fertilizer-tables-list.component.css',
 })
 export class FertilizerTablesListComponent implements OnInit {
   data: Row[] = [];
-  columns: Column[];
   loading = false;
-  showMoreButton = true;
   isAdmin = false;
 
-  constructor(private facade: FertilizerTablesListComponentFacade) {
-    this.columns = columns;
-  }
+  constructor(private facade: FertilizerTablesListComponentFacade) {}
 
   ngOnInit(): void {
     this.facade.loading$.subscribe((loading) => {
@@ -40,24 +37,3 @@ export class FertilizerTablesListComponent implements OnInit {
     this.facade.load();
   }
 }
-
-const columns: Column[] = [
-  {
-    field: 'cultureName',
-    header: 'Cultura',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true
-  },
-  {
-    field: "standardText",
-    header: "Personalizada",
-    type: "text",
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true
-  }
-];

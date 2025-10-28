@@ -3,61 +3,70 @@
   (ngSubmit)="onSubmit()"
   class="w-full flex flex-col gap-2 mt-6"
 >
-    <div class="w-full mx-auto flex flex-col lg:flex-row gap-2 px-6 lg:px-10">
-        <div class="w-full lg:w-3/5 m-auto">
-            <lib-fieldset [legend]="'Como Funciona'" [toggleable]="isSmallScreen" [styleClass]="'my-auto'">
-                <p [innerHtml]="currentText"></p>
-            </lib-fieldset>
-        </div>
-        
-        <div class="w-full max-w-md lg:w-2/5 m-auto  flex flex-col gap-2">
-            <lib-select
-                [id]="'cultureType'"
-                [control]="cultureType"
-                [label]="'Cultura'"
-                [placeholder]="'Selecione uma cultura'"
-                [options]="cultureOptions"
-                [required]="true"
-                [fluid]="true"
-                [filter]="true"
-                *ngIf="selectCulture"
-            ></lib-select>
-
-            <lib-select 
-                [id]="'tableDivision'" 
-                [control]="tableDivision"
-                [label]="'Divisão de Períodos'" 
-                [placeholder]="'Selecione uma divisão'"
-                [options]="divisionOptions"
-                [required]="true"   
-                [filter]="true"
-                *ngIf="selectDivision"
-            ></lib-select>
-        </div>
+  <div class="w-full mx-auto flex flex-col lg:flex-row gap-2 px-6 lg:px-10">
+    <div class="w-full lg:w-3/5 m-auto">
+      <lib-fieldset
+        [legend]="'Como Funciona'"
+        [toggleable]="isSmallScreen"
+        [styleClass]="'my-auto'"
+      >
+        <p [innerHtml]="currentText"></p>
+      </lib-fieldset>
     </div>
-    
-    <div class="mt-10 px-0 lg:px-10">
-        <lib-tabs [tabs]="tabs" (tabChange)="onTabChange($event)">
-            <ng-template #leafSection>
-                <lib-nutrient-table-leaf-form
-                    [nutrientTable]="nutrientTable"
-                ></lib-nutrient-table-leaf-form>
-            </ng-template>
 
-            <ng-template #soilSection>
-                <lib-nutrient-table-soil-form
-                    [nutrientTable]="nutrientTable"
-                ></lib-nutrient-table-soil-form>
-            </ng-template>
-        </lib-tabs>
-    </div>
-    
-    <lib-button
-        class="w-full max-w-96 mt-6 mx-auto"
-        [label]="submitLabel"
-        [type]="'submit'"
+    <div class="w-full max-w-md lg:w-2/5 m-auto flex flex-col gap-2">
+      <lib-select
+        [id]="'cultureType'"
+        [control]="cultureType"
+        [label]="'Cultura'"
+        [placeholder]="'Selecione uma cultura'"
+        [options]="cultureOptions"
+        [required]="true"
         [fluid]="true"
-        [severity]="'primary'"
-        [loading]="loading"
-    ></lib-button>
+        [filter]="true"
+        *ngIf="selectCulture"
+      ></lib-select>
+
+      <lib-select
+        [id]="'tableDivision'"
+        [control]="tableDivision"
+        [label]="'Divisão de Períodos'"
+        [placeholder]="'Selecione uma divisão'"
+        [options]="divisionOptions"
+        [required]="true"
+        [filter]="true"
+        [hidden]="!selectDivision"
+      ></lib-select>
+    </div>
+  </div>
+
+  <div class="mt-10 px-0 lg:px-10">
+    <div class="w-full max-w-md mx-auto lg:mx-0 lg:max-w-none">
+      <lib-tabs [tabs]="tabs" (tabChange)="onTabChange($event)">
+        <ng-template #leafSection>
+          <lib-nutrient-table-leaf-form
+            [leafRows]="leafRows"
+            [periods]="periods"
+            [leafHeaders]="leafHeaders"
+          ></lib-nutrient-table-leaf-form>
+        </ng-template>
+
+        <ng-template #soilSection>
+          <lib-nutrient-table-soil-form
+            [soilRow]="soilRow"
+            [soilHeaders]="soilHeaders"
+          ></lib-nutrient-table-soil-form>
+        </ng-template>
+      </lib-tabs>
+    </div>
+  </div>
+
+  <lib-button
+    class="w-full max-w-96 mt-6 mx-auto"
+    [label]="submitLabel"
+    [type]="'submit'"
+    [fluid]="true"
+    [severity]="'primary'"
+    [loading]="loading"
+  ></lib-button>
 </form>

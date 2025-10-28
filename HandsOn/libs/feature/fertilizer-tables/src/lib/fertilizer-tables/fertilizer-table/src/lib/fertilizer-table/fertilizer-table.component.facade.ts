@@ -24,7 +24,7 @@ export class FertilizerTableComponentFacade {
     loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
     originalTable: FertilizerTable | undefined;
-    userRole: string = '';
+    userRole = '';
 
     constructor(
         private fertilizerTableFacade: FertilizerTableFacade,
@@ -38,7 +38,7 @@ export class FertilizerTableComponentFacade {
 
         this.loadingSubject.next(true);
 
-        this.userFacade.me().pipe
+        this.userFacade.me().pipe()
 
         forkJoin({
             user: this.userFacade.me(),
@@ -66,7 +66,7 @@ export class FertilizerTableComponentFacade {
 
     submit(fertilizerTable: FertilizerTable) {
         let message = '';
-        let action = () => { }
+        let action
 
         //Caso seja edição
         if (this.id) {

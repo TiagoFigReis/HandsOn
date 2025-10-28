@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import {
     NutrientTable,
     NutrientTableFacade,
@@ -90,7 +90,7 @@ export class NutrientTablesListComponentFacade {
     }
 
     private mapNutrientTableToRow(nutrientTable: NutrientTable): Row {
-        const {  culture, leafNutrientRows, soilNutrientRow, standard, ...data } = nutrientTable;
+        const {standard, ...data } = nutrientTable;
 
         const newData = {
             ...data,
@@ -116,7 +116,7 @@ export class NutrientTablesListComponentFacade {
         if (this.userRole != UserRoles.Admin && standard) {;}
         else {
             actions.push({
-                tooltip: 'Excluir',
+                tooltip: this.userRole === UserRoles.Admin ? 'Excluir Tabela' : 'Excluir Tabela Personalizada',
                 icon: 'pi pi-fw pi-trash',
                 iconClass: 'error',
                 command: (event, data) => {

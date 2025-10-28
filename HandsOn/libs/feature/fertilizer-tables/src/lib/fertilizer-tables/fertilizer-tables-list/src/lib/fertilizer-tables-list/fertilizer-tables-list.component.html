@@ -1,10 +1,88 @@
-<lib-table 
-    [data]="data" 
-    [columns]="columns" 
-    [loading]="loading" 
-    [showMoreButton]="showMoreButton"
-    [registerButton]="isAdmin"
-    [registerLink]="'/app/fertilizerTables/create'"
-    [registerTooltip]="'Cadastrar Nova Tabela'"
-    (refresh)="refresh()" 
-/>
+<a [routerLink]="['/app']" class="m-2">
+  <p class="description flex items-center gap-1 link">
+    <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
+  </p>
+</a>
+
+<div *ngIf="loading" class="flex justify-center items-center p-8">
+  <i class="pi pi-spin pi-spinner text-3xl text-blue-500"></i>
+</div>
+
+<div *ngIf="!loading && data.length === 0" class="min-w-full text-center p-8 text-gray-600 dark:text-gray-400">
+  Não há tabelas cadastradas
+</div>
+
+<div *ngIf="!loading && data.length > 0">
+  <div class="px-2 space-y-4">
+    
+    <div class="flex justify-between items-center mb-4 px-2 pt-2">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Tabelas de Fertilizantes</h2>
+      
+      <div class="flex items-center space-x-2">
+        <a *ngIf="isAdmin" 
+           [routerLink]="'/app/fertilizerTables/create'" 
+           title="Cadastrar Nova Tabela" 
+           class="inline-flex items-center px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors">
+          <i class="pi pi-plus mr-1"></i>
+          <span class="hidden sm:inline">Cadastrar</span>
+        </a>
+
+        <button (click)="refresh()" title="Atualizar Lista" class="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <i class="pi pi-refresh text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <div *ngFor="let row of data" class="bg-white dark:secondary-background  shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      
+      <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
+        
+        <div>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Cultura</span>
+          <p class="text-lg font-medium text-gray-900 dark:text-white">{{ row['cultureName'] || 'N/A' }}</p>
+        </div>
+        
+        <div>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Personalizada</span>
+          <p class="text-lg font-medium text-gray-900 dark:text-gray-200">{{ row['standardText'] || 'N/A' }}</p>
+        </div>
+
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-end space-x-1">
+        
+        <ng-container *ngFor="let action of row['actions']">
+              
+          <a *ngIf="action['routerLink']; else commandAction"
+             [routerLink]="action['routerLink']"
+             [title]="action['tooltip']"
+             class="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors sm:px-3 sm:py-1.5 sm:rounded-md">
+            
+            <i [class]="action['icon'] + ' text-lg ' + action['iconClass']"></i>
+            
+            <span class="inline ml-2 text-sm font-medium" [class]="action['iconClass']">
+              {{action['tooltip']}}
+            </span>
+          </a>
+
+          <ng-template #commandAction>
+            <button *ngIf="action['command']"
+                    type="button"
+                    [title]="action['tooltip']"
+                    (click)="action['command']($event, row)"
+                    class="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors sm:px-3 sm:py-1.5 sm:rounded-md">
+              
+              <i [class]="action['icon'] + ' text-lg ' + action['iconClass']"></i>
+              
+              <span class="inline ml-2 text-sm font-medium" [class]="action['iconClass']">
+                {{action['tooltip']}}
+              </span>
+            </button>
+          </ng-template>
+
+        </ng-container>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Culture, CultureFacade, FertilizerTable, NutrientHeaders, User } from '@farm/core';
 import { ButtonComponent } from '../../components/button/button.component';
@@ -28,7 +28,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   templateUrl: './fertilizer-table-form.component.html',
   styleUrl: './fertilizer-table-form.component.css',
 })
-export class FertilizerTableFormComponent {
+export class FertilizerTableFormComponent implements OnInit, OnChanges {
   @Input() fertilizerTable: FertilizerTable | undefined;
   @Input() user: User | undefined;
   @Input() loading = false;
@@ -48,10 +48,10 @@ export class FertilizerTableFormComponent {
   tabs: TabItem[] = [];
   isSmallScreen = false;
 
-  leafText: string = `Esta tabela ajuda a identificar deficiências de nutrientes nas folhas de uma plantação e recomenda os produtos ideais para corrigi-las. 
+  leafText = `Esta tabela ajuda a identificar deficiências de nutrientes nas folhas de uma plantação e recomenda os produtos ideais para corrigi-las. 
     Cada nutriente listado possui uma seleção de fertilizantes indicados para aplicação quando que os níveis estiverem abaixo do ideal. <br>
     Os valores já vêm pré-definidos por nossos especialistas, mas podem ser personalizados de acordo com as necessidades específicas de uma cultura.`;
-  soilText: string = `Esta tabela serve como um guia para a adubação do solo com base nos teores de Nitrogênio (N), Fósforo (P), Potássio (K) e Boro (B). 
+  soilText = `Esta tabela serve como um guia para a adubação do solo com base nos teores de Nitrogênio (N), Fósforo (P), Potássio (K) e Boro (B). 
     Cada célula indica a quantidade de fertilizante a ser aplicada conforme a necessidade detectada em cada nutriente. <br>
     Todas as dosagens já são preenchidas com valores de referência estabelecidos pela nossa equipe de agrônomos, mas podem ser ajustadas para uma recomendação mais personalizada.`;
 
@@ -75,12 +75,17 @@ export class FertilizerTableFormComponent {
   }
 
   ngOnInit(): void {
-    this.cultureFacade.getAllCulturesWithoutFertilizerTable().subscribe({
+    this.cultureFacade.getAllCulturesWithoutNutrientTable().subscribe({
       next: (cultures: Culture[]) => {
-        this.cultureOptions = cultures.map(c => ({
-          value: c.id?.toString()!,
-          label: c.name
-        }));
+        this.cultureOptions = cultures.reduce<SelectOption[]>((acc, c) => {
+          if (c.id != null) {
+            acc.push({
+              value: c.id.toString(), 
+              label: c.name
+            });
+          }
+          return acc;
+        }, []); 
       }
     });
 

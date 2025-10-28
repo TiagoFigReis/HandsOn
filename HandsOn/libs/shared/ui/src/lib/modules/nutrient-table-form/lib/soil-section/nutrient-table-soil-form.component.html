@@ -1,69 +1,88 @@
-<ng-container [formGroup]="parentForm">
-    <div formGroupName="soilRow" class="overflow-x-auto min-h-[450px]">
-        <table class="min-w-max border-collapse text-center mx-auto">
-            <thead>
-                <tr>
-                    <ng-container *ngFor="let header of soilHeaders">
-                        <th colspan="2">{{ header.title }}</th>
-                    </ng-container>
-                </tr>
-            </thead>
+<ng-container [formGroup]="soilRow">
+  <div formArrayName="soilColumns" class="space-y-6">
+    <ng-container *ngFor="let headerGroup of soilHeaders">
+      <fieldset class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
+        <legend class="text-lg font-semibold px-2 text-primary">
+          {{ headerGroup.title }}
+        </legend>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-4 pt-2"
+        >
+          <ng-container *ngFor="let item of headerGroup.items">
+            <div
+              [formGroupName]="item.id"
+              class="flex flex-col border rounded-xl border-1 p-2 border-gray-300 dark:border-slate-800"
+            >
+              <label
+                [for]="'min-' + item.id"
+                class="block text-sm font-medium mb-1.5"
+                [innerHTML]="item.label"
+              ></label>
+              <div class="flex flex-col gap-2">
+                <div class="flex-1 space-y-1">
+                  <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-900 px-2 py-1 rounded">
+                    Min
+                  </div>
+                  <lib-input-number
+                    [id]="'min-' + item.id"
+                    [control]="getMinSoil(item.id)"
+                    [placeholder]="'Min.'"
+                    [required]="true"
+                    [min]="0"
+                    [max]="10000"
+                    class="flex-1"
+                  ></lib-input-number>
 
-            <tbody>
-                <tr formArrayName="soilColumns" *ngFor="let row of [].constructor(5); let i = index">
-                    <ng-container *ngFor="let header of soilHeaders; let j = index">
-                        <td class="w-24" [innerHTML]="header.items[i] ? header.items[i].label : ''"></td>
+                  <ng-container *ngIf="item.complex === true">
+                    <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-900 px-2 py-1 rounded">
+                      Med1
+                    </div>
+                    <lib-input-number
+                      [id]="'med1-' + item.id"
+                      [control]="getMed1Soil(item.id)"
+                      [placeholder]="'Méd1.'"
+                      [required]="true"
+                      [min]="getMinSoil(item.id).value + 1"
+                      [max]="10000"
+                      class="flex-1"
+                    ></lib-input-number>
 
-                        <td>
-                            <ng-container *ngIf="header.items[i]">
-                                <div [formGroupName]="i" class="flex flex-row gap-0.5">
-                                    <lib-input-number 
-                                        [id]="'min-' + i + '-' + j"
-                                        [control]="getMinSoil(header.items[i].id)" 
-                                        [placeholder]="'Min.'"
-                                        [required]="true"  
-                                        [min]="0" 
-                                        [max]="10000" 
-                                        class="w-16"
-                                    ></lib-input-number>
+                    <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-900 px-2 py-1 rounded">
+                      Med2
+                    </div>
+                    <lib-input-number
+                      [id]="'med2-' + item.id"
+                      [control]="getMed2Soil(item.id)"
+                      [placeholder]="'Méd2.'"
+                      [required]="true"
+                      [min]="getMed1Soil(item.id).value + 1"
+                      [max]="10000"
+                      class="flex-1"
+                    ></lib-input-number>
+                  </ng-container>
 
-                                    <ng-container *ngIf="header.items[i].complex === true">
-                                        <lib-input-number 
-                                            [id]="'med1-' + i + '-' + j"
-                                            [control]="getMed1Soil(header.items[i].id)" 
-                                            [placeholder]="'Méd1.'"
-                                            [required]="true"  
-                                            [min]="getMinSoil(header.items[i].id).value + 1" 
-                                            [max]="10000" 
-                                            class="w-16"
-                                        ></lib-input-number>
-
-                                        <lib-input-number 
-                                            [id]="'med2-' + i + '-' + j"
-                                            [control]="getMed2Soil(header.items[i].id)" 
-                                            [placeholder]="'Méd2.'"
-                                            [required]="true"  
-                                            [min]="getMed1Soil(header.items[i].id).value + 1" 
-                                            [max]="10000" 
-                                            class="w-16">
-                                        </lib-input-number>
-                                    </ng-container>
-
-                                    <lib-input-number 
-                                        [id]="'max-' + i + '-' + j" 
-                                        [control]="getMaxSoil(header.items[i].id)"
-                                        [placeholder]="'Máx.'"
-                                        [required]="true"  
-                                        [min]="header.items[i].complex === true ? getMed2Soil(header.items[i].id).value + 1 : getMinSoil(header.items[i].id).value + 1" 
-                                        [max]="10000" 
-                                        class="w-16">
-                                    </lib-input-number>
-                                </div>
-                            </ng-container>
-                        </td>
-                    </ng-container>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                  <div class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-900 px-2 py-1 rounded">
+                    Max
+                  </div>
+                  <lib-input-number
+                    [id]="'max-' + item.id"
+                    [control]="getMaxSoil(item.id)"
+                    [placeholder]="'Máx.'"
+                    [required]="true"
+                    [min]="
+                      item.complex === true
+                        ? getMed2Soil(item.id).value + 1
+                        : getMinSoil(item.id).value + 1
+                    "
+                    [max]="10000"
+                    class="flex-1"
+                  ></lib-input-number>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </fieldset>
+    </ng-container>
+  </div>
 </ng-container>
