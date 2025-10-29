@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from 'primeng/api';
 import { RouterModule } from '@angular/router';
-import { AvatarComponent, ButtonComponent, MenuComponent } from '@farm/ui';
+import { AvatarComponent, MenuComponent } from '@farm/ui';
 import { User, AuthFacade, UserFacade, UserRoles } from '@farm/core';
 import { MenubarModule } from 'primeng/menubar';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +16,6 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
     AvatarComponent,
     MenuComponent,
     MenubarModule,
-    ButtonComponent,
     FormsModule,
     ToggleSwitchModule
   ],

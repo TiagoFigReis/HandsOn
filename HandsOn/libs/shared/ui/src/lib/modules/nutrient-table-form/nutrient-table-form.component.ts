@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common'
 import { Culture, CultureFacade, minMaxValidator, minMedMaxValidator, NutrientColumn, NutrientHeaders, NutrientRow, NutrientTable, User } from '@farm/core';
 import { ButtonComponent } from '../../components/button/button.component';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -56,54 +56,86 @@ export class NutrientTableFormComponent implements OnInit, OnChanges {
   previousDivisionValue = '0';
 
   leafHeaders = [
-  'Nitrogênio (N)', 'Fósforo (P)', 'Potássio (K)', 'Cálcio (Ca)', 'Magnésio (Mg)', 'Enxofre (S)',
-  'Zinco (Zn)', 'Boro (B)', 'Cobre (Cu)', 'Manganês (Mn)', 'Ferro (Fe)',
-  'Nitrogênio/Fósforo (N/P)', 'Nitrogênio/Potássio (N/K)', 'Nitrogênio/Enxofre (N/S)',
-  'Nitrogênio/Boro (N/B)', 'Nitrogênio/Cobre (N/Cu)',
-  'Fósforo/Magnésio (P/Mg)', 'Fósforo/Zinco (P/Zn)',
-  'Potássio/Cálcio (K/Ca)', 'Potássio/Magnésio (K/Mg)', 'Potássio/Manganês (K/Mn)',
-  'Cálcio/Magnésio (Ca/Mg)', 'Cálcio/Manganês (Ca/Mn)', 'Ferro/Manganês (Fe/Mn)'
-];
+    {
+      title: "Macronutrientes",
+      items: [
+        { label: 'Nitrogênio (N) - g/Kg', id: 0, key: NutrientHeaders.N },
+        { label: 'Fósforo (P) - g/Kg', id: 1, key: NutrientHeaders.P },
+        { label: 'Potássio (K) - g/Kg', id: 2, key: NutrientHeaders.K },
+        { label: 'Cálcio (Ca) - g/Kg', id: 3, key: NutrientHeaders.Ca },
+        { label: 'Magnésio (Mg) - g/Kg', id: 4, key: NutrientHeaders.Mg },
+        { label: 'Enxofre (S) - g/Kg', id: 5, key: NutrientHeaders.S }
+      ]
+    },
+    {
+      title: "Micronutrientes",
+      items: [
+        { label: 'Zinco (Zn) - ppm', id: 6, key: NutrientHeaders.Zn },
+        { label: 'Boro (B) - ppm', id: 7, key: NutrientHeaders.B },
+        { label: 'Cobre (Cu) - ppm', id: 8, key: NutrientHeaders.Cu },
+        { label: 'Manganês (Mn) - ppm', id: 9, key: NutrientHeaders.Mn },
+        { label: 'Ferro (Fe) -ppm', id: 10, key: NutrientHeaders.Fe }
+      ]
+    },
+    {
+      title: "Relações",
+      items: [
+        { label: 'Nitrogênio/Fósforo (N/P)', id: 11, key: NutrientHeaders.NP },
+        { label: 'Nitrogênio/Potássio (N/K)', id: 12, key: NutrientHeaders.NK },
+        { label: 'Nitrogênio/Enxofre (N/S)', id: 13, key: NutrientHeaders.NS },
+        { label: 'Nitrogênio/Boro (N/B)', id: 14, key: NutrientHeaders.NB },
+        { label: 'Nitrogênio/Cobre (N/Cu)', id: 15, key: NutrientHeaders.NCu },
+        { label: 'Fósforo/Magnésio (P/Mg)', id: 16, key: NutrientHeaders.PMg },
+        { label: 'Fósforo/Zinco (P/Zn)', id: 17, key: NutrientHeaders.PZn },
+        { label: 'Potássio/Cálcio (K/Ca)', id: 18, key: NutrientHeaders.KCa },
+        { label: 'Potássio/Magnésio (K/Mg)', id: 19, key: NutrientHeaders.KMg },
+        { label: 'Potássio/Manganês (K/Mn)', id: 20, key: NutrientHeaders.KMn },
+        { label: 'Cálcio/Magnésio (Ca/Mg)', id: 21, key: NutrientHeaders.CaMg },
+        { label: 'Cálcio/Manganês (Ca/Mn)', id: 22, key: NutrientHeaders.CaMn },
+        { label: 'Ferro/Manganês (Fe/Mn)', id: 23, key: NutrientHeaders.FeMn }
+      ]
+    }
+  ];
 
-soilHeaders = [
-  {
-    title: "Macronutrientes",
-    items: [
-      { label: 'Fósforo (P)', complex: false, id: 0, inverted: false },
-      { label: 'Potássio (K)', complex: false, id: 1, inverted: false },
-      { label: 'Cálcio (Ca)', complex: false, id: 2, inverted: false },
-      { label: 'Magnésio (Mg)', complex: false, id: 3, inverted: false },
-      { label: 'Enxofre (S)', complex: false, id: 4, inverted: false }
-    ]
-  },
-  {
-    title: 'Micronutrientes',
-    items: [
-      { label: 'Zinco (Zn)', complex: false, id: 5, inverted: false },
-      { label: 'Boro (B)', complex: false, id: 6, inverted: false },
-      { label: 'Cobre (Cu)', complex: false, id: 7, inverted: false },
-      { label: 'Manganês (Mn)', complex: false, id: 8, inverted: false },
-      { label: 'Ferro (Fe)', complex: false, id: 9, inverted: false }
-    ]
-  },
-  {
-    title: 'Fertilidade',
-    items: [
-      { label: 'Matéria Orgânica', complex: false, id: 10, inverted: false },
-      { label: 'Soma de Bases', complex: true, id: 11, inverted: false },
-      { label: 'CTC', complex: true, id: 12, inverted: false },
-      { label: 'Sat. por Bases', complex: true, id: 13, inverted: false }
-    ]
-  },
-  {
-    title: "Acidez",
-    items: [
-      { label: 'pH em Água', complex: false, id: 14, inverted: false },
-      { label: 'Saturação por Alumínio', complex: true, id: 15, inverted: true },
-      { label: 'Acidez Potencial', complex: true, id: 16, inverted: true }
-    ]
-  }
-];
+  soilHeaders = [
+    {
+      title: "Macronutrientes",
+      items: [
+        { label: 'Fósforo (P) - ppm', complex: false, id: 0, inverted: false, key: NutrientHeaders.P },
+        { label: 'Potássio (K) - Cmolc/dm³', complex: false, id: 1, inverted: false, key: NutrientHeaders.K },
+        { label: 'Cálcio (Ca) - Cmolc/dm³', complex: false, id: 2, inverted: false, key: NutrientHeaders.Ca },
+        { label: 'Magnésio (Mg) - Cmolc/dm³', complex: false, id: 3, inverted: false, key: NutrientHeaders.Mg },
+        { label: 'Enxofre (S) - ppm', complex: false, id: 4, inverted: false, key: NutrientHeaders.S }
+      ]
+    },
+    {
+      title: 'Micronutrientes',
+      items: [
+        { label: 'Zinco (Zn) - ppm', complex: false, id: 5, inverted: false, key: NutrientHeaders.Zn },
+        { label: 'Boro (B) - ppm', complex: false, id: 6, inverted: false, key: NutrientHeaders.B },
+        { label: 'Cobre (Cu) - ppm', complex: false, id: 7, inverted: false, key: NutrientHeaders.Cu },
+        { label: 'Manganês (Mn) - ppm', complex: false, id: 8, inverted: false, key: NutrientHeaders.Mn },
+        { label: 'Ferro (Fe) - ppm', complex: false, id: 9, inverted: false, key: NutrientHeaders.Fe }
+      ]
+    },
+    {
+      title: 'Fertilidade',
+      items: [
+        { label: 'Matéria Orgânica (M.O) - %', complex: false, id: 10, inverted: false, key: NutrientHeaders.OrganicMatter },
+        { label: 'Soma de Bases (SB) - Cmolc/dm³', complex: true, id: 11, inverted: false, key: NutrientHeaders.SumBases },
+        { label: 'CTC (T) - Cmolc/dm³', complex: true, id: 12, inverted: false, key: NutrientHeaders.CTCpH7 },
+        { label: 'Sat. por Bases (v) - %', complex: true, id: 13, inverted: false, key: NutrientHeaders.BasesSaturation }
+      ]
+    },
+    {
+      title: "Acidez",
+      items: [
+        { label: 'pH em Água', complex: true, id: 14, inverted: false, key: NutrientHeaders.phH2O },
+        { label: 'Acidez Trocável (Al³⁺) - Cmolc/dm³', complex: true, id: 15, inverted: true, key: NutrientHeaders.AlSaturation },
+        { label: 'Acidez Potencial (H + Al) - Cmolc/dm³', complex: true, id: 16, inverted: true, key: NutrientHeaders.PotentialAcidity }
+      ]
+    }
+  ];
 
   leafText = `Esta tabela ajuda a identificar deficiências de nutrientes nas folhas de uma plantação e recomenda os produtos ideais para corrigi-las. 
     Cada nutriente listado possui uma seleção de fertilizantes indicados para aplicação quando que os níveis estiverem abaixo do ideal. <br>
@@ -210,8 +242,9 @@ soilHeaders = [
   }
   
   createLeafRow(columnsData?: any[]): FormGroup {
+    const allItems = this.leafHeaders.flatMap(group => group.items);
     const columnsArray = this.formBuilder.array(
-      Array.from({ length: this.leafHeaders.length }, (_, i) => {
+      Array.from({ length: allItems.length }, (_, i) => {
         const data = columnsData ? columnsData[i] : undefined;
         return this.createLeafColumn(data);
       })
@@ -333,22 +366,26 @@ soilHeaders = [
 
     const formValue = this.nutrientTableForm.getRawValue();
     const headerValues = Object.values(NutrientHeaders) as string[];
+    const allLeafItems = this.leafHeaders.flatMap(group => group.items);
     const allSoilItems = this.soilHeaders.flatMap(header => header.items);
 
     const leafRows: NutrientRow[] = formValue.leafRows.map((leafRow: any) => {
-      const nutrientColumns: NutrientColumn[] = leafRow.leafColumns.map((leafColumn: any, colIndex: number) => ({
-        header: colIndex,
-        min: leafColumn.min,
-        max: leafColumn.max
-      }));
+      const nutrientColumns: NutrientColumn[] = leafRow.leafColumns.map((leafColumn: any, colIndex: number) => {
+        const item = allLeafItems[colIndex];
+        const header = headerValues.indexOf(item.key);
+        return {
+          header: header,
+          min: leafColumn.min,
+          max: leafColumn.max
+        };
+      });
       return { nutrientColumns };
     });
 
     const soilRow: NutrientRow = {
       nutrientColumns: formValue.soilRow.soilColumns.map((soilColumn: any, colIndex: number) => {
         const item = allSoilItems[colIndex];
-        const cleanHeader = item.label.split("<br>")[0].trim();
-        const header = headerValues.indexOf(cleanHeader);
+        const header = headerValues.indexOf(item.key);
         return {
           header: header,
           inverted: item.inverted,

@@ -8,7 +8,7 @@
     </a>
   </div>
 
-  <lib-button
+  <!-- <lib-button
     class="md:hidden"
     [variant]="'text'"
     [severity]="'secondary'"
@@ -16,8 +16,9 @@
     [link]="true"
     [size]="'large'"
     (click)="menuToggle()"
-  ></lib-button>
+  ></lib-button> -->
 
+  <!--
   <p-menubar [model]="menuItems" class="w-full max-md:hidden">
   <ng-template #item let-item let-root="root">
     <a
@@ -25,19 +26,19 @@
       class="flex items-center gap-2 p-1 px-2"
       [routerLink]="item.routerLink"
     >
-      <!-- Suporte a Iconify -->
+       Suporte a Iconify 
       <ng-container *ngIf="item.iconify; else fontIcon">
         <span [ngClass]="'icon-[' + item.icon + ']'"></span>
       </ng-container>
 
-      <!-- Ícone padrão (Font Awesome, PrimeIcons...) -->
+      Ícone padrão (Font Awesome, PrimeIcons...) 
       <ng-template #fontIcon>
         <i [ngClass]="item.icon"></i>
       </ng-template>
 
       <p class="text text-sm">{{ item.label }}</p>
 
-      <!-- Setinha de submenu -->
+      Setinha de submenu 
       <i
         *ngIf="item.items"
         [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"
@@ -45,6 +46,7 @@
     </a>
   </ng-template>
 </p-menubar>
+-->
 
   <div class="flex items-center gap-6 ml-auto">
     <div class="flex items-center justify-center gap-4">

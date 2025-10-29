@@ -92,6 +92,12 @@ To download the project, run the following command in the desired directory:
     },
     "Hash": {
       "Key": "H9FfKD9B4pBl5U5KefxPfWcdB8Z6Vc8JCHQ2IzOgQxI="
+    },
+    "GeminiSettings": {
+      "ApiKey": "your-api-key"
+    },
+    "PythonSettings": {
+      "PythonDllPath": "your-path-to-python312.dll"
     }
   }
   ```

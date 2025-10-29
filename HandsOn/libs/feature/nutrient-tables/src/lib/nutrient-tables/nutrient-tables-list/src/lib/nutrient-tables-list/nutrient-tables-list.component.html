@@ -1,8 +1,8 @@
-<a [routerLink]="['/app']" class="m-2">
+<!-- <a [routerLink]="['/app']" class="m-2">
   <p class="description flex items-center gap-1 link">
     <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
   </p>
-</a>
+</a> -->
 
 <div *ngIf="loading" class="flex justify-center items-center p-8">
   <i class="pi pi-spin pi-spinner text-3xl text-blue-500"></i>
@@ -14,26 +14,21 @@
 
 <div *ngIf="!loading && data.length > 0">
   <div class="px-2 space-y-4">
-    
     <div class="flex justify-between items-center mb-4 px-2 pt-2">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Tabelas de Nutrientes</h2>
-      
-      <div class="flex items-center space-x-2">
         <a *ngIf="isAdmin" 
            [routerLink]="'/app/nutrientTables/create'" 
            title="Cadastrar Nova Tabela" 
            class="inline-flex items-center px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors">
           <i class="pi pi-plus mr-1"></i>
-          <span class="hidden sm:inline">Cadastrar</span>
+          <span class="inline">Cadastrar</span>
         </a>
 
         <button (click)="refresh()" title="Atualizar Lista" class="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           <i class="pi pi-refresh text-lg"></i>
         </button>
-      </div>
     </div>
 
-    <div *ngFor="let row of data" class="bg-white dark:secondary-background  shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+    <div *ngFor="let row of data" class="tertiary-background  shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700">
       
       <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
         

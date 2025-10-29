@@ -1,11 +1,11 @@
 import { Component, Input, ChangeDetectorRef, NgZone, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../../components/input/input.component';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component';
-import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValidator } from '@farm/core';
+import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValidator, NutrientHeaders } from '@farm/core';
 
 @Component({
   selector: 'lib-fertilizer-table-leaf-form',
@@ -29,44 +29,52 @@ export class FertilizerTableLeafFormComponent implements OnInit, OnChanges {
   macroHeaders = [
     {
       label: 'Nitrogênio (N)',
-      products: []
+      products: [],
+      key: NutrientHeaders.N
     }, {
       label: 'Fósforo (P)',
-      products: []
+      products: [],
+      key: NutrientHeaders.P
     }, {
       label: 'Potássio (K)',
-      products: []
+      products: [],
+      key: NutrientHeaders.K
     }, {
       label: 'Cálcio (Ca)',
-      products: []
+      products: [],
+      key: NutrientHeaders.Ca
     }, {
       label: 'Magnésio (Mg)',
-      products: []
+      products: [],
+      key: NutrientHeaders.Mg
     }, {
       label: 'Enxofre (S)',
-      products: []
+      products: [],
+      key: NutrientHeaders.S
     }
   ];
 
   microHeaders = [
     {
       label: 'Zinco (Zn)',
-      products: []
+      products: [],
+      key: NutrientHeaders.Zn
     }, {
       label: 'Boro (B)',
-      products: []
+      products: [],
+      key: NutrientHeaders.B
     }, {
       label: 'Cobre (Cu)',
-      products: []
+      products: [],
+      key: NutrientHeaders.Cu
     }, {
       label: 'Manganês (Mn)',
-      products: []
+      products: [],
+      key: NutrientHeaders.Mn
     }, {
       label: 'Ferro (Fe)',
-      products: []
-    }, {
-      label: 'Molibdênio (Mo)',
-      products: []
+      products: [],
+      key: NutrientHeaders.Fe
     }
   ];
 
@@ -141,6 +149,10 @@ export class FertilizerTableLeafFormComponent implements OnInit, OnChanges {
   getSolid(columnIndex: number, productIndex: number): FormControl {
     return this.getProduct(columnIndex, productIndex).get('solid') as FormControl;
   }
+  
+  public getProdControl(productControl: AbstractControl, controlName: string): FormControl {
+    return productControl.get(controlName) as FormControl;
+  }
 
   createLeafSection(): void {
     for (let i = 0; i < this.macroHeaders.length; i++)
@@ -169,8 +181,7 @@ export class FertilizerTableLeafFormComponent implements OnInit, OnChanges {
         updateOn: 'blur'
       }),
       solid: this.formBuilder.control(data?.solid ?? false, {
-        validators: [Validators.required],
-        updateOn: 'blur'
+        validators: [Validators.required]
       }),
     }, { validators: minMaxValidator('min', 'max') });
   }
@@ -231,7 +242,7 @@ export class FertilizerTableLeafFormComponent implements OnInit, OnChanges {
         });
 
         return {
-          header: headerValues.indexOf(leafHeaders[colIndex].label),
+          header: headerValues.indexOf(leafHeaders[colIndex].key),
           products: products
         };
       })

@@ -60,7 +60,7 @@ namespace Infrastructure
             services.AddScoped<IAnaliseRepository, AnaliseRepository>();
             services.AddScoped<INutrientTablesRepository, NutrientTablesRepository>();
             services.AddScoped<IAiExtractor, GeminiExtractor>();
-            services.AddSingleton<IPdfProcessor, PdfProcessor>();
+            services.AddScoped<IPdfProcessor, PdfProcessor>();
             services.AddScoped<PdfInterpretationService>();
             services.AddScoped<ICulturesRepository, CulturesRepository>();
             services.AddScoped<IFertilizerTablesRepository, FertilizerTablesRepository>();

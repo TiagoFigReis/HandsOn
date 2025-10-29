@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { NutrientTable, NutrientRow, NutrientColumn } from '../models/nutrient-table.model';
+import { NutrientTable } from '../models/nutrient-table.model';
 import { NutrientTableService } from '../services/nutrient-table/nutrient-table.service';
 import { NotificationService } from '../services/notification/notification.service';
 

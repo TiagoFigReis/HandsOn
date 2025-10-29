@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import {
   NutrientTable,
   NutrientTableFacade,
@@ -39,7 +38,7 @@ export class NutrientTableComponentFacade {
 
     this.loadingSubject.next(true);
 
-    this.userFacade.me().pipe
+    this.userFacade.me().pipe()
 
     forkJoin({
       user: this.userFacade.me(),
@@ -67,7 +66,7 @@ export class NutrientTableComponentFacade {
 
   submit(nutrientTable: NutrientTable) {
     let message = '';
-    let action = () => { }
+    let action
 
 
     //Caso seja edição

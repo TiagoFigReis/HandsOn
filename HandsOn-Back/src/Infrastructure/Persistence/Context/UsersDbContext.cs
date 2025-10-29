@@ -126,30 +126,30 @@ namespace Infrastructure.Persistence.Context
                 {
                     NutrientColumns = new List<NutrientColumnData>
                     {
-                        new NutrientColumnData { Header = (NutrientHeader)0, Min = 28, Max = 31 },
-                        new NutrientColumnData { Header = (NutrientHeader)1, Min = 1.7f, Max = 1.9f },
-                        new NutrientColumnData { Header = (NutrientHeader)2, Min = 22, Max = 25 },
-                        new NutrientColumnData { Header = (NutrientHeader)3, Min = 10, Max = 13 },
-                        new NutrientColumnData { Header = (NutrientHeader)4, Min = 2.7f, Max = 3.5f },
-                        new NutrientColumnData { Header = (NutrientHeader)5, Min = 1.8f, Max = 2.3f },
-                        new NutrientColumnData { Header = (NutrientHeader)6, Min = 10, Max = 20 },
-                        new NutrientColumnData { Header = (NutrientHeader)7, Min = 50, Max = 60 },
-                        new NutrientColumnData { Header = (NutrientHeader)8, Min = 10, Max = 15 },
-                        new NutrientColumnData { Header = (NutrientHeader)9, Min = 100, Max = 150 },
-                        new NutrientColumnData { Header = (NutrientHeader)10, Min = 120, Max = 200 },
-                        new NutrientColumnData { Header = (NutrientHeader)11, Min = 15, Max = 18 },
-                        new NutrientColumnData { Header = (NutrientHeader)12, Min = 1.1f, Max = 1.4f },
-                        new NutrientColumnData { Header = (NutrientHeader)13, Min = 12, Max = 17 },
-                        new NutrientColumnData { Header = (NutrientHeader)14, Min = 467, Max = 620 },
-                        new NutrientColumnData { Header = (NutrientHeader)15, Min = 1867, Max = 3100 },
-                        new NutrientColumnData { Header = (NutrientHeader)16, Min = 0.5f, Max = 0.7f },
-                        new NutrientColumnData { Header = (NutrientHeader)17, Min = 85, Max = 190 },
-                        new NutrientColumnData { Header = (NutrientHeader)18, Min = 1.7f, Max = 2.5f },
-                        new NutrientColumnData { Header = (NutrientHeader)19, Min = 6, Max = 9 },
-                        new NutrientColumnData { Header = (NutrientHeader)20, Min = 146, Max = 250 },
-                        new NutrientColumnData { Header = (NutrientHeader)21, Min = 2.8f, Max = 4.8f },
-                        new NutrientColumnData { Header = (NutrientHeader)22, Min = 67, Max = 130 },
-                        new NutrientColumnData { Header = (NutrientHeader)23, Min = 0.8f, Max = 2.0f }
+                        new NutrientColumnData { Header = NutrientHeader.N, Min = 28, Max = 31 },
+                        new NutrientColumnData { Header = NutrientHeader.P, Min = 1.7f, Max = 1.9f },
+                        new NutrientColumnData { Header = NutrientHeader.K, Min = 22, Max = 25 },
+                        new NutrientColumnData { Header = NutrientHeader.Ca, Min = 10, Max = 13 },
+                        new NutrientColumnData { Header = NutrientHeader.Mg, Min = 2.7f, Max = 3.5f },
+                        new NutrientColumnData { Header = NutrientHeader.S, Min = 1.8f, Max = 2.3f },
+                        new NutrientColumnData { Header = NutrientHeader.Zn, Min = 10, Max = 20 },
+                        new NutrientColumnData { Header = NutrientHeader.B, Min = 50, Max = 60 },
+                        new NutrientColumnData { Header = NutrientHeader.Cu, Min = 10, Max = 15 },
+                        new NutrientColumnData { Header = NutrientHeader.Mn, Min = 100, Max = 150 },
+                        new NutrientColumnData { Header = NutrientHeader.Fe, Min = 120, Max = 200 },
+                        new NutrientColumnData { Header = NutrientHeader.NP, Min = 15, Max = 18 },
+                        new NutrientColumnData { Header = NutrientHeader.NK, Min = 1.1f, Max = 1.4f },
+                        new NutrientColumnData { Header = NutrientHeader.NS, Min = 12, Max = 17 },
+                        new NutrientColumnData { Header = NutrientHeader.NB, Min = 467, Max = 620 },
+                        new NutrientColumnData { Header = NutrientHeader.NCu, Min = 1867, Max = 3100 },
+                        new NutrientColumnData { Header = NutrientHeader.PMg, Min = 0.5f, Max = 0.7f },
+                        new NutrientColumnData { Header = NutrientHeader.PZn, Min = 85, Max = 190 },
+                        new NutrientColumnData { Header = NutrientHeader.KCa, Min = 1.7f, Max = 2.5f },
+                        new NutrientColumnData { Header = NutrientHeader.KMg, Min = 6, Max = 9 },
+                        new NutrientColumnData { Header = NutrientHeader.KMn, Min = 146, Max = 250 },
+                        new NutrientColumnData { Header = NutrientHeader.CaMg, Min = 2.8f, Max = 4.8f },
+                        new NutrientColumnData { Header = NutrientHeader.CaMn, Min = 67, Max = 130 },
+                        new NutrientColumnData { Header = NutrientHeader.FeMn, Min = 0.8f, Max = 2.0f }
                     }
                 }
             };
@@ -158,23 +158,23 @@ namespace Infrastructure.Persistence.Context
             {
                 NutrientColumns = new List<NutrientColumnData>
                 {
-                    new NutrientColumnData { Header = (NutrientHeader)1, Min = 10, Max = 30 },
-                    new NutrientColumnData { Header = (NutrientHeader)2, Min = 0.15f, Max = 0.3f },
-                    new NutrientColumnData { Header = (NutrientHeader)3, Min = 2.0f, Max = 5.0f },
-                    new NutrientColumnData { Header = (NutrientHeader)4, Min = 0.5f, Max = 1.5f },
-                    new NutrientColumnData { Header = (NutrientHeader)5, Min = 5, Max = 20 },
-                    new NutrientColumnData { Header = (NutrientHeader)6, Min = 2, Max = 6 },
-                    new NutrientColumnData { Header = (NutrientHeader)7, Min = 0.5f, Max = 2 },
-                    new NutrientColumnData { Header = (NutrientHeader)8, Min = 0.5f, Max = 10 },
-                    new NutrientColumnData { Header = (NutrientHeader)9, Min = 10, Max = 100 },
-                    new NutrientColumnData { Header = (NutrientHeader)10, Min = 10, Max = 40 },
-                    new NutrientColumnData { Header = (NutrientHeader)24, Min = 5, Max = 6.5f },
-                    new NutrientColumnData { Header = (NutrientHeader)25, Inverted = true, Min = 0.2f, Med1 = 0.5f, Med2 = 1.0f, Max = 2.0f },
-                    new NutrientColumnData { Header = (NutrientHeader)26, Inverted = true, Min = 1.0f, Med1 = 2.5f, Med2 = 5.0f, Max = 9.0f },
-                    new NutrientColumnData { Header = (NutrientHeader)27, Min = 0.7f, Med1 = 2.0f, Med2 = 4.0f, Max = 7.0f },
-                    new NutrientColumnData { Header = (NutrientHeader)28, Min = 0.6f, Med1 = 1.8f, Med2 = 3.6f, Max = 6.0f },
-                    new NutrientColumnData { Header = (NutrientHeader)29, Min = 1.6f, Med1 = 4.3f, Med2 = 8.6f, Max = 15.0f },
-                    new NutrientColumnData { Header = (NutrientHeader)30, Min = 20, Med1 = 40, Med2 = 60, Max = 80 }
+                    new NutrientColumnData { Header = NutrientHeader.P, Min = 10, Max = 30 },
+                    new NutrientColumnData { Header = NutrientHeader.K, Min = 0.15f, Max = 0.3f },
+                    new NutrientColumnData { Header = NutrientHeader.Ca, Min = 2.0f, Max = 5.0f },
+                    new NutrientColumnData { Header = NutrientHeader.Mg, Min = 0.5f, Max = 1.5f },
+                    new NutrientColumnData { Header = NutrientHeader.S, Min = 5, Max = 20 },
+                    new NutrientColumnData { Header = NutrientHeader.Zn, Min = 2, Max = 6 },
+                    new NutrientColumnData { Header = NutrientHeader.B, Min = 0.5f, Max = 2 },
+                    new NutrientColumnData { Header = NutrientHeader.Cu, Min = 0.5f, Max = 10 },
+                    new NutrientColumnData { Header = NutrientHeader.Mn, Min = 10, Max = 100 },
+                    new NutrientColumnData { Header = NutrientHeader.Fe, Min = 10, Max = 40 },
+                    new NutrientColumnData { Header = NutrientHeader.PhH2O, Min = 5, Max = 6.5f },
+                    new NutrientColumnData { Header = NutrientHeader.AlSaturation, Inverted = true, Min = 0.2f, Med1 = 0.5f, Med2 = 1.0f, Max = 2.0f },
+                    new NutrientColumnData { Header = NutrientHeader.PotentialAcidity, Inverted = true, Min = 1.0f, Med1 = 2.5f, Med2 = 5.0f, Max = 9.0f },
+                    new NutrientColumnData { Header = NutrientHeader.OrganicMatter, Min = 0.7f, Med1 = 2.0f, Med2 = 4.0f, Max = 7.0f },
+                    new NutrientColumnData { Header = NutrientHeader.SumBases, Min = 0.6f, Med1 = 1.8f, Med2 = 3.6f, Max = 6.0f },
+                    new NutrientColumnData { Header = NutrientHeader.CTCpH7, Min = 1.6f, Med1 = 4.3f, Med2 = 8.6f, Max = 15.0f },
+                    new NutrientColumnData { Header = NutrientHeader.BasesSaturation, Min = 20, Med1 = 40, Med2 = 60, Max = 80 }
                 }
             };
 
@@ -205,7 +205,7 @@ namespace Infrastructure.Persistence.Context
                 {
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)0,
+                        Header = NutrientHeader.N,
                         Products = new List<LeafFertilizerProductData>
                         {
 
@@ -213,7 +213,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)1,
+                        Header = NutrientHeader.P,
                         Products = new List<LeafFertilizerProductData>
                         {
 
@@ -221,7 +221,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)2,
+                        Header = NutrientHeader.K,
                         Products = new List<LeafFertilizerProductData>
                         {
 
@@ -229,7 +229,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)3,
+                        Header = NutrientHeader.Ca,
                         Products = new List<LeafFertilizerProductData>
                         {
 
@@ -237,7 +237,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)4,
+                        Header = NutrientHeader.Mg,
                         Products = new List<LeafFertilizerProductData>
                         {
 
@@ -245,7 +245,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)5,
+                        Header = NutrientHeader.S,
                         Products = new List<LeafFertilizerProductData>
                         {
                             new LeafFertilizerProductData
@@ -259,7 +259,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)6,
+                        Header = NutrientHeader.Zn,
                         Products = new List<LeafFertilizerProductData>
                         {
                             new LeafFertilizerProductData
@@ -280,7 +280,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)7,
+                        Header = NutrientHeader.B,
                         Products = new List<LeafFertilizerProductData>
                         {
                             new LeafFertilizerProductData
@@ -301,7 +301,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)8,
+                        Header = NutrientHeader.Cu,
                         Products = new List<LeafFertilizerProductData>
                         {
                             new LeafFertilizerProductData
@@ -315,7 +315,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)9,
+                        Header = NutrientHeader.Mn,
                         Products = new List<LeafFertilizerProductData>
                         {
                             new LeafFertilizerProductData
@@ -329,7 +329,7 @@ namespace Infrastructure.Persistence.Context
                     },
                     new LeafFertilizerColumnData
                     {
-                        Header = (NutrientHeader)10,
+                        Header = NutrientHeader.Fe,
                         Products = new List<LeafFertilizerProductData>
                         {
                             new LeafFertilizerProductData
@@ -339,14 +339,6 @@ namespace Infrastructure.Persistence.Context
                                 MinConcentration = 1.0f,
                                 MaxConcentration = 2.0f
                             }
-                        }
-                    },
-                    new LeafFertilizerColumnData
-                    {
-                        Header = (NutrientHeader)11,
-                        Products = new List<LeafFertilizerProductData>
-                        {
-                            
                         }
                     }
                 }

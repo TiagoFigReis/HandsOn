@@ -6,6 +6,7 @@ using Infrastructure;
 using Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
+using Python.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,7 +80,12 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
-Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", @"C:\Users\tiago\AppData\Local\Programs\Python\Python312\python312.dll");
+string? pythonDllPath = builder.Configuration.GetValue<string>("PythonSettings:PythonDllPath");
+
+Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", pythonDllPath);
+
+PythonEngine.Initialize();
+PythonEngine.BeginAllowThreads();
 
 var app = builder.Build();
 
@@ -89,7 +95,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
 
     app.MapOpenApi();
-    
+
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "HandsOn API v1");

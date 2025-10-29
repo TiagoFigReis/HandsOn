@@ -12,7 +12,7 @@
                  class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
               
               <div class="flex flex-col items-start sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
-  
+ 
                 <div class="flex items-center gap-3">
                   <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Deficiência:</span>
                   <span class="text-lg font-semibold">{{ item.header.label }}</span>
@@ -55,13 +55,13 @@
                         [minlength]="3" 
                         [maxlength]="50" 
                         [id]="'name-' + item.columnIndex + '-' + productIndex"
-                        [control]="getName(item.columnIndex, productIndex)">
+                        [control]="getProdControl(productControl, 'name')">
                       </lib-input>
                     </div>
 
                     <div class="space-y-1">
                       <div class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        Concentração (Kg/400L de água)
+                        Concentração - {{ getProdControl(productControl, 'solid').value ? 'Kg/400L de água' : 'L/400L de água'}}
                       </div>
                       <div class="flex flex-wrap items-center gap-2">
                         <div class="flex items-start gap-2 flex-1 min-w-[200px]">
@@ -77,7 +77,7 @@
                               [min]="0" 
                               [max]="1000"
                               [id]="'min-' + item.columnIndex + '-' + productIndex"
-                              [control]="getMin(item.columnIndex, productIndex)">
+                              [control]="getProdControl(productControl, 'min')">
                             </lib-input-number>
                           </div>
 
@@ -91,9 +91,9 @@
                               [placeholder]="'Máx.'" 
                               [required]="true" 
                               class="w-full"
-                              [min]="getMin(item.columnIndex, productIndex).value" [max]="1000"
+                              [min]="getProdControl(productControl, 'min').value" [max]="1000"
                               [id]="'max-' + item.columnIndex + '-' + productIndex"
-                              [control]="getMax(item.columnIndex, productIndex)">
+                              [control]="getProdControl(productControl, 'max')">
                             </lib-input-number>
                           </div>
                         </div>
@@ -101,7 +101,7 @@
                         <div class="flex items-center gap-2">
                           <lib-checkbox 
                             [id]="'solid-' + item.columnIndex + '-' + productIndex"
-                            [control]="getSolid(item.columnIndex, productIndex)">
+                            [control]="getProdControl(productControl, 'solid')">
                           </lib-checkbox>
                           <span class="text-sm text-zinc-700 dark:text-zinc-300">É sólido</span>
                         </div>

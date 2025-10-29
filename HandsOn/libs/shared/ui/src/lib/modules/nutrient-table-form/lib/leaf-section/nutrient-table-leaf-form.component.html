@@ -24,7 +24,7 @@
         {{ periods[i] }}
       </h3>
 
-      <ng-container *ngFor="let group of nutrientGroups">
+      <ng-container *ngFor="let group of leafHeaders">
         <fieldset class="border border-zinc-300 dark:border-zinc-600 rounded-lg p-4">
           <legend class="text-base font-semibold px-2 text-primary">
             {{ group.title }}
@@ -32,15 +32,15 @@
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2"
           >
-            <ng-container *ngFor="let col of group.items">
+            <ng-container *ngFor="let item of group.items">
               <div
                 class="flex flex-col border rounded-xl border-1 p-2 border-gray-300 dark:border-slate-800"
               >
                 <label
-                  [for]="'min-' + i + '-' + col.index"
+                  [for]="'min-' + i + '-' + item.id"
                   class="block text-sm font-medium mb-1.5"
+                  [innerHTML]="item.label"
                 >
-                  {{ col.header }}
                 </label>
                 <div class="flex flex-col gap-2">
                   <div class="flex-1 space-y-1">
@@ -50,8 +50,8 @@
                       Min
                     </div>
                     <lib-input-number
-                      [id]="'min-' + i + '-' + col.index"
-                      [control]="getMinLeaf(i, col.index)"
+                      [id]="'min-' + i + '-' + item.id"
+                      [control]="getMinLeaf(i, item.id)"
                       [placeholder]="'Min.'"
                       [required]="true"
                       [min]="0"
@@ -64,11 +64,11 @@
                       Max
                     </div>
                     <lib-input-number
-                      [id]="'max-' + i + '-' + col.index"
-                      [control]="getMaxLeaf(i, col.index)"
+                      [id]="'max-' + i + '-' + item.id"
+                      [control]="getMaxLeaf(i, item.id)"
                       [placeholder]="'Máx.'"
                       [required]="true"
-                      [min]="getMinLeaf(i, col.index).value"
+                      [min]="getMinLeaf(i, item.id).value + 1"
                       [max]="10000"
                     ></lib-input-number>
                   </div>

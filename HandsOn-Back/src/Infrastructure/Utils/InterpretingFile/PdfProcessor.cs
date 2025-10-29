@@ -9,26 +9,8 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Utils.InterpretingFile
 {
-    public class PdfProcessor : IPdfProcessor, IDisposable
+    public class PdfProcessor : IPdfProcessor
     {
-        private static bool _pythonInitialized = false;
-        private static readonly object _lock = new();
-
-        public PdfProcessor()
-        {
-            lock (_lock)
-            {
-                if (!_pythonInitialized)
-                {
-                    PythonEngine.Initialize();
-                    
-                    PythonEngine.BeginAllowThreads();
-
-                    _pythonInitialized = true;
-                }
-            }
-        }
-        
         /// Corrige a orientação das páginas de um PDF e retorna os bytes do arquivo corrigido e seu caminho.
         public async Task<(byte[]? correctedPdfBytes, string correctedFilePath)> CorrectOrientationAsync(string filePath)
         {
@@ -45,11 +27,11 @@ namespace Infrastructure.Utils.InterpretingFile
                         dynamic collections = Py.Import("collections");
 
                         var correcoes_necessarias = new PyDict();
-                        
+
                         // Abre o PDF com pdfplumber para detectar a rotação
                         using (var pdf = pdfplumber.open(filePath))
                         {
-                            
+
                             for (int i = 0; i < pdf.pages.Length(); i++)
                             {
                                 var page = pdf.pages[i];
@@ -60,7 +42,7 @@ namespace Infrastructure.Utils.InterpretingFile
                                     correcoes_necessarias[i.ToPython()] = rotacao_para_corrigir.ToPython();
                                 }
                             }
-                            
+
                             pdf.close();
                         }
 
@@ -83,7 +65,7 @@ namespace Infrastructure.Utils.InterpretingFile
                             {
                                 int num_pagina = item[0].As<int>();
                                 int rotacao_a_aplicar = item[1].As<int>();
-                                
+
                                 var pagina = pdf_para_corrigir.pages[num_pagina];
                                 pagina.Rotate = rotacao_a_aplicar;
                             }
@@ -91,7 +73,7 @@ namespace Infrastructure.Utils.InterpretingFile
 
                             pdf_para_corrigir.close();
                         }
-                        
+
                         byte[] fileBytes = File.ReadAllBytes(nome_arquivo_corrigido);
                         return (fileBytes, nome_arquivo_corrigido);
                     }
@@ -99,10 +81,9 @@ namespace Infrastructure.Utils.InterpretingFile
                     {
                         throw new InvalidOperationException($"Ocorreu um erro no script Python de correção de orientação: {ex.Message}", ex);
                     }
-                    
                     catch (Exception)
                     {
-                        throw; 
+                        throw;
                     }
                 }
             });
@@ -125,7 +106,7 @@ namespace Infrastructure.Utils.InterpretingFile
                     try
                     {
                         dynamic pdfplumber = Py.Import("pdfplumber");
-                        
+
                         using (var pdf = pdfplumber.open(filePath))
                         {
                             for (int i = 0; i < pdf.pages.Length(); i++)
@@ -143,18 +124,18 @@ namespace Infrastructure.Utils.InterpretingFile
 
                                 // Extrai tabelas e aplica uma formatação com separações por |
                                 var tables = page.extract_tables();
-                                
+
                                 if (tables is not null && tables.Length() > 0)
                                 {
                                     fullContent.AppendLine("### Tabelas Encontradas:");
                                     for (int j = 0; j < tables?.Length(); j++)
                                     {
                                         var table = tables[j];
-                                        
+
                                         if (table is null || table.Length() == 0) continue;
 
                                         fullContent.AppendLine($"--- Tabela {j + 1} ---");
-                                        
+
                                         var headerCellsPy = table?[0];
                                         if (headerCellsPy == null) continue;
 
@@ -163,14 +144,14 @@ namespace Infrastructure.Utils.InterpretingFile
                                         {
                                             headerCells.Add(cell);
                                         }
-                                        
+
                                         string header = "| " + string.Join(" | ", headerCells.Select(new Func<dynamic, string>(cell => (cell?.ToString() ?? "").Replace("\n", " ")))) + " |";
                                         string separator = "| " + string.Join(" | ", headerCells.Select(new Func<dynamic, string>(_ => "---"))) + " |";
 
                                         fullContent.AppendLine(header);
                                         fullContent.AppendLine(separator);
-                                        
-                                        for(int rowIndex = 1; rowIndex < table?.Length(); rowIndex++)
+
+                                        for (int rowIndex = 1; rowIndex < table?.Length(); rowIndex++)
                                         {
                                             var rowCellsPy = table[rowIndex];
                                             if (rowCellsPy == null) continue;
@@ -197,7 +178,7 @@ namespace Infrastructure.Utils.InterpretingFile
                     }
                     catch (Exception)
                     {
-                        throw; 
+                        throw;
                     }
                     
                 }
@@ -243,11 +224,6 @@ namespace Infrastructure.Utils.InterpretingFile
             if (mostCommon.Length() == 0) return 0;
 
             return mostCommon[0][0].As<int>();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -10,7 +10,6 @@ export enum NutrientHeaders {
   Cu = 'Cu',
   Mn = 'Mn',
   Fe = 'Fe',
-  Mb = 'Mb',
   NP = 'N/P',
   NK = 'N/K',
   NS = 'N/S',
@@ -24,14 +23,13 @@ export enum NutrientHeaders {
   CaMg = 'Ca/Mg',
   CaMn = 'Ca/Mn',
   FeMn = 'Fe/Mn',
-
   phH2O = "pH em Água",
   AlSaturation = 'Saturação por Al',
   PotentialAcidity = 'Acidez Potencial',
   OrganicMatter = 'Matéria Orgânica',
   SumBases = 'Soma de Bases',
   CTCpH7 = 'CTC',
-  BasesSaturation = 'Sat. por Bases'
+  BasesSaturation = 'Sat. por Bases',
 }
 
 
