@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
 import { descendingValuesValidator, FertilizerTable, NutrientHeaders, SoilFertilizerColumn, SoilFertilizerRow } from '@farm/core';
+import { FieldsetComponent } from '../../../../components/fieldset/fieldset.component';
 
 @Component({
   selector: 'lib-fertilizer-table-soil-form',
-  imports: [CommonModule, ReactiveFormsModule, InputNumberComponent],
+  imports: [CommonModule, ReactiveFormsModule, InputNumberComponent, FieldsetComponent],
   templateUrl: './fertilizer-table-soil-form.component.html',
   styleUrl: './fertilizer-table-soil-form.component.css',
 })

@@ -2,10 +2,11 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
+import { FieldsetComponent } from '../../../../components/fieldset/fieldset.component';
 
 @Component({
   selector: 'lib-nutrient-table-soil-form',
-  imports: [CommonModule, ReactiveFormsModule, InputNumberComponent],
+  imports: [CommonModule, ReactiveFormsModule, InputNumberComponent, FieldsetComponent],
   templateUrl: './nutrient-table-soil-form.component.html',
   styleUrl: './nutrient-table-soil-form.component.css',
 })

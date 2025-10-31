@@ -119,5 +119,10 @@
   .file-upload-basic .filelabel {
     @apply hidden
   }
+
+  .fieldset-style .p-fieldset-legend {
+    @apply text-blue-500 dark:text-blue-400 secondary-background hover:tertiary-background;
+    @apply transition-colors duration-200;
+  }
   
 }

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Row } from '@farm/ui';
 import { FertilizerTablesListComponentFacade } from './fertilizer-tables-list.component.facade';
+import { ButtonComponent } from '@farm/ui';
 
 @Component({
   selector: 'lib-fertilizer-tables-list',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ButtonComponent],
   templateUrl: './fertilizer-tables-list.component.html',
   styleUrl: './fertilizer-tables-list.component.css',
 })

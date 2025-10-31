@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import {
   User,
   UserFacade,
@@ -9,18 +9,20 @@ import {
   UserRoles,
   UserStatus,
 } from '@farm/core';
-import { Row, Action } from '@farm/ui';
+import { Action } from '@farm/ui';
+
+export type UserWithActions = User & { actions: Action[] };
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersListComponentFacade {
-  private usersSubject = new BehaviorSubject<Row[]>([]);
+  private usersSubject = new BehaviorSubject<UserWithActions[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   userId: string | undefined;
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
-  users$: Observable<Row[]> = this.usersSubject.asObservable();
+  users$: Observable<UserWithActions[]> = this.usersSubject.asObservable();
 
   constructor(
     private authFacade: AuthFacade,
@@ -38,11 +40,12 @@ export class UsersListComponentFacade {
     this.userFacade
       .getAllUsers()
       .pipe(
+        map((users) =>
+          users.map((user) => this.mapUserWithActions(user)),
+        ),
         tap(
           (users) => {
-            this.usersSubject.next(
-              users.map((user) => this.mapUserToRow(user)),
-            );
+            this.usersSubject.next(users);
             this.loadingSubject.next(false);
           },
           () => {
@@ -53,7 +56,7 @@ export class UsersListComponentFacade {
       .subscribe();
   }
 
-  private mapUserToRow(user: User): Row {
+  private mapUserWithActions(user: User): UserWithActions {
     return {
       ...user,
       role: UserRoles[user.role as keyof typeof UserRoles],

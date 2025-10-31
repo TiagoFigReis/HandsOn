@@ -13,7 +13,7 @@ import { debounceTime } from 'rxjs';
 import { Table, TableFilterEvent, TableModule } from 'primeng/table';
 import { Skeleton } from 'primeng/skeleton';
 import { ButtonComponent, Column, ColumnWidths, InputComponent, Row } from '../../../';
-import { ConfirmationService, FilterMetadata } from 'primeng/api';
+import {FilterMetadata } from 'primeng/api';
 import {
   Action,
   ActionButtonComponent,

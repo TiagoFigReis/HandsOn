@@ -1,6 +1,6 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Fieldset, FieldsetModule } from 'primeng/fieldset';
+import {FieldsetModule } from 'primeng/fieldset';
 
 @Component({
   selector: 'lib-fieldset',
@@ -10,6 +10,6 @@ import { Fieldset, FieldsetModule } from 'primeng/fieldset';
 })
 export class FieldsetComponent {
   @Input() legend = "Header"
-  @Input() toggleable: true | false = false;
+  @Input() toggleable: true | false = true;
   @Input() styleClass = "";
 }

@@ -103,13 +103,13 @@ export class NutrientTableComponentFacade {
 
   private addNutrientTable(nutrientTable: NutrientTable) {
     this.nutrientTableFacade.createNutrientTable(nutrientTable as NutrientTable).subscribe(() => {
-      this.router.navigate(['/app/nutrientTables']);
+      this.router.navigate(['/app']);
     });
   }
 
   private updateNutrientTable(nutrientTable: NutrientTable) {
     this.nutrientTableFacade.updateNutrientTable(nutrientTable).subscribe(() => {
-      this.router.navigate(['/app/nutrientTables']);
+      this.router.navigate(['/app']);
     });
   }
 }

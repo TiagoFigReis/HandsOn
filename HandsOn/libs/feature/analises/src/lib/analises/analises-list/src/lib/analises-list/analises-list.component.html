@@ -2,64 +2,101 @@
   <i class="pi pi-spin pi-spinner text-3xl text-blue-500"></i>
 </div>
 
-<!-- <a [routerLink]="['/app']" >
-        <p class="description flex items-center gap-1 link">
-            <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
-        </p>
-  </a> -->
-
-<div *ngIf="!loading && data.length === 0" class="min-w-full text-center p-8 text-gray-600 dark:text-gray-400">
+<div *ngIf="!loading && allAnalyses.length === 0" class="min-w-full text-center p-8 text-gray-600 dark:text-gray-400">
   Não há análises cadastradas
 </div>
 
-<div *ngIf="!loading && data.length > 0">
-
+<div *ngIf="!loading && allAnalyses.length > 0">
   <div class="px-2 space-y-4">
-    
-    <div class="flex justify-end items-center mb-4 px-2 pt-2">
-      <button (click)="refresh()" title="Atualizar Lista" class="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-        <i class="pi pi-refresh text-lg"></i>
-      </button>
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 px-2 pt-2 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full sm:w-auto">
+        
+        <div class="col-span-2 sm:col-span-1">
+          <lib-select
+            id="filtroTipo"
+            label="Tipo"
+            [control]="filterTypeControl"
+            [options]="typeOptions"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="col-span-1">
+          <lib-input
+            id="filtroDataInicio"
+            label="De"
+            type="date"
+            [control]="filterStartDateControl"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="col-span-1">
+          <lib-input
+            id="filtroDataFim"
+            label="Até"
+            type="date"
+            [control]="filterEndDateControl"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="col-span-2 sm:col-span-1">
+          <lib-select
+            id="ordemData"
+            label="Ordenar por"
+            [control]="dateSortOrderControl"
+            [options]="sortOptions"
+            styleClass="w-full"
+          />
+        </div>
+      </div>
+
+      <div class="flex-shrink-0">
+        <lib-button (click)="refresh()" icon="pi pi-refresh" size="large" styleClass="p-2 secondary-background border-none rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors " />
+      </div>
     </div>
 
-    <div *ngFor="let analise of data" class=" tertiary-background shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-      
+    <div *ngIf="filteredAnalyses.length === 0" class="text-center p-8 text-gray-600 dark:text-gray-400">
+      Nenhuma análise encontrada para os filtros aplicados.
+    </div>
+
+    <div *ngFor="let analysis of filteredAnalyses" class=" tertiary-background shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700">
       <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
-        
         <div class="col-span-2">
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Tipo</span>
-          <p class="text-lg font-medium text-gray-900 dark:text-white">{{ analise.tipo || 'N/A' }}</p>
+          <p class="text-lg font-medium text-gray-900 dark:text-white">{{ analysis.tipo || 'N/A' }}</p>
         </div>
 
         <div>
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Laboratório</span>
-          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.lab || 'N/A' }}</p>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analysis.lab || 'N/A' }}</p>
         </div>
-        
+
         <div>
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Data da Análise</span>
-          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.dataAnalise | date:'dd/MM/yyyy' }}</p>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analysis.dataAnalise | date:'dd/MM/yyyy' }}</p>
         </div>
-        
+
         <div>
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Proprietário</span>
-          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.proprietario || 'N/A' }}</p>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analysis.proprietario || 'N/A' }}</p>
         </div>
 
         <div>
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Propriedade</span>
-          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analise.propriedade || 'N/A' }}</p>
+          <p class="text-sm text-gray-800 dark:text-gray-200">{{ analysis.propriedade || 'N/A' }}</p>
         </div>
 
         <div class="col-span-2">
           <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Arquivo da Análise</span>
-          <div *ngIf="analise.blob; else noFile">
-            <button type="button" 
-                    (click)="downloadFile(analise.blob, analise.lab + ' - ' + analise.tipo)"
-                    class="inline-flex items-center mt-1 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors">
-              <i class="pi pi-download mr-2"></i>
-              Baixar Arquivo
-            </button>
+          <div *ngIf="analysis.blob; else noFile">
+            <lib-button
+              (click)="downloadFile(analysis.blob, analysis.lab + ' - ' + analysis.tipo)"
+              [icon]="'pi pi-download'"
+              [label]="'Baixar Arquivo'"
+              [styleClass]="'border-none bg-blue-500 hover:bg-blue-600 text-white transition-colors '"
+            />
           </div>
           <ng-template #noFile>
             <p class="text-sm text-gray-500 dark:text-gray-400 italic mt-1">Nenhum arquivo anexado.</p>
@@ -67,39 +104,17 @@
         </div>
       </div>
 
-      <div class="border-t border-gray-200 dark:border-gray-700 pt-3 flex flex-col sm:flex-row justify-end space-x-1">
-        
-        <ng-container *ngFor="let action of analise.actions">
-                    
-            <a *ngIf="action.routerLink"
-                [routerLink]="action.routerLink"
-                [title]="action.tooltip"
-                class="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors sm:px-3 sm:py-1.5 sm:rounded-md">
-                
-                <i [class]="action.icon + ' text-lg ' + action.iconClass"></i>
-                
-                <span class="inline ml-1 text-sm font-medium" [class]="action.iconClass">
-                {{action.tooltip}}
-                </span>
-            </a>
-
-            <button *ngIf="action.command"
-                    type="button"
-                    [title]="action.tooltip"
-                    (click)="action.command($event, analise)"
-                    class="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors sm:px-3 sm:py-1.5 sm:rounded-md">
-                
-                <i [class]="action.icon + ' text-lg ' + action.iconClass"></i>
-                
-                <span class="sm:inline ml-1 text-sm font-medium" [class]="action.iconClass">
-                {{action.tooltip}}
-                </span>
-            </button>
-
+      <div class="border-t border-gray-400 dark:border-gray-700 pt-3 flex flex-col sm:flex-row justify-center sm:justify-end items-center space-x-1">
+        <ng-container *ngFor="let action of analysis.actions">
+          <lib-button
+            [routerLink]="action.routerLink"
+            (click)="!!action.command && action.command($event, analysis)"
+            [icon]="action.icon || ''"
+            [label]="action.tooltip || ''"
+            [styleClass]="'p-2 tertiary-background border-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ' + (action.iconClass || '')"
+          />
         </ng-container>
-
       </div>
     </div>
   </div>
-
 </div>

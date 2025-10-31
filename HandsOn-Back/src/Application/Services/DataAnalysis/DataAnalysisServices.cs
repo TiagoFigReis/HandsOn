@@ -219,7 +219,14 @@ namespace Application.Services.DataAnalysis
 
                 var (nutrientA, nutrientB) = NutrientHeaderExtension.ParseRelationHeader(relation);
 
-                float nutrientRelation = nutrientValues[nutrientA] / nutrientValues[nutrientB];
+                float nutrientBValue = nutrientValues[nutrientB];
+                float nutrientRelation = 0;
+                
+                if (nutrientBValue != 0)
+                {
+                    nutrientRelation = nutrientValues[nutrientA] / nutrientBValue;
+                }
+
                 float min = nutrientColumn.Min;
                 float max = nutrientColumn.Max;
 

@@ -74,7 +74,7 @@ export class NutrientTableFormComponent implements OnInit, OnChanges {
         { label: 'Boro (B) - ppm', id: 7, key: NutrientHeaders.B },
         { label: 'Cobre (Cu) - ppm', id: 8, key: NutrientHeaders.Cu },
         { label: 'Manganês (Mn) - ppm', id: 9, key: NutrientHeaders.Mn },
-        { label: 'Ferro (Fe) -ppm', id: 10, key: NutrientHeaders.Fe }
+        { label: 'Ferro (Fe) - ppm', id: 10, key: NutrientHeaders.Fe }
       ]
     },
     {

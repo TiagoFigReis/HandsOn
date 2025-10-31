@@ -117,8 +117,8 @@ export class UserFormComponent implements OnInit, OnChanges {
         Validators.minLength(8),
         Validators.maxLength(18),
         Validators.pattern(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,18}$/,
-        ),
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,18}$/
+        )
       ]);
 
     if (this.user) this.updateUserData();

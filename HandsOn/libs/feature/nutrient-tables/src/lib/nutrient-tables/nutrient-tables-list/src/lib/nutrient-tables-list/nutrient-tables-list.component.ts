@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Row } from '@farm/ui'; 
 import { NutrientTablesListComponentFacade } from './nutrient-tables-list.component.facade';
+import { ButtonComponent } from '@farm/ui';
 
 @Component({
   selector: 'lib-nutrient-tables-list',
-  imports: [CommonModule, RouterModule], 
+  imports: [CommonModule, RouterModule, ButtonComponent], 
   templateUrl: './nutrient-tables-list.component.html',
   styleUrl: './nutrient-tables-list.component.css',
 })

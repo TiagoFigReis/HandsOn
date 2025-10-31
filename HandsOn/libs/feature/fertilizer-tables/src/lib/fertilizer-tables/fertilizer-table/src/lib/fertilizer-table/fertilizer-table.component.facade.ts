@@ -103,13 +103,13 @@ export class FertilizerTableComponentFacade {
 
     private addFertilizerTable(fertilizerTable: FertilizerTable) {
         this.fertilizerTableFacade.createFertilizerTable(fertilizerTable as FertilizerTable).subscribe(() => {
-            this.router.navigate(['/app/fertilizerTables']);
+            this.router.navigate(['/app']);
         });
     }
 
     private updateFertilizerTable(fertilizerTable: FertilizerTable) {
         this.fertilizerTableFacade.updateFertilizerTable(fertilizerTable).subscribe(() => {
-            this.router.navigate(['/app/fertilizerTables']);
+            this.router.navigate(['/app']);
         });
     }
 }

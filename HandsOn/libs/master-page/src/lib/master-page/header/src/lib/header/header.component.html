@@ -8,46 +8,6 @@
     </a>
   </div>
 
-  <!-- <lib-button
-    class="md:hidden"
-    [variant]="'text'"
-    [severity]="'secondary'"
-    [icon]="'pi pi-fw pi-bars'"
-    [link]="true"
-    [size]="'large'"
-    (click)="menuToggle()"
-  ></lib-button> -->
-
-  <!--
-  <p-menubar [model]="menuItems" class="w-full max-md:hidden">
-  <ng-template #item let-item let-root="root">
-    <a
-      pRipple
-      class="flex items-center gap-2 p-1 px-2"
-      [routerLink]="item.routerLink"
-    >
-       Suporte a Iconify 
-      <ng-container *ngIf="item.iconify; else fontIcon">
-        <span [ngClass]="'icon-[' + item.icon + ']'"></span>
-      </ng-container>
-
-      Ícone padrão (Font Awesome, PrimeIcons...) 
-      <ng-template #fontIcon>
-        <i [ngClass]="item.icon"></i>
-      </ng-template>
-
-      <p class="text text-sm">{{ item.label }}</p>
-
-      Setinha de submenu 
-      <i
-        *ngIf="item.items"
-        [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"
-      ></i>
-    </a>
-  </ng-template>
-</p-menubar>
--->
-
   <div class="flex items-center gap-6 ml-auto">
     <div class="flex items-center justify-center gap-4">
       <div class="flex flex-col items-end">
@@ -64,6 +24,6 @@
       </button>
     </div>
   </div>
-</header>
 
-<lib-menu #avatarMenu [items]="avatarItems" [popup]="true"></lib-menu>
+  <lib-menu #avatarMenu [items]="avatarItems" [popup]="true"></lib-menu>
+</header>

@@ -69,7 +69,7 @@ export class UserComponentFacade {
 
   addUser(user: User) {
     this.userFacade.createUser(user).subscribe(() => {
-      this.router.navigate(['/app/users']);
+      this.router.navigate(['/app']);
     });
   }
 
@@ -78,7 +78,7 @@ export class UserComponentFacade {
       const data = this.authenticationService.decodedToken;
       if (data.nameid === user.id) this.authenticationService.logout();
 
-      this.router.navigate(['/app/users']);
+      this.router.navigate(['/app']);
     });
   }
 }

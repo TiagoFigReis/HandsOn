@@ -8,7 +8,6 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { NgxMaskDirective } from 'ngx-mask';
 
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -49,6 +48,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() placeholder = '';
   @Input() mask = '';
   @Input() suffix = '';
+  @Input() styleClass = ''
   @Input() thousandSeparator = '.';
   @Input() decimalMarker : "." | "," | [".", ","] = ','
   @Input() dropSpecialCharacters = false
@@ -66,7 +66,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() icon = '';
   @Input() iconPosition: 'left' | 'right' = 'left';
   @Input() minlength = 0;
-  @Input() maxlength = 0;
+  @Input() maxlength = 200;
   @Input() min = 0;
   @Input() max = 0;
   @Input() showErrorMessage = true;
@@ -122,6 +122,12 @@ export class InputComponent implements ControlValueAccessor {
           .replace('{max}', this.maxlength.toString());
       }
 
+      if (error === 'min' || error === 'max') {
+        message = message
+          .replace('{min}', this.min.toString())
+          .replace('{max}', this.max.toString());
+      }
+
       return message;
     }
 
@@ -136,6 +142,8 @@ const errorMessages = {
   emailsMatch: 'E-mails não coincidem',
   number: 'Número inválido',
   minlength: '{0} deve ter no mínimo {min} caracteres',
+  min: '{0} deve ser maior que {min}',
+  max: '{0} deve ser menor que {min}',
   maxlength: '{0} deve ter no máximo {max} caracteres',
   phoneExists: 'Telefone já cadastrado',
   date: 'A data não deve ser futura'

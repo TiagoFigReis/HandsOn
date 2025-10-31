@@ -61,7 +61,7 @@ export class CultureComponentFacade {
 
   private updateCulture(culture: Culture) {
     this.cultureFacade.updateCulture(culture).subscribe(() => {
-      this.router.navigate(['/app/cultures']);
+      this.router.navigate(['/app']);
     });
   }
 }

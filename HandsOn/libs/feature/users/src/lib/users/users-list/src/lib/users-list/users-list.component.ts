@@ -1,23 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Column, TableComponent, Row } from '@farm/ui';
-import { UsersListComponentFacade } from './users-list.component.facade';
+import { RouterLink } from '@angular/router';
+import {
+  UsersListComponentFacade,
+  UserWithActions,
+} from './users-list.component.facade';
+import { ButtonComponent } from '@farm/ui';
 
 @Component({
   selector: 'lib-users-list',
-  imports: [CommonModule, TableComponent],
+  imports: [CommonModule, RouterLink, ButtonComponent],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.css',
 })
 export class UsersListComponent implements OnInit {
-  data: Row[] = [];
-  columns: Column[];
+  data: UserWithActions[] = [];
   loading = false;
-  showMoreButton = true;
 
-  constructor(private facade: UsersListComponentFacade) {
-    this.columns = columns;
-  }
+  constructor(private facade: UsersListComponentFacade) {}
 
   ngOnInit(): void {
     this.facade.loading$.subscribe((loading) => {
@@ -35,80 +35,3 @@ export class UsersListComponent implements OnInit {
     this.facade.load();
   }
 }
-
-const columns: Column[] = [
-  {
-    field: 'firstName',
-    header: 'Name',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'lastName',
-    header: 'Sobrenome',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'email',
-    header: 'Email',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'phoneNumber',
-    header: 'Telefone',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'role',
-    header: 'Função',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-    fraction: 0.5,
-  },
-  {
-    field: 'createdAt',
-    header: 'Criado em',
-    type: 'datetime',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: false,
-  },
-  {
-    field: 'updatedAt',
-    header: 'Atualizado em',
-    type: 'datetime',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: false,
-  },
-  {
-    field: 'status',
-    header: 'Status',
-    type: 'text',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-    fraction: 0.5,
-  },
-];

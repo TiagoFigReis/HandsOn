@@ -18,17 +18,14 @@
   <div *ngFor="let leafRow of leafRows.controls; let i = index">
     <div
       *ngIf="i === selectedPeriodIndex"
-      class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-6"
+      class="border flex flex-col border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-6"
     >
       <h3 class="text-lg font-semibold">
         {{ periods[i] }}
       </h3>
 
       <ng-container *ngFor="let group of leafHeaders">
-        <fieldset class="border border-zinc-300 dark:border-zinc-600 rounded-lg p-4">
-          <legend class="text-base font-semibold px-2 text-primary">
-            {{ group.title }}
-          </legend>
+        <lib-fieldset [legend]="group.title" styleClass="p-5 bg-transparent fieldset-style">
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2"
           >
@@ -76,7 +73,7 @@
               </div>
             </ng-container>
           </div>
-        </fieldset>
+        </lib-fieldset>
       </ng-container>
     </div>
   </div>

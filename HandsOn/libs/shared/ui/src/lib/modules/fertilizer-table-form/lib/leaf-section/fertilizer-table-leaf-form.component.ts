@@ -6,6 +6,7 @@ import { InputNumberComponent } from '../../../../components/input-number/input-
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { CheckboxComponent } from '../../../../components/checkbox/checkbox.component';
 import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValidator, NutrientHeaders } from '@farm/core';
+import { FieldsetComponent } from '../../../../components/fieldset/fieldset.component';
 
 @Component({
   selector: 'lib-fertilizer-table-leaf-form',
@@ -16,6 +17,7 @@ import { FertilizerTable, LeafFertilizerProduct, LeafFertilizerRow, minMaxValida
     InputNumberComponent,
     ButtonComponent,
     CheckboxComponent,
+    FieldsetComponent
   ],
   templateUrl: './fertilizer-table-leaf-form.component.html',
   styleUrl: './fertilizer-table-leaf-form.component.css',

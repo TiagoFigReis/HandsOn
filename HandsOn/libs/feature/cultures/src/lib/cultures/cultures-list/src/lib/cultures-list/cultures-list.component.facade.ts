@@ -1,23 +1,27 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import {
   Culture,
   CultureFacade,
   ConfirmationService
 } from '@farm/core';
-import { Row, Action } from '@farm/ui';
+import { Action } from '@farm/ui';
 import { Router } from '@angular/router';
+
+export type CultureWithActions = Culture & { actions: Action[] };
 
 @Injectable({
   providedIn: 'root',
 })
 export class CulturesListComponentFacade {
-  private culturesSubject = new BehaviorSubject<Row[]>([]);
+  private culturesSubject = new BehaviorSubject<CultureWithActions[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
+  private submittingSubject = new BehaviorSubject<boolean>(false);
 
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
-  cultures$: Observable<Row[]> = this.culturesSubject.asObservable();
+  submitting$: Observable<boolean> = this.submittingSubject.asObservable();
+  cultures$: Observable<CultureWithActions[]> = this.culturesSubject.asObservable();
 
   constructor(
     private cultureFacade: CultureFacade,
@@ -31,11 +35,12 @@ export class CulturesListComponentFacade {
     this.cultureFacade
       .getAllCultures()
       .pipe(
+        map((cultures) =>
+          cultures.map((culture) => this.mapCultureWithActions(culture)),
+        ),
         tap(
-          (categories) => {
-            this.culturesSubject.next(
-              categories.map((culture) => this.mapCultureToRow(culture)),
-            );
+          (cultures) => {
+            this.culturesSubject.next(cultures);
             this.loadingSubject.next(false);
           },
           () => {
@@ -46,7 +51,7 @@ export class CulturesListComponentFacade {
       .subscribe();
   }
 
-  private mapCultureToRow(culture: Culture): Row {
+  private mapCultureWithActions(culture: Culture): CultureWithActions {
     const { ...data } = culture;
 
     return {
@@ -81,16 +86,23 @@ export class CulturesListComponentFacade {
 
   submit(culture: Culture) {
     this.confirmationService.confirm({
-      message: `Deseja criar a cultura?`,
+      message: `Deseja criar a cultura "${culture.name}"?`,
       accept: () => this.createCulture(culture)
     });
   }
 
   private createCulture(culture: Culture) {
+    this.submittingSubject.next(true);
     const create$ = this.cultureFacade.createCulture(culture as Culture);
 
-    create$.subscribe(() => {
-      this.load();
+    create$.subscribe({
+      next: () => {
+        this.load();
+        this.submittingSubject.next(false);
+      },
+      error: () => {
+        this.submittingSubject.next(false);
+      }
     });
   }
 }

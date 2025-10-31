@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Analise, DadosAnalise, Nutrients, RecommendFertilizers, NutrientTable, Plots, LEAF_NUTRIENT_MAP, SOIL_NUTRIENT_MAP } from '@farm/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { ResultAnaliseComponentFacade } from './result_analises.component.facade';
 import { SpinnerComponent } from '@farm/ui';
 import { filter, take } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { LeafRecommendationDisplayComponent } from './leaf-recommendation-displa
 import { ConfirmationService } from '@farm/core';
 import { NotificationService } from '@farm/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { InputComponent, InputNumberComponent, ButtonComponent } from '@farm/ui';
 
 export type NutrientAnalysis = any;
 
@@ -27,6 +28,9 @@ export type NutrientAnalysis = any;
     RecommendationDisplayComponent,
     LeafRecommendationDisplayComponent,
     ConfirmDialogModule,
+    InputNumberComponent,
+    InputComponent,
+    ButtonComponent
   ],
   templateUrl: './result_analises.component.html',
 })
@@ -42,14 +46,52 @@ export class ResultAnalisesComponent implements OnInit {
   table: NutrientTable | undefined;
   tipo = 0;
   editingPlotName: string | null = null;
-  tempPlotName = '';
+
+  plotForm : FormGroup
 
   constructor(
     private route: ActivatedRoute,
     public dataAnalyseFacade: ResultAnaliseComponentFacade,
     private confirmationService: ConfirmationService,
     private notificationService : NotificationService
-  ) {}
+  ) {
+    this.plotForm = new FormGroup ({
+      expectedProductivity: new FormControl(null, {
+        validators: [Validators.required,Validators.min(1)],
+      }),
+      tempPlotName: new FormControl(null, {
+      }),
+      width: new FormControl(null, {
+        validators : [Validators.required, Validators.min(0.1)]
+      }),
+      height: new FormControl(null, {
+        validators : [Validators.required, Validators.min(0.1)]
+      }),
+      prnt: new FormControl(null, {
+        validators : [Validators.required, Validators.min(1)]
+      }),
+    })
+  }
+
+  get expectedProductivity() : FormControl {
+    return this.plotForm.get('expectedProductivity') as FormControl
+  }
+
+  get tempPlotName() : FormControl {
+    return this.plotForm.get('tempPlotName') as FormControl
+  }
+
+  get width() : FormControl {
+    return this.plotForm.get('width') as FormControl
+  }
+
+  get height() : FormControl {
+    return this.plotForm.get('height') as FormControl
+  }
+
+  get prnt() : FormControl {
+    return this.plotForm.get('prnt') as FormControl
+  }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id') || undefined;
@@ -86,23 +128,33 @@ export class ResultAnalisesComponent implements OnInit {
     this.dataAnalyseFacade.nutrientTable$.subscribe(table => {
       if (table) this.table = table;
     });
+
+   this.plotForm.valueChanges.subscribe(formValues => {
+      if (this.selectedPlot) {
+        this.selectedPlot = {
+          ...this.selectedPlot,
+          ...formValues
+        };
+      }
+    });
+
   }
 
   startEditingPlotName(plotName: string | undefined, event: Event) {
     event.stopPropagation();
     if (!plotName) return;
     this.editingPlotName = plotName;
-    this.tempPlotName = plotName;
+    this.tempPlotName.setValue(plotName);
   }
 
   savePlotName(plot: Plots, event: Event) {
     event.stopPropagation();
-    if (this.tempPlotName.trim() && this.tempPlotName !== plot.plotName) {
+    if (this.tempPlotName.value.trim() && this.tempPlotName.value !== plot.plotName) {
       const oldName = plot.plotName;
-      plot.plotName = this.tempPlotName.trim();
+      plot.plotName = this.tempPlotName.value.trim();
       
       if (this.selectedPlot && this.selectedPlot.plotName === oldName) {
-        this.selectedPlot.plotName = this.tempPlotName.trim();
+        this.selectedPlot.plotName = this.tempPlotName.value.trim();
         this.fertilizerRecommendations = undefined;
         this.activeTab = 'analise';
       }
@@ -121,7 +173,7 @@ export class ResultAnalisesComponent implements OnInit {
   cancelEditPlotName(event: Event) {
     event.stopPropagation();
     this.editingPlotName = null;
-    this.tempPlotName = '';
+    this.tempPlotName.setValue('');
   }
 
   onNutrientValueChange(updatedNutrient: NutrientAnalysis) {
@@ -158,6 +210,11 @@ export class ResultAnalisesComponent implements OnInit {
   selectPlot(plot: Plots | undefined) {
     if(plot){
       this.selectedPlot = JSON.parse(JSON.stringify(plot));
+      this.expectedProductivity.setValue(plot.expectedProductivity)
+      this.tempPlotName.setValue(plot.plotName)
+      this.width.setValue(plot.width)
+      this.height.setValue(plot.height)
+      this.prnt.setValue(plot.prnt)
       this.fertilizerRecommendations = undefined;
       this.activeTab = 'analise';
       if (plot.cultureType) {

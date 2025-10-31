@@ -16,6 +16,7 @@ export * from './lib/components/table/table.component';
 export * from './lib/components/toast/toast.component';
 export * from './lib/components/upload-file/upload-file.component';
 export * from './lib/components/table-cultures/table-cultures.component';
+export * from './lib/components/table-cultures/lib/input-culture/input-culture.component';
 export * from './lib/components/input-number/input-number.component';
 export * from './lib/components/tabs/tabs.component';
 export * from './lib/components/fieldset/fieldset.component';

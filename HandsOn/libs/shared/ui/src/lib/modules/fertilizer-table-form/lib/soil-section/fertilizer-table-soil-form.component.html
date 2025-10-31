@@ -1,16 +1,7 @@
 <ng-container [formGroup]="parentForm">
-  <div formArrayName="soilRows" class="space-y-6 pb-4">
+  <div formArrayName="soilRows" class="space-y-6 pb-4 flex flex-col gap-1">
 
-    <fieldset class="space-y-4 border border-zinc-300 dark:border-zinc-600 rounded-lg p-4">
-      <legend class="flex items-center gap-2 justify-between p-2">
-        <h3 class="text-lg font-semibold text-primary">
-          Tabela de Adubação por Produtividade
-        </h3>
-        <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
-          Valores em g/nutriente/cova
-        </span>
-      </legend>
-
+    <lib-fieldset legend="Tabela de Adubação por Produtividade (Valores em g/nutriente/cova)" styleClass="p-5 bg-transparent fieldset-style">
       <div *ngFor="let productivity of soilRowsProductivities; let i = index" 
            [formGroupName]="i"
            class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
@@ -18,7 +9,7 @@
         <div class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
           <div class="flex items-center gap-2">
             <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Produtividade:</span>
-            <span class="text-lg font-semibold">
+            <span class="text-black dark:text-white text-sm sm:text-lg font-semibold">
               <span *ngIf="i === 0">&lt;</span>{{ productivity }} litros/planta
             </span>
           </div>
@@ -185,16 +176,10 @@
         </div>
 
       </div>
-    </fieldset>
+    </lib-fieldset>
 
-    <fieldset class="space-y-4 border border-zinc-300 dark:border-zinc-600 rounded-lg p-4">
-      <legend class="flex items-center gap-2 justify-between p-2">
-        <h3 class="text-lg font-semibold text-primary">Boro</h3>
-        <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
-          Valores em kg/ha
-        </span>
-      </legend>
 
+    <lib-fieldset legend="Boro (Valores em kg/ha)" styleClass="p-5 bg-transparent">
       <div [formGroupName]="0" class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
         
           <div formGroupName="b" class="rounded-lg p-3 space-y-3 bg-zinc-100 dark:bg-zinc-900 ">
@@ -262,7 +247,7 @@
             </div>
           </div>
       </div>
-    </fieldset>
+    </lib-fieldset>
 
   </div> 
 </ng-container>

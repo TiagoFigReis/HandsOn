@@ -7,13 +7,12 @@ export const culturesRoutes: Route[] = [
       import('./cultures/cultures.component').then((m) => m.CulturesComponent),
     children: [
       {
-        path: '',
-        loadChildren: () =>
-          import('@farm/cultures-list').then((m) => m.culturesListRoutes),
-      },
-      {
         path: ':id',
         loadChildren: () => import('@farm/culture').then((m) => m.cultureRoutes),
+      },
+      {
+        path: '**',
+        redirectTo: '/404',
       },
     ],
   },

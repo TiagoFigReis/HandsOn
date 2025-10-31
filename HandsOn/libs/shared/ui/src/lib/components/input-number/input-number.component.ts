@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ControlValueAccessor,
@@ -98,6 +98,12 @@ export class InputNumberComponent implements ControlValueAccessor {
         this.hintName || this.label,
       );
 
+      if (error === 'min' || error === 'max') {
+        message = message
+          .replace('{min}', this.min.toString())
+          .replace('{max}', this.max.toString());
+      }
+
       return message;
     }
 
@@ -106,5 +112,7 @@ export class InputNumberComponent implements ControlValueAccessor {
 }
 
 const errorMessages = {
-  required: '{0} é obrigatório'
+  required: '{0} obrigatório',
+  min: '{0} deve ser maior que {min}',
+  max: '{0} deve ser menor que {min}',
 };

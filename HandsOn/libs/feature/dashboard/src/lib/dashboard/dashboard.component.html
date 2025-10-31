@@ -17,10 +17,8 @@
                   'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-semibold': activeTab === 'sobre',
                   'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100': activeTab !== 'sobre'
                 }"
-                class="flex-1 lg:w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors duration-150">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+                class="flex-1 lg:w-full flex items-center justify-center lg:justify-start gap-3 p-3 rounded-lg transition-colors duration-150">
+          <i class="pi pi-info-circle"></i>
           <span class="hidden lg:inline">Sobre o Gestão</span>
         </button>
 
@@ -29,10 +27,9 @@
                   'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-semibold': activeTab === 'analises',
                   'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100': activeTab !== 'analises'
                 }"
-                class="flex-1 lg:w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors duration-150">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+                class="flex-1 lg:w-full flex items-center justify-center lg:justify-start gap-3 p-3 rounded-lg transition-colors duration-150"
+                *ngIf="userRole === 'Admin' || userRole === 'Proprietário'">
+          <i class="pi pi-file-pdf"></i>
           <span class="hidden lg:inline">Análises</span>
         </button>
 
@@ -41,11 +38,38 @@
                   'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-semibold': activeTab === 'tabelas',
                   'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100': activeTab !== 'tabelas'
                 }"
-                class="flex-1 lg:w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors duration-150">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
+                class="flex-1 lg:w-full flex items-center justify-center lg:justify-start gap-3 p-3 rounded-lg transition-colors duration-150"
+                *ngIf="userRole === 'Admin' || userRole === 'Proprietário'">
+          <i class="pi pi-table"></i>
           <span class="hidden lg:inline">Tabelas</span>
+        </button>
+
+        <button (click)="setActiveTab('culturas')"
+                [ngClass]="{
+                  'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-semibold': activeTab === 'culturas',
+                  'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100': activeTab !== 'culturas'
+                }"
+                class="flex-1 lg:w-full flex items-center justify-center lg:justify-start gap-3 p-3 rounded-lg transition-colors duration-150"
+                *ngIf="userRole === 'Admin'">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21V11" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c-1.5-1.5-4-3-6-1.5C3.5 10 5 13 6.5 14.5" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c1.5-1.5 4-3 6-1.5 1.5 1.5.0 4-1.5 5.5" />
+          </svg>
+
+          <span class="hidden lg:inline">Culturas</span>
+        </button>
+
+        <button (click)="setActiveTab('users')"
+                [ngClass]="{
+                  'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-semibold': activeTab === 'users',
+                  'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100': activeTab !== 'users'
+                }"
+                class="flex-1 lg:w-full flex items-center justify-center lg:justify-start gap-3 p-3 rounded-lg transition-colors duration-150"
+                *ngIf="userRole === 'Admin'">
+
+          <i class="pi pi-users"></i>
+          <span class="hidden lg:inline">Usuários</span>
         </button>
       </nav>
     </div>
@@ -87,7 +111,11 @@
           <ol class="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300">
             <li>
               <strong>Ajuste as Tabelas:</strong> Vá até a aba 
-              <button (click)="setActiveTab('tabelas')" class="text-green-600 dark:text-green-400 hover:underline font-medium cursor-pointer">Tabelas</button>.
+              <lib-button 
+              (click)="setActiveTab('tabelas')"
+              label="Tabelas"
+              styleClass="bg-transparent p-0 m-0 text-green-600 dark:text-green-400 hover:underline cursor-pointer border-none"
+              />.
               Lá, você encontra:
               <ul class="list-disc list-inside ml-4 mt-1">
                 <li><strong>Tabela de Nutrientes</strong>: mostra quais níveis de nutrientes são bons ou ruins para cada cultura (ex: café, milho etc.);</li>
@@ -96,8 +124,12 @@
               Você pode editar ou cadastrar novos produtos e níveis conforme sua necessidade. Essas tabelas são a base dos cálculos do sistema.
             </li>
             <li>
-              <strong>Adicione uma Análise:</strong> Vá para a aba 
-              <button (click)="setActiveTab('analises')" class="text-green-600 dark:text-green-400 hover:underline font-medium cursor-pointer">Análises</button> 
+              <strong>Adicione uma Análise:</strong> Vá para a aba
+              <lib-button 
+              (click)="setActiveTab('analises')"
+              label="Análises"
+              styleClass="bg-transparent p-0 m-0 text-green-600 dark:text-green-400 hover:underline cursor-pointer border-none"
+              /> 
               e clique em <strong>“Adicionar Análise”</strong> para preencher os dados do seu laudo de solo ou foliar.
             </li>
             <li>
@@ -113,14 +145,16 @@
             <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
               Suas Análises
             </h2>
-            <button 
-              [routerLink]="['analises/create']" 
-              class="w-full sm:w-auto bg-green-600 text-white font-medium py-2 px-5 rounded-lg shadow hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-              </svg>
-              Adicionar Análise
-            </button>
+            <lib-button
+              routerLink="analises/create" 
+              label="Adicionar Análise"
+              [type]="'submit'"
+              [fluid]="true"
+              [severity]="'primary'"
+              styleClass="text-white border border-green-600 bg-green-600 hover:bg-green-700 hover:border-green-700"
+              icon="pi pi-plus"
+              class="mb-auto"
+            ></lib-button>
           </div>
           
           <lib-analises-list></lib-analises-list>
@@ -129,9 +163,22 @@
 
       <div *ngIf="activeTab === 'tabelas'" class="flex flex-col gap-6 lg:gap-8">
         <div class="secondary-background p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-          <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">
-            Tabelas de Nutrientes
-          </h3>
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+              Tabelas de Nutrientes
+            </h2>
+            <lib-button
+              *ngIf="userRole === 'Admin'"
+              routerLink="nutrientTables/create" 
+              label="Cadastrar"
+              [type]="'submit'"
+              [fluid]="true"
+              [severity]="'primary'"
+              styleClass="text-white border border-blue-500 bg-blue-500 hover:bg-blue-600 hover:border-blue-600"
+              icon="pi pi-plus"
+              class="mb-auto"
+            ></lib-button>
+          </div>
           <p class="text-gray-600 dark:text-gray-300 mb-4">
             Esta tabela mostra os <strong>níveis ideais de cada nutriente</strong> (como Nitrogênio, Fósforo, Potássio, Cálcio, entre outros) para cada tipo de cultura. 
             <br><br>
@@ -142,9 +189,22 @@
         </div>
 
         <div class="secondary-background p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-          <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">
-          Tabelas de Fertilizantes
-          </h3>
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+              Tabelas de Fertilizantes
+            </h2>
+            <lib-button
+              *ngIf="userRole === 'Admin'"
+              routerLink="fertilizerTables/create" 
+              label="Cadastrar"
+              [type]="'submit'"
+              [fluid]="true"
+              [severity]="'primary'"
+              styleClass="text-white border border-blue-500 bg-blue-500 hover:bg-blue-600 hover:border-blue-600"
+              icon="pi pi-plus"
+              class="mb-auto"
+            ></lib-button>
+          </div>
           <p class="text-gray-600 dark:text-gray-300 mb-4">
             Aqui ficam <strong>os produtos que você usa na propriedade</strong> — adubos e fertilizantes foliares. 
             <br><br>
@@ -155,6 +215,40 @@
             Assim, você sabe qual produto usar e na quantidade certa, evitando desperdício e garantindo o melhor resultado para a lavoura.
           </p>
           <lib-fertilizer-tables-list></lib-fertilizer-tables-list>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'culturas'" class="flex flex-col gap-6 lg:gap-8">
+        <div class="secondary-background p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
+            Culturas
+          </h2>
+          
+          <p class="text-gray-600 dark:text-gray-300 mb-4">Aba de gerenciamento das culturas que o sistema oferece suporte.</p>
+          <lib-cultures-list></lib-cultures-list>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'users'" class="flex flex-col gap-6 lg:gap-8">
+        <div class="secondary-background p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+              Usuários
+            </h2>
+            <lib-button
+              *ngIf="userRole === 'Admin'"
+              routerLink="users/create" 
+              label="Cadastrar"
+              [type]="'submit'"
+              [fluid]="true"
+              [severity]="'primary'"
+              styleClass="text-white border border-blue-500 bg-blue-500 hover:bg-blue-600 hover:border-blue-600"
+              icon="pi pi-plus"
+              class="mb-auto"
+            ></lib-button>
+          </div>
+          <p class="text-gray-600 dark:text-gray-300 mb-4">Aba de gerenciamento dos usuários do sistema.</p>
+          <lib-users-list></lib-users-list>
         </div>
       </div>
 

@@ -7,7 +7,7 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, timeout } from 'rxjs/operators';
 import { AuthenticationService } from '../../services/authentication/authentication.service';
 import { HttpContextToken } from '@angular/common/http';
 
@@ -15,6 +15,8 @@ export const BYPASS_INTERCEPTORS = new HttpContextToken<boolean>(() => false);
 
 @Injectable()
 export class AuthenticationInterceptor implements HttpInterceptor {
+  private readonly REQUEST_TIMEOUT = 5 * 60 * 1000;
+
   constructor(private authenticationService: AuthenticationService) {}
 
   intercept(
@@ -39,6 +41,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
     }
 
     return next.handle(request).pipe(
+      timeout(this.REQUEST_TIMEOUT),
       catchError((error: HttpErrorResponse) => {
         return throwError(error);
       }),

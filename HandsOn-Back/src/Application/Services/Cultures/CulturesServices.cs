@@ -46,6 +46,8 @@ namespace Application.Services.Cultures
         {
             InputModelValidator.Validate(inputModel);
 
+            if (await _cultureRepository.GetByNameAsync(inputModel.Name!) is not null) throw new ConflictException("Culture exists");
+
             var culture = new Culture
             {
                 Name = inputModel.Name!,

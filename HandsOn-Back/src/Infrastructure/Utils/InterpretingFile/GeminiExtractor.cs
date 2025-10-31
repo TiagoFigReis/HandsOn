@@ -22,6 +22,7 @@ namespace Infrastructure.Utils.InterpretingFile
         public GeminiExtractor(HttpClient httpClient, IOptions<GeminiSettings> settings)
         {
             _httpClient = httpClient;
+            _httpClient.Timeout = TimeSpan.FromMinutes(5);
             _settings = settings.Value;
 
             if (string.IsNullOrEmpty(_settings.ApiKey))
@@ -67,7 +68,6 @@ namespace Infrastructure.Utils.InterpretingFile
                 generationConfig = new
                 {
                     temperature = 0,
-                    maxOutputTokens = 8192,
                     topP = 1,
                     topK = 1
                 }
@@ -84,7 +84,7 @@ namespace Infrastructure.Utils.InterpretingFile
 
 
             var geminiResponse = await response.Content.ReadFromJsonAsync<GeminiApiResponse>();
-            
+
             /*Extrair resposta do modelo.
             {
                 "Candidates": [  // lista de possíveis respostas
@@ -99,9 +99,16 @@ namespace Infrastructure.Utils.InterpretingFile
                 }
                 ]
             } */
-            
+
+            var firstCandidate = geminiResponse?.Candidates?.FirstOrDefault();
+
+            if (firstCandidate?.FinishReason != "STOP" && firstCandidate?.FinishReason != null)
+            {
+                throw new Exception($"Geração incompleta. Motivo: {firstCandidate.FinishReason}");
+            }
+
             var rawContent = geminiResponse?.Candidates[0]?.Content?.Parts[0]?.Text ?? "";
-            
+
             // Retira o markdown de json. ```json {dados do json}``` -> {dados do json}
             var cleanedJson = Regex.Replace(rawContent, @"^```json\s*|\s*```$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
 
@@ -124,7 +131,8 @@ namespace Infrastructure.Utils.InterpretingFile
                 - O pH H2O é valor do pH CaCl2 + 0.6.
                 - O enxofre em alguns casos pode estar representado como SO4.
                 - Retorne os valores de ponto flutuante sempre com 2 casas decimais.
-            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor 0.0. Não invente dados.
+            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor '0.0'. Não invente dados.
+            5.  **Identificacao do Talhão Repetida**: Se houver talhões com o mesmo nome utilize um marcador para diferencia-los.
             ### ESQUEMA JSON DE SAÍDA OBRIGATÓRIO:
             {
                 ""amostras_solo"": [
@@ -166,7 +174,8 @@ namespace Infrastructure.Utils.InterpretingFile
             3.  **Conversão de Unidades Obrigatória**:
                 - **Macronutrientes (N, P, K, Ca, Mg, S)**: Normalize todos os valores para grama por quilo (g/kg). Se a unidade original for porcentagem (%), multiplique o valor por 10. Se já estiver em g/kg, mantenha o valor.
                 - **Micronutrientes (B, Cu, Fe, Mn, Zn)**: Normalize todos os valores para ppm. Se a unidade for mg/kg, mantenha o valor numérico, pois mg/kg é equivalente a ppm.
-            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor 0.0. Não invente dados.
+            4.  **Informação Ausente**: Se uma informação específica não for encontrada, use o valor '0.0'. Não invente dados.
+            5.  **Identificacao do Talhão Repetida**: Se houver talhões com o mesmo nome utilize um marcador para diferencia-los.
             ### ESQUEMA JSON DE SAÍDA OBRIGATÓRIO:
             {
                 ""amostras_foliar"": [
@@ -202,6 +211,9 @@ namespace Infrastructure.Utils.InterpretingFile
     {
         [JsonPropertyName("content")]
         public Content Content { get; set; } = new();
+
+        [JsonPropertyName("finishReason")]
+        public string FinishReason { get; set; } = string.Empty;
     }
 
     internal class Content

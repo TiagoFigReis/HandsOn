@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberComponent } from '../../../../components/input-number/input-number.component';
+import { FieldsetComponent } from '../../../../components/fieldset/fieldset.component';
 
 interface LeafHeaderItem {
   label: string;
@@ -19,6 +20,7 @@ export interface LeafHeaderGroup {
     CommonModule,
     ReactiveFormsModule,
     InputNumberComponent,
+    FieldsetComponent
   ],
   templateUrl: './nutrient-table-leaf-form.component.html',
   styleUrl: './nutrient-table-leaf-form.component.css',
